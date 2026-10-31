@@ -50,5 +50,34 @@ const loginController =async (req,res,next)=>{
 }
 
 
+//Get the profile
+const profile = async(req,res,next)=>{
+    try{
+        const id = req.user.id
+        const user = await User.findById(id).select("-password")
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: "User does not exist"
+            })
+        }
 
-module.exports = loginController
+        res.status(200).json({
+            success: true,
+            message: "User's Profile",
+            user:{
+                userId: user._id,
+                name: user.name,
+                email: user.email
+            }
+        })
+
+    }catch(err){
+        next(err)
+    }
+
+}
+
+
+
+module.exports = {loginController, profile}
