@@ -6,6 +6,7 @@ const authMiddleware = require("../middleware/authMiddleware")
 //Login User
 router.post("/login",loginController)
 
+// Profile
 router.get("/profile",authMiddleware,profile)
 
 
