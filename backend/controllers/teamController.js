@@ -45,4 +45,31 @@ const createTeam = async(req, res, next)=>{
 }
 
 
-module.exports = {createTeam}
+//Get all team for specific user 
+const getAllTeams = async(req,res, next)=>{
+    try{
+        const id = req.user.id
+        const search = await teamMembership.find({userId: id}).populate("teamId")
+        if(search.length === 0){
+            return res.status(201).json({
+                message:"No teams found"
+            })
+        }
+
+        res.status(200).json({
+            message: "team Membership founded",
+            teams: search
+        })
+
+    }catch(err){
+        next(err)
+    }
+}
+
+// Get Team details
+
+
+
+
+
+module.exports = {createTeam, getAllTeams, getTeamDetails}
