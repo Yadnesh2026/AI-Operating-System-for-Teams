@@ -1,5 +1,6 @@
 const TeamModel = require("../model/TeamModel")
 const teamMembership = require("../model/TeamMembership")
+const User = require("../model/userModle")
 
 //Create an team
 
@@ -104,7 +105,61 @@ const getTeamDetails = async(req, res, next)=>{
 // Add employee to the team
 const addEmployee = async(req, res, next)=>{
     try{
+        const teamId = req.params.teamId
+        const userId = req.user.id
+        const employeeUser = req.body.userId // Employee means manager click on that user than his id should come
         
+        //Check weather the team exist or not
+        const team = await TeamModel.findById(teamId)
+        if(!team){
+            return res.status(404).json({
+                message: "Team does not exist"
+            })
+        }
+
+        //check weather the logged-In user has manager role
+        const manager = await teamMembership.findOne({
+            userId: userId, //userId matches the logged-in manager's ID.
+            teamId: teamId, //teamId matches the team being accessed.
+            role: "manager"
+        })
+        if(manager == null){
+            return res.status(403).json({
+                message: "Forbidden"
+            })
+        }
+
+        // To add the user
+        const user = await User.findById(employeeUser)
+        if(!user){
+            return res.status(404).json({
+                message: "Employee does not exist"
+            })
+        }
+
+        //Check that this user is already in a team or not
+        const existingMembership = await teamMembership.findOne({userId: employeeUser,
+            teamId: teamId
+        })
+        if(existingMembership){
+            return res.status(409).json({
+                message:"Employee is already in a team"
+            })
+        }
+
+        // Create the team means add that employee in the team
+        const addEmployee = await teamMembership.create({
+            userId: employeeUser,
+            teamId: teamId,
+            role: "employee"
+        })
+
+        res.status(201).json({
+            message: "Employee added",
+            employee: addEmployee
+        })
+
+
     }catch(err){
         next(err)
     }
