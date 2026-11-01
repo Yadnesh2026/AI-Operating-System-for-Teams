@@ -66,10 +66,51 @@ const getAllTeams = async(req,res, next)=>{
     }
 }
 
-// Get Team details
+// Get Team details - When click on that specfic team
+const getTeamDetails = async(req, res, next)=>{
+    try{
+    const teamId = req.params.teamId
+    const userId = req.user.id
+
+    // Find the team 
+    const team = await TeamModel.findById(teamId)
+    if(!team){
+        return res.status(404).json({
+            message: "Team does not exist"
+        })
+    }
+
+    //Check weather logged-in user belongs to that team or not 
+    const membership = await teamMembership.find({teamId: teamId, userId: userId}).populate("userId");
+    if(!membership){
+        return res.status(403).json({
+            message: "Members does not exist"
+        })
+    }
+
+    // Return details
+    res.status(200).json({
+        message: "Team Details successfull",
+        team: team,
+        membership: membership
+    })
+
+    }catch(err){
+        next(err)
+    }
+}
+
+
+// Add employee to the team
+const addEmployee = async(req, res, next)=>{
+    try{
+        
+    }catch(err){
+        next(err)
+    }
+}
 
 
 
 
-
-module.exports = {createTeam, getAllTeams, getTeamDetails}
+module.exports = {createTeam, getAllTeams, getTeamDetails, addEmployee}
