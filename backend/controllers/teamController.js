@@ -137,6 +137,8 @@ const addEmployee = async(req, res, next)=>{
             })
         }
 
+
+        
         //Check that this user is already in a team or not
         const existingMembership = await teamMembership.findOne({userId: employeeUser,
             teamId: teamId
