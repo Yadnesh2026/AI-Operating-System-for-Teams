@@ -120,7 +120,7 @@ const addEmployee = async(req, res, next)=>{
         //check weather the logged-In user has manager role
         const manager = await teamMembership.findOne({
             userId: userId, //userId matches the logged-in manager's ID.
-            teamId: teamId, //teamId matches the team being accessed.
+            teamId: teamId, //teamId matches the team being accessed to this manager
             role: "manager"
         })
         if(manager == null){
@@ -153,6 +153,12 @@ const addEmployee = async(req, res, next)=>{
             teamId: teamId,
             role: "employee"
         })
+        console.log("Logged-in user:", userId);
+        console.log("Team ID:", teamId);
+        console.log("Manager record:", manager);
+
+        console.log("Manager ID:", userId);
+        console.log("Team ID:", teamId);
 
         res.status(201).json({
             message: "Employee added",
