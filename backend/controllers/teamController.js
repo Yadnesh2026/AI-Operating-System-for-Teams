@@ -1,6 +1,7 @@
 const TeamModel = require("../model/TeamModel")
 const teamMembership = require("../model/TeamMembership")
 const User = require("../model/userModle")
+const { deleteModel } = require("mongoose")
 
 //Create an team
 
@@ -137,8 +138,6 @@ const addEmployee = async(req, res, next)=>{
             })
         }
 
-
-        
         //Check that this user is already in a team or not
         const existingMembership = await teamMembership.findOne({userId: employeeUser,
             teamId: teamId
@@ -174,6 +173,52 @@ const addEmployee = async(req, res, next)=>{
 }
 
 
+const deleteEmployee = async(req,res,next)=>{
+    try{
+        const teamId = req.params.teamId;
+        const userId = req.params.userId;
+        const loggedUser = req.user.id;
+
+        //Check weather the team exist 
+        const team = await TeamModel.findById(teamId)
+        if(!team){
+            return res.status(401).json({
+                message:"Team does not exist"
+            })
+        }
+
+        //Verify that logged-in user has manager role
+        const manager = await teamMembership.findOne({userId:loggedUser,teamId: teamId, role:"manager"})
+        if(!manager){
+            return res.status(400).json({
+                message:"You are not a manager"
+            })
+        }
+
+        // Selected employee belongs to that team or not
+        const employee = await teamMembership.findOne({userId:userId, teamId: teamId, role: "employee"})
+        if(!employee){
+            return res.status(200).json({
+                message: "You are not in this team"
+            })
+        }
+
+        // if he is the employee of the team than delete the employee from the team
+        const deleteEmployee = await teamMembership.findOneAndDelete({userId,teamId,role:"employee"})
+
+        res.status(200).json({
+            message: "Employee deleted Successfully ",
+            deleteEmployee
+        })
 
 
-module.exports = {createTeam, getAllTeams, getTeamDetails, addEmployee}
+
+    }catch(err){
+        next(err)
+    }
+}
+
+
+
+
+module.exports = {createTeam, getAllTeams, getTeamDetails, addEmployee, deleteEmployee}
