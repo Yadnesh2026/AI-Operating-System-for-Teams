@@ -5,6 +5,7 @@ const connectDB = require("./config/db")
 const userRouter = require("./router/userRouter")
 const authRouter = require("./router/authRouter");
 const teamRouter = require("./router/teamRouter")
+const projectRouter = require("./router/projectRouter")
 
 require("dotenv").config()
 
@@ -13,7 +14,8 @@ app.use(cors());
 app.use(express.json());
 app.use("/api",userRouter)
 app.use("/api", authRouter);
-app.use("/api", teamRouter)
+app.use("/api", teamRouter);
+app.use("/api", projectRouter);
 
 
 app.get("/",(req, res)=>{
