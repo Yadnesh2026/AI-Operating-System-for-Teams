@@ -1,7 +1,7 @@
 
 const express = require("express")
 const router = express.Router()
-const {createTeam, getAllTeams, getTeamDetails, addEmployee, deleteEmployee} = require("../controllers/teamController")
+const {createTeam, getAllTeams, getTeamDetails, addEmployee, deleteEmployee, updateTeamInfo, deleteTeam} = require("../controllers/teamController")
 const authMiddleware = require("../middleware/authMiddleware")
 
 //Create a team
@@ -19,6 +19,11 @@ router.post("/addEmployee/:teamId/members",authMiddleware,addEmployee)
 //Delete Employee
 router.delete("/deleteEmployee/:teamId/:userId",authMiddleware,deleteEmployee)
 
+//Update team info by manager
+router.put("/updateTeam/:teamId",authMiddleware,updateTeamInfo)
+
+//Delete the team by manager
+router.delete("/deleteTeam/:teamId",authMiddleware,deleteTeam)
 
 
 module.exports = router

@@ -210,15 +210,84 @@ const deleteEmployee = async(req,res,next)=>{
             message: "Employee deleted Successfully ",
             deleteEmployee
         })
+    }catch(err){
+        next(err)
+    }
+}
 
+const updateTeamInfo = async(req,res,next)=>{
+    try{
+        const teamId =req.params.teamId
+        const userId = req.user.id //manager
+        const {name, description} = req.body
 
+        //Check weather the team exist or not
+        const team = await TeamModel.findById(teamId)
+        if(!team){
+            return res.status(400).json({
+                message: "team does not exist"
+            })
+        }
 
+        //Check weathet the userId is the manager of this team
+        const checkManager = await teamMembership.findOne({userId: userId, teamId: teamId, role: "manager"})
+        if(!checkManager){
+            return res.status(400).json({
+                message: "You are not the manager of this team"
+            })
+        }
+
+        // Update the team
+        const updateTeam = await TeamModel.findByIdAndUpdate(teamId,{
+            name,
+            description
+        },{new: true, runValidators: true})
+
+        res.status(200).json({
+            message: "Updated Successfully",
+            updateTeam
+        })
     }catch(err){
         next(err)
     }
 }
 
 
+// Delete the team by manager
+const deleteTeam = async(req,res)=>{
+    const teamId = req.params.teamId
+    const user = req.user.id
+
+    //Check weather the team exist
+    const team = await TeamModel.findById(teamId)
+    if(!team){
+        return res.status(400).json({
+            message: "Team does not exist"
+        })
+    }
+
+    //check weather the logged-In user is manager of team 
+    const checkManager = await teamMembership.findOne({userId: user, teamId: teamId, role: "manager"})
+    if(!checkManager){
+        return res.status(400).json({
+            message: "You are not the manager of this team"
+        })
+    }
+
+    // Delete the membership first
+    const deleteTeamMemberships = await teamMembership.deleteMany({teamId})
+
+    // Delete the team
+    const deleteTeam = await TeamModel.findByIdAndDelete(teamId)
+
+    res.status(200).json({
+        message: "Deleted team and memberships",
+        deleteTeamMemberships,
+        deleteTeam
+    })
+}
 
 
-module.exports = {createTeam, getAllTeams, getTeamDetails, addEmployee, deleteEmployee}
+
+
+module.exports = {createTeam, getAllTeams, getTeamDetails, addEmployee, deleteEmployee, updateTeamInfo, deleteTeam}
