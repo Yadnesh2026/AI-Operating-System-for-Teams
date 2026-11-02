@@ -196,6 +196,8 @@ const deleteProject = async(req, res)=>{
         teamId: teamId
     })
 
+// Using findOneAndDelete({ _id: projectId, teamId }) ensures that Project B won't be deleted through Team A's route.
+
     res.status(200).json({
         message: "Project Deleted",
         project
