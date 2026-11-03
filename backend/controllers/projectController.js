@@ -9,9 +9,12 @@ const createProject =async(req,res,next)=>{
     const user = req.user.id
     const teamId = req.params.teamId
 
+    //Redis CacheKey
+    const CacheKey = `projects:${teamId}`
+
 
     // Name and description
-    if(!name || !description){
+    if(!name){
         return res.status(400).json({
             message: "Enter the feilds"
         })
@@ -30,10 +33,14 @@ const createProject =async(req,res,next)=>{
         name, description, teamId
     })
 
+    await redisClient.del(CacheKey)  //Delete the cache after the data is change or craeted 
+
     res.status(200).json({
         message :"Project Created",
         project
     })
+
+    
     }catch(err){
         next(err)
     }
@@ -146,6 +153,9 @@ const updateProject = async(req, res)=>{
     const projectId = req.params.projectId
     const userId = req.user.id
 
+    //Redis Implementation
+    const CacheKey = `projects:${teamId}`
+
     // Check team exist
     const team = await TeamModel.findById(teamId)
     if(!team){
@@ -163,7 +173,7 @@ const updateProject = async(req, res)=>{
     }
 
     // Check weather the project belongs to the team or not
-    const checkProject = await Project.findOne({teamId: teamId, projectId: projectId})
+    const checkProject = await Project.findOne({teamId: teamId, _id: projectId})
     if(!checkProject){
         return res.status(400).json({
             message: "Project does not belongs to this team"
@@ -171,9 +181,12 @@ const updateProject = async(req, res)=>{
     }
 
     // Update Project
-    const project = await Project.findOneAndUpdate(projectId,{
+    const project = await Project.findOneAndUpdate({_id:projectId,teamId},{
         name, description
     },{new: true, runValidators: true})
+
+    // Redis deleion of old cache - Redis invalidation
+    await redisClient.del(CacheKey)
 
     res.status(200).json({
         message:"Project Updated",
@@ -189,6 +202,9 @@ const deleteProject = async(req, res)=>{
     const teamId = req.params.teamId
     const projectId = req.params.projectId
     const userId = req.user.id
+
+    // Redis Implementatuon
+    const CacheKey = `projects:${teamId}`
 
     // Check team exist
     const team = await TeamModel.findById(teamId)
@@ -222,6 +238,9 @@ const deleteProject = async(req, res)=>{
 
 // Using findOneAndDelete({ _id: projectId, teamId }) ensures that Project B won't be deleted through Team A's route.
 
+    // Redis Invalidation
+    await redisClient.del(CacheKey)
+
     res.status(200).json({
         message: "Project Deleted",
         project
@@ -238,3 +257,64 @@ const deleteProject = async(req, res)=>{
 
 
 module.exports = {createProject, getAllProjects, getOneProjectDetails, updateProject, deleteProject}
+
+
+// redis 
+// Get All Projects → MongoDB.
+// Get All Projects again → Redis.
+// Create a project → Cache invalidated.
+// Get All Projects again → MongoDB.
+// Update or delete a project → Cache invalidated.
+
+
+// 1. Get All Projects API – Implement Caching
+
+// Step 1: Import Redis client
+// Import redisClient from config/redis.js.
+
+// Step 2: Extract team ID
+// Get teamId from req.params.
+
+// Step 3: Create cache key
+// const cacheKey = `projects:${teamId}`;
+// Use a unique key for each team's projects.
+
+// Step 4: Check Redis
+// const cachedProjects = await redisClient.get(cacheKey);
+
+// Step 5: Handle Cache HIT
+// - Check whether cached data exists.
+// - Convert JSON string into JavaScript array using JSON.parse().
+// - Return projects directly from Redis.
+// - Do not query MongoDB.
+
+// Step 6: Handle Cache MISS
+// If Redis returns null:
+// - Fetch projects from MongoDB using Project.find({ teamId }).
+// - Store the result in Redis.
+// await redisClient.set(cacheKey, JSON.stringify(projects), {
+//     EX: 60
+// });
+
+// Step 7: Handle empty projects
+// Check projects.length === 0 and return an appropriate message.
+
+// Step 8: Return response
+// Include source: "mongodb" for Cache MISS and source: "redis" for Cache HIT.
+
+// Important: Perform team and membership authorization checks before returning cached data.
+
+// 2. Create Project – Cache Invalidation
+// When a new project is created, the old cached project list becomes outdated.
+
+// Steps:
+// 1. Extract teamId.
+// 2. Create the same cache key: projects:${teamId}.
+// 3. Validate project details.
+// 4. Verify manager authorization.
+// 5. Create project in MongoDB.
+// 6. Delete old Redis cache.
+// await redisClient.del(cacheKey);
+
+
+// 7. Return success response.
