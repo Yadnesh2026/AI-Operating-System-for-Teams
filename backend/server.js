@@ -8,6 +8,7 @@ const teamRouter = require("./router/teamRouter")
 const projectRouter = require("./router/projectRouter");
 const taskRouter = require("./router/tashRouter")
 const helmet = require("helmet")
+const {connectRedis, redisClient} = require("./config/redis")
 
 require("dotenv").config()
 
@@ -32,6 +33,7 @@ app.get("/",(req, res)=>{
 const startServer =  async()=>{
     try{
         await connectDB()
+        await connectRedis()
         
         app.listen(1000,()=>{
             console.log("Server started")
