@@ -1,12 +1,14 @@
 const teamMembership = require("../model/TeamMembership")
 const Project = require("../model/ProjectModel")
 const TeamModel = require("../model/TeamModel")
+const { redisClient } = require("../config/redis")
 
 const createProject =async(req,res,next)=>{
     try{
     const {name, description} = req.body
     const user = req.user.id
     const teamId = req.params.teamId
+
 
     // Name and description
     if(!name || !description){
@@ -42,6 +44,20 @@ const getAllProjects = async(req, res, next)=>{
     const teamId = req.params.teamId
     const userId = req.user.id
 
+    // Redis part
+    const casheKey = `projects:${teamId}`
+    const cachedProjects = await redisClient.get(casheKey)
+
+    if(cachedProjects){
+        const projects = JSON.parse(cachedProjects) //Convert it to JSON
+
+        return res.status(200).json({
+            message: "Cached Project exist",
+            projects
+        })
+    }
+
+
     //Check team exist
     const team = await TeamModel.findById(teamId)
     if(!team){
@@ -60,15 +76,23 @@ const getAllProjects = async(req, res, next)=>{
 
     // Fetch the project
     const project = await Project.find({teamId: teamId})
+
+
+    // Redis part how to fetch the Data when CACHE MISS - Store MongoDB results in Redis
+    const storeProject = await redisClient.set(casheKey, JSON.stringify(project),{
+        EX: 60 //he cached data expires after 60 seconds.
+    })
+
     if(project.length === 0){ // Its an array thats why project.length === 0
-        return res.status(200).json({
-            message: "Project does not exist"
+    return res.status(200).json({
+        message: "Project does not exist",
+        source: "mongoDB"
         })
     }
 
     res.status(200).json({
         message: "All Project",
-        project
+        projects: project
     })
     }catch(err){
         next(err)
