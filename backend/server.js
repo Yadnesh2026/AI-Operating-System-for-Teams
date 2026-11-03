@@ -5,8 +5,9 @@ const connectDB = require("./config/db")
 const userRouter = require("./router/userRouter")
 const authRouter = require("./router/authRouter");
 const teamRouter = require("./router/teamRouter")
-const projectRouter = require("./router/projectRouter")
-const errMiddleware = require("./middleware/errMiddleware")
+const projectRouter = require("./router/projectRouter");
+const taskRouter = require("./router/tashRouter")
+const errMiddleware = require("./middleware/errMiddleware");
 
 require("dotenv").config()
 
@@ -17,6 +18,7 @@ app.use("/api",userRouter)
 app.use("/api", authRouter);
 app.use("/api", teamRouter);
 app.use("/api", projectRouter);
+app.use("api/",taskRouter)
 
 
 app.get("/",(req, res)=>{
