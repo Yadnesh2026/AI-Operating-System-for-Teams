@@ -7,13 +7,17 @@ const authRouter = require("./router/authRouter");
 const teamRouter = require("./router/teamRouter")
 const projectRouter = require("./router/projectRouter");
 const taskRouter = require("./router/tashRouter")
-const errMiddleware = require("./middleware/errMiddleware");
+const helmet = require("helmet")
 
 require("dotenv").config()
 
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000"
+}));
+app.use(helmet()) //Helmet helps protect your backend from common web attacks by setting security headers in HTTP responses.
 app.use(express.json());
+
 app.use("/api",userRouter)
 app.use("/api", authRouter);
 app.use("/api", teamRouter);
