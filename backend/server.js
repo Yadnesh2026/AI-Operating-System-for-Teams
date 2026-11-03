@@ -6,6 +6,7 @@ const userRouter = require("./router/userRouter")
 const authRouter = require("./router/authRouter");
 const teamRouter = require("./router/teamRouter")
 const projectRouter = require("./router/projectRouter")
+const errMiddleware = require("./middleware/errMiddleware")
 
 require("dotenv").config()
 

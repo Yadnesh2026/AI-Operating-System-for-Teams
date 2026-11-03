@@ -1,11 +1,13 @@
 
 const express = require("express")
 const router = express.Router()
+const validate = require("../middleware/validateMiddleware")
 
 const {register, getUser, updateUser, deleteUser} = require("../controllers/userController")
+const userValidation = require("../validation/userValidation")
 
 //Create User
-router.post("/register",register)
+router.post("/register",validate(userValidation),register)
 
 //Get he user
 router.get("/user/:id",getUser)
