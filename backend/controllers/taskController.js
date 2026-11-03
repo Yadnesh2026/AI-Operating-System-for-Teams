@@ -198,11 +198,26 @@ const updateTask = async(req, res, next)=>{
         })
     }
 
+    const updateData = {};
+
+    if (title !== undefined) {
+        updateData.title = title;
+    }
+
+    if (description !== undefined) {
+        updateData.description = description;
+    }
+
+    if (status !== undefined) {
+        updateData.status = status;
+    }
+
+    if (assignedTo !== undefined) {
+        updateData.assignedTo = assignedTo;
+    }
+
     const updateTask = await TaskModel.findOneAndUpdate({_id:taskId, projectId:projectId},{
-        title,
-        description,
-        assignedTo: employeeUser,
-        status
+       updateData
     }, { new: true, runValidators: true })
 
     res.status(200).json({
@@ -210,14 +225,141 @@ const updateTask = async(req, res, next)=>{
         updateTask
     })
 
-    
     }catch(err){
         next(err)
     }
 }
 
+const updateStatusByEmployee = async(req, res, next)=>{
+    try{
+    const {status} = req.body
+    const userId=req.user.id
+    const teamId = req.params.teamId
+    const projectId= req.params.projectId
+    const taskId= req.params.taskId
+
+    //Check if team consist or not
+    const team = await TeamModel.findById(teamId)
+    if(!team){
+        return res.status(400).json({
+            message :"team does not exist"
+        })
+    }
+
+    // Check if the user is in that team or not
+    const user = await teamMembership.findOne({userId: userId, teamId:teamId})
+    if(!user){
+        return res.status(400).json({
+            message: "User does not belongs to this team"
+        })
+    }
+    
+    // Check Project is of that team or not
+    const project = await Project.findOne({_id: projectId, teamId: teamId})
+    if(!project){
+        return res.status(400).json({
+            message: "Not of this team"
+        })
+    }
+
+    // Check if the task is of this projet or not
+    const task = await TaskModel.findOne({_id: taskId, projectId: projectId})
+    if(!task){
+        return res.status(400).json({
+            message: "Task is not of this project"
+        })
+    }
+
+    // if(task.assignedTo.toString() !== userId.toString()){
+    //     return res.status(403).json({
+    //         message : "You are not user of this task"
+    //     })
+    // }
+
+    // Check loggin user belongs to that task or not
+    const checkTaskUser = await TaskModel.findOne({_id: taskId, assignedTo: userId})
+    if(!checkTaskUser){
+        return res.status(400).json({
+            message: "You are not user of this task"
+        })
+    }
+
+    // Check status is provided
+    if (!status) {
+        return res.status(400).json({
+            message: "Status is required"
+        })
+    }
+
+    // Update Task Status
+    const updateStatus = await TaskModel.findOneAndUpdate({_id:taskId, projectId: projectId},{
+        status
+    },{new:true, runValidators: true})
+
+    res.status(200).json({
+        message:"Task Updated",
+        updateStatus
+    })
+
+    }catch(err){
+        next(err)
+    }
+}
+
+const deleteTask =async(req, res,next)=>{
+    try{
+    const userId=req.user.id
+    const teamId = req.params.teamId
+    const projectId= req.params.projectId
+    const taskId= req.params.taskId
+
+    //Check if team consist or not
+    const team = await TeamModel.findById(teamId)
+    if(!team){
+        return res.status(400).json({
+            message :"team does not exist"
+        })
+    }
+
+    // Check if the user is in that team or not
+    const user = await teamMembership.findOne({userId: userId, teamId:teamId, role: "manager"})
+    if(!user){
+        return res.status(400).json({
+            message: "User does not belongs to this team"
+        })
+    }
+    
+    // Check Project is of that team or not
+    const project = await Project.findOne({_id: projectId, teamId: teamId})
+    if(!project){
+        return res.status(400).json({
+            message: "Not of this team"
+        })
+    }
+
+    // Check if the task is of this project or not
+    const task = await TaskModel.findOne({_id: taskId, projectId: projectId})
+    if(!task){
+        return res.status(400).json({
+            message: "Task is not of this project"
+        })
+    }
+
+    // Delete Task
+    const deleteT = await TaskModel.findOneAndDelete({_id: taskId , projectId: projectId})
+
+    res.status(200).json({
+        message: "Task deleted",
+        deleteT
+    })
+
+    }catch(err){
+        next(err)
+    }
+
+}
 
 
 
 
-module.exports ={ createTask,getAllTask,getTaskDetails, updateTask}
+module.exports ={ createTask,getAllTask,getTaskDetails, updateTask, updateStatusByEmployee,deleteTask}
