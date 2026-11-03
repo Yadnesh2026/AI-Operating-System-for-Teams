@@ -1,7 +1,7 @@
 const TeamModel = require("../model/TeamModel")
 const teamMembership = require("../model/TeamMembership")
 const User = require("../model/userModle")
-const { deleteModel } = require("mongoose")
+const mongoose = require("mongoose")
 
 //Create an team
 
@@ -11,6 +11,7 @@ const { deleteModel } = require("mongoose")
 // Return the response.
 
 const createTeam = async(req, res, next)=>{
+
     try{
     const {name, description} = req.body
     const creatorId = req.user.id
