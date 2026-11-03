@@ -23,7 +23,7 @@ app.use("/api",userRouter)
 app.use("/api", authRouter);
 app.use("/api", teamRouter);
 app.use("/api", projectRouter);
-app.use("api/",taskRouter)
+app.use("/api", taskRouter)
 
 
 app.get("/",(req, res)=>{
@@ -34,7 +34,7 @@ const startServer =  async()=>{
     try{
         await connectDB()
         await connectRedis()
-        
+
         app.listen(1000,()=>{
             console.log("Server started")
         })
