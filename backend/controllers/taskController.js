@@ -75,8 +75,6 @@ const createTask = async(req,res, next)=>{
         next(err)
     }
 }
-
-
 const getAllTask = async (req,res,next)=>{
     try{
     const user = req.user.id
