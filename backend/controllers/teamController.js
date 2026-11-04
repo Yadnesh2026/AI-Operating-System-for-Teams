@@ -142,7 +142,7 @@ const addEmployee = async(req, res, next)=>{
         const employeeUser = req.body.userId // Employee means manager click on that user than his id should come
 
         // Redis implimentation
-        const cachedKey = `teams:${id}`
+        const cachedKey = `teams:${userId}`
         
         //Check weather the team exist or not
         const team = await TeamModel.findById(teamId)

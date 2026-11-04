@@ -2,7 +2,7 @@ const TeamModel = require("../model/TeamModel")
 const teamMembership = require("../model/TeamMembership")
 const Project = require("../model/ProjectModel")
 const TaskModel = require("../model/TaskModel")
-const redisClient =require("../config/redis")
+const {redisClient} =require("../config/redis")
 const notificationQueue = require("../queues/notificationQueue")
 
 const createTask = async(req,res, next)=>{
