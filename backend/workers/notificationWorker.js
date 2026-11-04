@@ -1,0 +1,22 @@
+// notificationWorker.js — processes jobs in the background.
+
+const { Worker} = require("bullmq")
+
+const notificationWorker = new Worker(
+    "notification",  // Name of the queue to listen to
+    async (job)=>{   // The job received by the worker
+        console.log(job.data)  // Data passed when adding the job
+    },
+    {
+        connection:{ // Redis conenction detaos 
+            host: "localhost",
+            port: 6379
+        }
+    }
+)
+
+// 1. createTask controller
+// 2. notificationQueue.add()
+// 3. Redis stores the job
+// 4. notificationWorker receives the job
+// 5. console.log(job.data)

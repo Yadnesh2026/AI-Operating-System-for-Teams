@@ -3,6 +3,7 @@ const teamMembership = require("../model/TeamMembership")
 const Project = require("../model/ProjectModel")
 const TaskModel = require("../model/TaskModel")
 const redisClient =require("../config/redis")
+const notificationQueue = require("../queues/notificationQueue")
 
 const createTask = async(req,res, next)=>{
     try{
@@ -55,6 +56,14 @@ const createTask = async(req,res, next)=>{
             projectId: projectId
         })
 
+        // BullMQ queu added 
+        await notificationQueue.add("task-assigned",{
+            taskId: createTask._id,
+            assignedTo: assignedTo,
+            assignedBy: user
+        })
+
+        // Redis Invalidation
         await redisClient.del(cacheKey)
 
         res.status(200).json({

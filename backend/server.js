@@ -9,6 +9,7 @@ const projectRouter = require("./router/projectRouter");
 const taskRouter = require("./router/tashRouter")
 const helmet = require("helmet")
 const {connectRedis, redisClient} = require("./config/redis")
+require("./workers/notificationWorker")
 
 require("dotenv").config()
 
