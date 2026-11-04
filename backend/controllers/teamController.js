@@ -2,6 +2,7 @@ const TeamModel = require("../model/TeamModel")
 const teamMembership = require("../model/TeamMembership")
 const User = require("../model/userModle")
 const mongoose = require("mongoose")
+const { redisClient } = require("../config/redis")
 
 //Create an team
 
@@ -52,7 +53,32 @@ const createTeam = async(req, res, next)=>{
 const getAllTeams = async(req,res, next)=>{
     try{
         const id = req.user.id
+
+        // Redis part 
+        const cahcedKey = `teams: ${id}`
+        const cachedTeam = await redisClient.get(cahcedKey)
+
+        if(cachedTeam){
+            const team = await JSON.parse(cachedTeam)
+
+            res.status(200).json({
+                message: "Cached Data exist",
+                sources: "redis",
+                teams: team
+            })
+        }
+
+// JSON.stringify() converts a JavaScript array into a JSON string.
+// JSON.parse() converts a JSON string back into a JavaScript array.
+
+
         const search = await teamMembership.find({userId: id}).populate("teamId")
+
+        // Redis Store the data 
+        const storeData = await redisClient.set(cahcedKey, JSON.stringify(search),{
+            EX:60
+        })
+
         if(search.length === 0){
             return res.status(201).json({
                 message:"No teams found"
