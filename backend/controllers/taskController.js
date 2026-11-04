@@ -2,6 +2,7 @@ const TeamModel = require("../model/TeamModel")
 const teamMembership = require("../model/TeamMembership")
 const Project = require("../model/ProjectModel")
 const TaskModel = require("../model/TaskModel")
+const redisClient =require("../config/redis")
 
 const createTask = async(req,res, next)=>{
     try{
@@ -9,6 +10,8 @@ const createTask = async(req,res, next)=>{
         const user = req.user.id
         const teamId = req.params.teamId
         const projectId = req.params.projectId
+
+        const cacheKey = `tasks:${teamId}:${projectId}`
 
         //Check team exist
         const team = await TeamModel.findById(teamId)
@@ -52,6 +55,8 @@ const createTask = async(req,res, next)=>{
             projectId: projectId
         })
 
+        await redisClient.del(cacheKey)
+
         res.status(200).json({
             message: "Task Created",
             createTask
@@ -92,18 +97,38 @@ const getAllTask = async (req,res,next)=>{
         })
     }
 
-    //fetch all projects
-    const allTask = await TaskModel.find({projectId: projectId})
-    if(allTask.length === 0){
-        return res.status(400).json({
-            message: "Task does not exist"
+       // Redis implementation
+    const cacheKey = `tasks:${teamId}:${projectId}`
+    const cacheTasks = await redisClient.get(cacheKey)
+    if(cacheTasks){
+        const task = JSON.parse(cacheTasks)
+
+        return res.status(200).json({
+            message: "All Task of this project listed",
+            source: "redis",
+            tasks: task
         })
     }
 
-    res.status(200).json({
-        message: "All task",
-        allTask
+    //fetch all projects
+    const allTask = await TaskModel.find({projectId: projectId})
+
+    // Redis store this data - CACHE MISS
+    await redisClient.set(cacheKey, JSON.stringify(allTask),{
+        EX:60
     })
+
+    if (allTask.length === 0) {
+    return res.status(400).json({
+        message: "Task does not exist"
+    });
+}
+
+    return res.status(200).json({
+        message: "All tasks",
+        source: "mongodb",
+        tasks: allTask
+    });
 
 
     }catch(err){
@@ -163,6 +188,8 @@ const updateTask = async(req, res, next)=>{
     const projectId= req.params.projectId
     const taskId= req.params.taskId
 
+   const cacheKey = `tasks:${teamId}:${projectId}`
+
     const team = await TeamModel.findById(teamId)
     if(!team){
         return res.status(400).json({
@@ -220,6 +247,8 @@ const updateTask = async(req, res, next)=>{
        updateData
     }, { new: true, runValidators: true })
 
+    await redisClient.del(cacheKey)
+
     res.status(200).json({
         message: "Task Updated",
         updateTask
@@ -237,6 +266,8 @@ const updateStatusByEmployee = async(req, res, next)=>{
     const teamId = req.params.teamId
     const projectId= req.params.projectId
     const taskId= req.params.taskId
+
+    const cacheKey = `tasks:${teamId}:${projectId}`
 
     //Check if team consist or not
     const team = await TeamModel.findById(teamId)
@@ -295,6 +326,8 @@ const updateStatusByEmployee = async(req, res, next)=>{
     const updateStatus = await TaskModel.findOneAndUpdate({_id:taskId, projectId: projectId},{
         status
     },{new:true, runValidators: true})
+
+    await redisClient.del(cacheKey)
 
     res.status(200).json({
         message:"Task Updated",

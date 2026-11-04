@@ -17,6 +17,8 @@ const createTeam = async(req, res, next)=>{
     const {name, description} = req.body
     const creatorId = req.user.id
 
+    const cahcedKey = `team: ${creatorId}`
+
     if(!name || !description){
         return res.status(400).json({
             message: "Feilds are required"
@@ -36,6 +38,8 @@ const createTeam = async(req, res, next)=>{
         teamId: newTeam._id,
         role: "manager"
     })
+
+    await redisClient.del(cahcedKey)
 
 
     res.status(200).json({
@@ -136,6 +140,9 @@ const addEmployee = async(req, res, next)=>{
         const teamId = req.params.teamId
         const userId = req.user.id
         const employeeUser = req.body.userId // Employee means manager click on that user than his id should come
+
+        // Redis implimentation
+        const cachedKey = `teams:${id}`
         
         //Check weather the team exist or not
         const team = await TeamModel.findById(teamId)
@@ -188,6 +195,9 @@ const addEmployee = async(req, res, next)=>{
         console.log("Manager ID:", userId);
         console.log("Team ID:", teamId);
 
+        //redis changes
+        await redisClient.del(cachedKey)
+
         res.status(201).json({
             message: "Employee added",
             employee: addEmployee
@@ -233,6 +243,7 @@ const deleteEmployee = async(req,res,next)=>{
         // if he is the employee of the team than delete the employee from the team
         const deleteEmployee = await teamMembership.findOneAndDelete({userId,teamId,role:"employee"})
 
+
         res.status(200).json({
             message: "Employee deleted Successfully ",
             deleteEmployee
@@ -247,6 +258,8 @@ const updateTeamInfo = async(req,res,next)=>{
         const teamId =req.params.teamId
         const userId = req.user.id //manager
         const {name, description} = req.body
+
+        const cahcedKey = `teams: ${userId}`
 
         //Check weather the team exist or not
         const team = await TeamModel.findById(teamId)
@@ -269,6 +282,8 @@ const updateTeamInfo = async(req,res,next)=>{
             name,
             description
         },{new: true, runValidators: true})
+
+        await redisClient.del(cahcedKey)
 
         res.status(200).json({
             message: "Updated Successfully",
