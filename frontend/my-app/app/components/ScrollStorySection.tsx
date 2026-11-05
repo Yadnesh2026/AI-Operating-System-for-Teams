@@ -35,7 +35,7 @@ function ScatteredVisual() {
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
       {[
-        { label: "Tasks", icon: "✓", x: "10%", y: "15%", color: "#FF7A1A", rot: -8 },
+        { label: "Tasks", icon: "✓", x: "10%", y: "15%", color: "#EF4444", rot: -8 },
         { label: "Documents", icon: "📄", x: "55%", y: "8%", color: "#9297A5", rot: 5 },
         { label: "Calendar", icon: "📅", x: "5%", y: "55%", color: "#8B5CF6", rot: -4 },
         { label: "Messages", icon: "💬", x: "60%", y: "50%", color: "#4ADE80", rot: 6 },
@@ -83,11 +83,11 @@ function ConnectingVisual() {
           width: "64px",
           height: "64px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, #FF9A4A, #FF7A1A)",
+          background: "radial-gradient(circle, #FF6B6B, #EF4444)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 0 40px rgba(255,122,26,0.5)",
+          boxShadow: "0 0 40px rgba(239, 68, 68,0.5)",
           zIndex: 10,
         }}
       >
@@ -112,7 +112,7 @@ function ConnectingVisual() {
             y1={line.y1}
             x2={line.x2}
             y2={line.y2}
-            stroke="#FF7A1A"
+            stroke="#EF4444"
             strokeWidth="1.5"
             strokeOpacity="0.4"
             initial={{ pathLength: 0 }}
@@ -124,7 +124,7 @@ function ConnectingVisual() {
 
       {/* Panels moving toward center */}
       {[
-        { label: "Tasks", x: "5%", y: "5%", color: "#FF7A1A" },
+        { label: "Tasks", x: "5%", y: "5%", color: "#EF4444" },
         { label: "Docs", x: "68%", y: "3%", color: "#9297A5" },
         { label: "Calendar", x: "3%", y: "62%", color: "#8B5CF6" },
         { label: "Messages", x: "70%", y: "60%", color: "#4ADE80" },
@@ -196,7 +196,7 @@ function UnifiedVisual() {
       {/* Content */}
       <div style={{ padding: "14px", flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
         {[
-          { label: "Project Alpha", status: "On Track", progress: 78, color: "#FF7A1A" },
+          { label: "Project Alpha", status: "On Track", progress: 78, color: "#EF4444" },
           { label: "Q4 Release", status: "At Risk", progress: 45, color: "#FF5555" },
           { label: "Design Sprint", status: "Ahead", progress: 90, color: "#4ADE80" },
         ].map((item, i) => (
@@ -233,13 +233,13 @@ function UnifiedVisual() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
           style={{
-            background: "rgba(255,122,26,0.06)",
-            border: "1px solid rgba(255,122,26,0.15)",
+            background: "rgba(239, 68, 68,0.06)",
+            border: "1px solid rgba(239, 68, 68,0.15)",
             borderRadius: "8px",
             padding: "10px 12px",
           }}
         >
-          <div style={{ fontSize: "9px", fontWeight: 700, color: "#FF7A1A", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "4px" }}>
+          <div style={{ fontSize: "9px", fontWeight: 700, color: "#EF4444", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "4px" }}>
             AI Recommendation
           </div>
           <p style={{ fontSize: "11px", color: "#F5F5F7", lineHeight: 1.5 }}>
@@ -359,7 +359,7 @@ export default function ScrollStorySection() {
                     width: "32px",
                     height: "32px",
                     borderRadius: "50%",
-                    background: activeStage === i ? "#FF7A1A" : "rgba(255,255,255,0.06)",
+                    background: activeStage === i ? "#EF4444" : "rgba(255,255,255,0.06)",
                     border: activeStage === i ? "none" : "1px solid rgba(255,255,255,0.1)",
                     display: "flex",
                     alignItems: "center",
@@ -445,7 +445,7 @@ export default function ScrollStorySection() {
                   width: activeStage === i ? "20px" : "6px",
                   height: "6px",
                   borderRadius: "3px",
-                  background: activeStage === i ? "#FF7A1A" : "rgba(255,255,255,0.2)",
+                  background: activeStage === i ? "#EF4444" : "rgba(255,255,255,0.2)",
                   transition: "all 0.3s ease",
                 }}
               />

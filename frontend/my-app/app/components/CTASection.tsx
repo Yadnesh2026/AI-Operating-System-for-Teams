@@ -24,7 +24,7 @@ export default function CTASection() {
           transform: "translate(-50%, -50%)",
           width: "700px",
           height: "380px",
-          background: "radial-gradient(ellipse, rgba(255, 122, 26, 0.12) 0%, rgba(255, 122, 26, 0.03) 45%, transparent 70%)",
+          background: "radial-gradient(ellipse, rgba(239, 68, 68, 0.12) 0%, rgba(239, 68, 68, 0.03) 45%, transparent 70%)",
           pointerEvents: "none",
         }}
       />
@@ -35,7 +35,7 @@ export default function CTASection() {
           left: 0,
           right: 0,
           height: "1px",
-          background: "linear-gradient(90deg, transparent, rgba(255, 122, 26, 0.3), transparent)",
+          background: "linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.3), transparent)",
         }}
       />
 
@@ -62,7 +62,7 @@ export default function CTASection() {
           >
             Make your team&apos;s next move
             <br />
-            <span style={{ color: "#FF7A1A" }}>the smartest one.</span>
+            <span style={{ color: "#EF4444" }}>the smartest one.</span>
           </h2>
           <p
             style={{
@@ -145,8 +145,8 @@ export function Footer() {
                   width: "6px",
                   height: "6px",
                   borderRadius: "50%",
-                  background: "#FF7A1A",
-                  boxShadow: "0 0 8px #FF7A1A",
+                  background: "#EF4444",
+                  boxShadow: "0 0 8px #EF4444",
                 }}
               />
             </div>

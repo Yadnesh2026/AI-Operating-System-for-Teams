@@ -27,7 +27,7 @@ const tasks = [
 ];
 
 const projects = [
-  { name: "Project Alpha", progress: 78, color: "#FF7A1A", daysLeft: 3 },
+  { name: "Project Alpha", progress: 78, color: "#EF4444", daysLeft: 3 },
   { name: "Project Beta", progress: 45, color: "#8B5CF6", daysLeft: 12 },
   { name: "Project Gamma", progress: 92, color: "#4ADE80", daysLeft: 1 },
 ];
@@ -177,7 +177,7 @@ export default function ProductShowcase() {
               borderRadius: "20px",
               overflow: "hidden",
               boxShadow:
-                "0 0 0 1px rgba(255,255,255,0.05), 0 40px 100px rgba(0,0,0,0.6), 0 0 60px rgba(255,122,26,0.06)",
+                "0 0 0 1px rgba(255,255,255,0.05), 0 40px 100px rgba(0,0,0,0.6), 0 0 60px rgba(239, 68, 68,0.06)",
             }}
           >
             {/* Titlebar */}
@@ -214,13 +214,13 @@ export default function ProductShowcase() {
                   alignItems: "center",
                   gap: "6px",
                   padding: "4px 10px",
-                  background: "rgba(255,122,26,0.1)",
-                  border: "1px solid rgba(255,122,26,0.2)",
+                  background: "rgba(239, 68, 68,0.1)",
+                  border: "1px solid rgba(239, 68, 68,0.2)",
                   borderRadius: "5px",
                 }}
               >
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#FF7A1A" }} />
-                <span style={{ fontSize: "10px", color: "#FF7A1A", fontWeight: 600 }}>Live</span>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#EF4444" }} />
+                <span style={{ fontSize: "10px", color: "#EF4444", fontWeight: 600 }}>Live</span>
               </div>
             </div>
 
@@ -254,7 +254,7 @@ export default function ProductShowcase() {
                       width: 32,
                       height: 32,
                       borderRadius: "50%",
-                      background: "linear-gradient(135deg, #FF7A1A, #8B5CF6)",
+                      background: "linear-gradient(135deg, #EF4444, #8B5CF6)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -277,9 +277,9 @@ export default function ProductShowcase() {
                     style={{
                       padding: "9px 16px",
                       fontSize: "13px",
-                      color: item.active ? "#FF7A1A" : "#9297A5",
-                      background: item.active ? "rgba(255,122,26,0.08)" : "transparent",
-                      borderLeft: item.active ? "2px solid #FF7A1A" : "2px solid transparent",
+                      color: item.active ? "#EF4444" : "#9297A5",
+                      background: item.active ? "rgba(239, 68, 68,0.08)" : "transparent",
+                      borderLeft: item.active ? "2px solid #EF4444" : "2px solid transparent",
                       fontWeight: item.active ? 600 : 400,
                       cursor: "pointer",
                       letterSpacing: "-0.01em",
@@ -362,9 +362,9 @@ export default function ProductShowcase() {
                             alignItems: "center",
                             gap: "10px",
                             padding: "8px",
-                            background: i === 0 ? "rgba(255,122,26,0.06)" : "rgba(255,255,255,0.02)",
+                            background: i === 0 ? "rgba(239, 68, 68,0.06)" : "rgba(255,255,255,0.02)",
                             borderRadius: "8px",
-                            border: i === 0 ? "1px solid rgba(255,122,26,0.15)" : "1px solid rgba(255,255,255,0.05)",
+                            border: i === 0 ? "1px solid rgba(239, 68, 68,0.15)" : "1px solid rgba(255,255,255,0.05)",
                           }}
                         >
                           <div
@@ -372,7 +372,7 @@ export default function ProductShowcase() {
                               width: 3,
                               height: 32,
                               borderRadius: "2px",
-                              background: i === 0 ? "#FF7A1A" : "rgba(255,255,255,0.15)",
+                              background: i === 0 ? "#EF4444" : "rgba(255,255,255,0.15)",
                             }}
                           />
                           <div style={{ flex: 1 }}>
@@ -424,7 +424,7 @@ export default function ProductShowcase() {
                               task.status === "Done"
                                 ? "#4ADE80"
                                 : task.status === "In Progress"
-                                ? "#FF7A1A"
+                                ? "#EF4444"
                                 : task.status === "Review"
                                 ? "#8B5CF6"
                                 : "#9297A5",
@@ -437,7 +437,7 @@ export default function ProductShowcase() {
                             width: 24,
                             height: 24,
                             borderRadius: "50%",
-                            background: "linear-gradient(135deg, #FF7A1A, #8B5CF6)",
+                            background: "linear-gradient(135deg, #EF4444, #8B5CF6)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -457,7 +457,7 @@ export default function ProductShowcase() {
                               task.status === "Done"
                                 ? "rgba(74,222,128,0.1)"
                                 : task.status === "In Progress"
-                                ? "rgba(255,122,26,0.1)"
+                                ? "rgba(239, 68, 68,0.1)"
                                 : task.status === "Review"
                                 ? "rgba(139,92,246,0.1)"
                                 : "rgba(146,151,165,0.1)",
@@ -465,7 +465,7 @@ export default function ProductShowcase() {
                               task.status === "Done"
                                 ? "#4ADE80"
                                 : task.status === "In Progress"
-                                ? "#FF7A1A"
+                                ? "#EF4444"
                                 : task.status === "Review"
                                 ? "#8B5CF6"
                                 : "#9297A5",
@@ -501,8 +501,8 @@ export default function ProductShowcase() {
 
                 <div
                   style={{
-                    background: "rgba(255,122,26,0.06)",
-                    border: "1px solid rgba(255,122,26,0.15)",
+                    background: "rgba(239, 68, 68,0.06)",
+                    border: "1px solid rgba(239, 68, 68,0.15)",
                     borderRadius: "10px",
                     padding: "12px",
                     marginBottom: "12px",
@@ -514,11 +514,11 @@ export default function ProductShowcase() {
                         width: 6,
                         height: 6,
                         borderRadius: "50%",
-                        background: "#FF7A1A",
-                        boxShadow: "0 0 8px rgba(255,122,26,0.6)",
+                        background: "#EF4444",
+                        boxShadow: "0 0 8px rgba(239, 68, 68,0.6)",
                       }}
                     />
-                    <span style={{ fontSize: "10px", color: "#FF7A1A", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                    <span style={{ fontSize: "10px", color: "#EF4444", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>
                       Risk Detected
                     </span>
                   </div>
@@ -528,7 +528,7 @@ export default function ProductShowcase() {
                   <button
                     style={{
                       fontSize: "11px",
-                      color: "#FF7A1A",
+                      color: "#EF4444",
                       background: "none",
                       border: "none",
                       cursor: "pointer",

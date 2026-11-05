@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { LogIn, Menu, UserPlus, X } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu, UserPlus, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 const navLinks = [
@@ -92,8 +92,8 @@ export default function Navbar() {
               width: "7px",
               height: "7px",
               borderRadius: "50%",
-              background: "#FF7A1A",
-              boxShadow: "0 0 10px #FF7A1A, 0 0 20px rgba(255, 122, 26, 0.8)",
+              background: "#EF4444",
+              boxShadow: "0 0 10px #EF4444, 0 0 20px rgba(239, 68, 68, 0.8)",
             }}
           />
         </a>
@@ -136,6 +136,7 @@ export default function Navbar() {
         {/* Login and sign-up actions */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <div className="nav-auth-desktop" style={{ alignItems: "center", gap: "14px" }}>
+            <Link href="/dashboard" className="nav-auth-login"><LayoutDashboard size={15} /> Dashboard</Link>
             <Link href="/login" className="nav-auth-login"><LogIn size={15} /> Log in</Link>
             <Link href="/register" className="nav-auth-signup"><UserPlus size={15} /> Sign up</Link>
           </div>
@@ -202,6 +203,14 @@ export default function Navbar() {
                 {link.label}
               </button>
             ))}
+            <Link
+              href="/dashboard"
+              onClick={() => setMenuOpen(false)}
+              className="nav-auth-signup"
+              style={{ width: "100%", marginTop: "20px" }}
+            >
+              <LayoutDashboard size={16} /> Dashboard
+            </Link>
             <div className="mobile-auth-actions" style={{ marginTop: "20px" }}>
               <Link href="/login" onClick={() => setMenuOpen(false)} className="nav-auth-login"><LogIn size={16} /> Log in</Link>
               <Link href="/register" onClick={() => setMenuOpen(false)} className="nav-auth-signup"><UserPlus size={16} /> Sign up</Link>

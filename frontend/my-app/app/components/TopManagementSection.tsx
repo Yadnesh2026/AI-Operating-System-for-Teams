@@ -146,12 +146,12 @@ export default function TopManagementSection() {
                       width: "20px",
                       height: "20px",
                       borderRadius: "5px",
-                      background: "rgba(255, 122, 26, 0.2)",
-                      border: "1.5px solid #FF7A1A",
+                      background: "rgba(239, 68, 68, 0.2)",
+                      border: "1.5px solid #EF4444",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      color: "#FF7A1A",
+                      color: "#EF4444",
                       flexShrink: 0,
                     }}
                   >
@@ -189,9 +189,9 @@ export default function TopManagementSection() {
                 width: "300px",
                 height: "300px",
                 borderRadius: "50%",
-                border: "2px solid rgba(255, 122, 26, 0.8)",
-                background: "radial-gradient(circle, rgba(255, 122, 26, 0.3) 0%, rgba(255, 70, 0, 0.08) 50%, transparent 75%)",
-                boxShadow: "0 0 50px rgba(255, 122, 26, 0.4)",
+                border: "2px solid rgba(239, 68, 68, 0.8)",
+                background: "radial-gradient(circle, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.08) 50%, transparent 75%)",
+                boxShadow: "0 0 50px rgba(239, 68, 68, 0.4)",
                 pointerEvents: "none",
               }}
             />
@@ -205,11 +205,11 @@ export default function TopManagementSection() {
                 width: "60px",
                 height: "60px",
                 borderRadius: "14px",
-                background: "linear-gradient(135deg, #FF9A4A, #FF7A1A)",
+                background: "linear-gradient(135deg, #FF6B6B, #EF4444)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 0 30px rgba(255, 122, 26, 0.8)",
+                boxShadow: "0 0 30px rgba(239, 68, 68, 0.8)",
                 zIndex: 2,
               }}
             >
@@ -237,11 +237,11 @@ export default function TopManagementSection() {
                   width: "32px",
                   height: "32px",
                   borderRadius: "8px",
-                  background: "rgba(255, 122, 26, 0.2)",
+                  background: "rgba(239, 68, 68, 0.2)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "#FF7A1A",
+                  color: "#EF4444",
                   flexShrink: 0,
                 }}
               >

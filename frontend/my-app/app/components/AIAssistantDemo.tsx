@@ -76,7 +76,7 @@ export default function AIAssistantDemo() {
           transform: "translate(-50%, -50%)",
           width: "600px",
           height: "400px",
-          background: "radial-gradient(ellipse, rgba(255,122,26,0.06) 0%, transparent 65%)",
+          background: "radial-gradient(ellipse, rgba(239, 68, 68,0.06) 0%, transparent 65%)",
           pointerEvents: "none",
         }}
       />
@@ -161,7 +161,7 @@ export default function AIAssistantDemo() {
                   width: 36,
                   height: 36,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, #FF7A1A, #8B5CF6)",
+                  background: "linear-gradient(135deg, #EF4444, #8B5CF6)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -226,7 +226,7 @@ export default function AIAssistantDemo() {
                       width: 36,
                       height: 36,
                       borderRadius: "50%",
-                      background: "radial-gradient(circle, #FF9A4A, #FF7A1A)",
+                      background: "radial-gradient(circle, #FF6B6B, #EF4444)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -243,8 +243,8 @@ export default function AIAssistantDemo() {
                   <div
                     style={{
                       flex: 1,
-                      background: "rgba(255,122,26,0.05)",
-                      border: "1px solid rgba(255,122,26,0.15)",
+                      background: "rgba(239, 68, 68,0.05)",
+                      border: "1px solid rgba(239, 68, 68,0.15)",
                       borderRadius: "12px",
                       padding: "14px 16px",
                     }}
@@ -269,7 +269,7 @@ export default function AIAssistantDemo() {
                             width: 6,
                             height: 6,
                             borderRadius: "50%",
-                            background: i < currentStep ? "#4ADE80" : i === currentStep ? "#FF7A1A" : "#9297A5",
+                            background: i < currentStep ? "#4ADE80" : i === currentStep ? "#EF4444" : "#9297A5",
                           }}
                         />
                         {step}
@@ -292,7 +292,7 @@ export default function AIAssistantDemo() {
                       width: 36,
                       height: 36,
                       borderRadius: "50%",
-                      background: "radial-gradient(circle, #FF9A4A, #FF7A1A)",
+                      background: "radial-gradient(circle, #FF6B6B, #EF4444)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -305,14 +305,14 @@ export default function AIAssistantDemo() {
                     {/* Sprint Progress */}
                     <div
                       style={{
-                        background: "rgba(255,122,26,0.05)",
-                        border: "1px solid rgba(255,122,26,0.15)",
+                        background: "rgba(239, 68, 68,0.05)",
+                        border: "1px solid rgba(239, 68, 68,0.15)",
                         borderRadius: "12px",
                         padding: "20px",
                         marginBottom: "16px",
                       }}
                     >
-                      <div style={{ fontSize: "11px", fontWeight: 700, color: "#FF7A1A", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "14px" }}>
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "#EF4444", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "14px" }}>
                         Sprint Progress
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "10px" }}>
@@ -321,10 +321,10 @@ export default function AIAssistantDemo() {
                             initial={{ width: 0 }}
                             animate={{ width: `${reportContent.sprintProgress.percent}%` }}
                             transition={{ duration: 0.8, delay: 0.2 }}
-                            style={{ height: "100%", background: "#FF7A1A", borderRadius: "3px" }}
+                            style={{ height: "100%", background: "#EF4444", borderRadius: "3px" }}
                           />
                         </div>
-                        <span style={{ fontSize: "14px", fontWeight: 700, color: "#FF7A1A", whiteSpace: "nowrap" }}>
+                        <span style={{ fontSize: "14px", fontWeight: 700, color: "#EF4444", whiteSpace: "nowrap" }}>
                           {reportContent.sprintProgress.completed}/{reportContent.sprintProgress.total} tasks complete
                         </span>
                       </div>
@@ -357,8 +357,8 @@ export default function AIAssistantDemo() {
                                 fontSize: "9px",
                                 padding: "2px 7px",
                                 borderRadius: "4px",
-                                background: task.priority === "High" ? "rgba(255,122,26,0.1)" : "rgba(146,151,165,0.1)",
-                                color: task.priority === "High" ? "#FF7A1A" : "#9297A5",
+                                background: task.priority === "High" ? "rgba(239, 68, 68,0.1)" : "rgba(146,151,165,0.1)",
+                                color: task.priority === "High" ? "#EF4444" : "#9297A5",
                                 fontWeight: 600,
                                 textTransform: "uppercase",
                               }}

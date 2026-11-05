@@ -64,7 +64,7 @@ export default function FeatureGrid() {
           >
             Intelligent building blocks for
             <br />
-            <span style={{ color: "#FF7A1A" }}>hyper-productive teams.</span>
+            <span style={{ color: "#EF4444" }}>hyper-productive teams.</span>
           </h2>
           <p style={{ fontSize: "16px", color: "#8E93A0", maxWidth: "500px", margin: "0 auto" }}>
             Explore the frontier of automated work with smart analytics, live sessions, and automated dispatching.
@@ -96,7 +96,7 @@ export default function FeatureGrid() {
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                 <span style={{ fontSize: "15px", fontWeight: 700, color: "#FFFFFF" }}>Balance</span>
-                <Sliders size={16} color="#FF7A1A" />
+                <Sliders size={16} color="#EF4444" />
               </div>
               <p style={{ fontSize: "12px", color: "#8E93A0", lineHeight: 1.5, marginBottom: "24px" }}>
                 Monitor resource allocations, velocity buffers, and team delivery bandwidth in real-time.
@@ -108,9 +108,9 @@ export default function FeatureGrid() {
               <div
                 style={{
                   height: "28px",
-                  background: "linear-gradient(90deg, rgba(255, 122, 26, 0.4) 0%, rgba(255, 122, 26, 0.8) 70%, transparent 100%)",
+                  background: "linear-gradient(90deg, rgba(239, 68, 68, 0.4) 0%, rgba(239, 68, 68, 0.8) 70%, transparent 100%)",
                   borderRadius: "6px",
-                  border: "1px solid rgba(255, 122, 26, 0.5)",
+                  border: "1px solid rgba(239, 68, 68, 0.5)",
                   display: "flex",
                   alignItems: "center",
                   padding: "0 10px",
@@ -202,11 +202,11 @@ export default function FeatureGrid() {
               <svg width="100%" height="34" viewBox="0 0 200 40" fill="none">
                 <path
                   d="M0 32 L30 28 L60 30 L90 18 L120 22 L150 10 L180 14 L200 4"
-                  stroke="#FF7A1A"
+                  stroke="#EF4444"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                 />
-                <circle cx="200" cy="4" r="3.5" fill="#FF7A1A" />
+                <circle cx="200" cy="4" r="3.5" fill="#EF4444" />
               </svg>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function FeatureGrid() {
                 transform: "translateX(-50%)",
                 width: "240px",
                 height: "260px",
-                background: "radial-gradient(ellipse at 50% 0%, rgba(255, 122, 26, 0.45) 0%, rgba(255, 80, 0, 0.15) 50%, transparent 80%)",
+                background: "radial-gradient(ellipse at 50% 0%, rgba(239, 68, 68, 0.45) 0%, rgba(220, 38, 38, 0.15) 50%, transparent 80%)",
                 clipPath: "polygon(10% 0%, 90% 0%, 65% 100%, 35% 100%)",
                 pointerEvents: "none",
               }}
@@ -251,7 +251,7 @@ export default function FeatureGrid() {
                 transform: "translateX(-50%)",
                 width: "180px",
                 height: "220px",
-                background: "repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255, 154, 74, 0.15) 10px, rgba(255, 154, 74, 0.15) 12px)",
+                background: "repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(239, 68, 68, 0.15) 10px, rgba(239, 68, 68, 0.15) 12px)",
                 clipPath: "polygon(15% 0%, 85% 0%, 60% 100%, 40% 100%)",
                 pointerEvents: "none",
               }}
@@ -274,9 +274,9 @@ export default function FeatureGrid() {
                   width: "68px",
                   height: "68px",
                   borderRadius: "16px",
-                  background: "linear-gradient(135deg, rgba(255, 122, 26, 0.9), rgba(255, 60, 0, 0.9))",
+                  background: "linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9))",
                   border: "2px solid rgba(255, 255, 255, 0.4)",
-                  boxShadow: "0 0 35px rgba(255, 122, 26, 0.9), 0 0 70px rgba(255, 80, 0, 0.5)",
+                  boxShadow: "0 0 35px rgba(239, 68, 68, 0.9), 0 0 70px rgba(220, 38, 38, 0.5)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -302,7 +302,7 @@ export default function FeatureGrid() {
                   gap: "6px",
                   fontSize: "12px",
                   fontWeight: 600,
-                  color: "#FF7A1A",
+                  color: "#EF4444",
                   textDecoration: "none",
                 }}
               >
@@ -334,8 +334,8 @@ export default function FeatureGrid() {
                     fontSize: "10px",
                     padding: "2px 8px",
                     borderRadius: "100px",
-                    background: "rgba(255, 122, 26, 0.15)",
-                    color: "#FF7A1A",
+                    background: "rgba(239, 68, 68, 0.15)",
+                    color: "#EF4444",
                     fontWeight: 600,
                   }}
                 >
@@ -374,7 +374,7 @@ export default function FeatureGrid() {
               {/* Items from video */}
               <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <div style={{ width: 8, height: 8, borderRadius: "2px", background: "#FF7A1A" }} />
+                  <div style={{ width: 8, height: 8, borderRadius: "2px", background: "#EF4444" }} />
                   <span style={{ fontSize: "12px", fontWeight: 600, color: "#FFFFFF" }}>Personal •</span>
                 </div>
                 {["Issues", "Active", "Backlog", "Projects"].map((subItem) => (

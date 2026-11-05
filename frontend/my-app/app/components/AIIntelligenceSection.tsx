@@ -15,7 +15,7 @@ const modules = [
     icon: <GitBranch size={18} />,
     description: "Project progress, task dependencies, and blockers",
     angle: -90, // top
-    color: "#FF7A1A",
+    color: "#EF4444",
     detail: "12 active · 3 at risk",
   },
   {
@@ -42,7 +42,7 @@ const modules = [
     icon: <Zap size={18} />,
     description: "Connected workflow steps and automated actions",
     angle: 180, // left
-    color: "#FF7A1A",
+    color: "#EF4444",
     detail: "18 workflows active",
   },
 ];
@@ -235,7 +235,7 @@ export default function AIIntelligenceSection() {
                   width: "100px",
                   height: "100px",
                   borderRadius: "50%",
-                  background: "radial-gradient(circle, rgba(255,122,26,0.6) 0%, rgba(255,122,26,0.2) 50%, transparent 70%)",
+                  background: "radial-gradient(circle, rgba(239, 68, 68,0.6) 0%, rgba(239, 68, 68,0.2) 50%, transparent 70%)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -246,17 +246,17 @@ export default function AIIntelligenceSection() {
                     width: "64px",
                     height: "64px",
                     borderRadius: "50%",
-                    background: "linear-gradient(135deg, #FF9A4A 0%, #FF7A1A 100%)",
+                    background: "linear-gradient(135deg, #FF6B6B 0%, #EF4444 100%)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    boxShadow: "0 0 40px rgba(255,122,26,0.5)",
+                    boxShadow: "0 0 40px rgba(239, 68, 68,0.5)",
                   }}
                 >
                   <Zap size={24} color="white" />
                 </div>
               </motion.div>
-              <div style={{ fontSize: "11px", fontWeight: 700, color: "#FF7A1A", letterSpacing: "0.1em", marginTop: "8px", textTransform: "uppercase" }}>
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "#EF4444", letterSpacing: "0.1em", marginTop: "8px", textTransform: "uppercase" }}>
                 Nexora AI
               </div>
             </div>
@@ -316,8 +316,8 @@ export default function AIIntelligenceSection() {
             style={{
               maxWidth: "600px",
               width: "100%",
-              background: "rgba(255,122,26,0.05)",
-              border: "1px solid rgba(255,122,26,0.15)",
+              background: "rgba(239, 68, 68,0.05)",
+              border: "1px solid rgba(239, 68, 68,0.15)",
               borderRadius: "14px",
               padding: "20px 24px",
             }}
@@ -326,9 +326,9 @@ export default function AIIntelligenceSection() {
               <motion.div
                 animate={{ opacity: [1, 0.4, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                style={{ width: 8, height: 8, borderRadius: "50%", background: "#FF7A1A" }}
+                style={{ width: 8, height: 8, borderRadius: "50%", background: "#EF4444" }}
               />
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "#FF7A1A", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#EF4444", letterSpacing: "0.06em", textTransform: "uppercase" }}>
                 AI-Generated Insight
               </span>
             </div>
@@ -339,7 +339,7 @@ export default function AIIntelligenceSection() {
               <button
                 style={{
                   padding: "7px 14px",
-                  background: "#FF7A1A",
+                  background: "#EF4444",
                   border: "none",
                   borderRadius: "6px",
                   fontSize: "12px",

@@ -150,7 +150,7 @@ export default function HeroSection() {
           width: "720px",
           height: "320px",
           borderRadius: "50%",
-          background: "radial-gradient(ellipse at 50% 30%, rgba(255, 122, 26, 0.12) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 30%, rgba(239, 68, 68, 0.12) 0%, transparent 70%)",
           filter: "blur(70px)",
           pointerEvents: "none",
         }}
@@ -259,9 +259,9 @@ export default function HeroSection() {
             width: "min(920px, 92vw)",
             height: "360px",
             borderRadius: "50% 50% 0 0",
-            borderTop: "2px solid rgba(255, 154, 74, 0.95)",
-            background: "radial-gradient(ellipse at 50% 0%, rgba(255, 122, 26, 0.3) 0%, rgba(255, 80, 0, 0.08) 45%, transparent 75%)",
-            boxShadow: "0 -6px 45px rgba(255, 122, 26, 0.65), 0 -20px 80px rgba(255, 90, 0, 0.3)",
+            borderTop: "2px solid rgba(239, 68, 68, 0.95)",
+            background: "radial-gradient(ellipse at 50% 0%, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.08) 45%, transparent 75%)",
+            boxShadow: "0 -6px 45px rgba(239, 68, 68, 0.65), 0 -20px 80px rgba(220, 38, 38, 0.3)",
             pointerEvents: "none",
             zIndex: 1,
           }}
@@ -277,7 +277,7 @@ export default function HeroSection() {
             WebkitBackdropFilter: "blur(24px)",
             border: "1px solid rgba(255, 255, 255, 0.1)",
             borderRadius: "18px",
-            boxShadow: "0 30px 100px rgba(0, 0, 0, 0.8), 0 0 60px rgba(255, 122, 26, 0.1)",
+            boxShadow: "0 30px 100px rgba(0, 0, 0, 0.8), 0 0 60px rgba(239, 68, 68, 0.1)",
             overflow: "hidden",
           }}
         >
@@ -296,7 +296,7 @@ export default function HeroSection() {
             <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <span style={{ fontSize: "14px", fontWeight: 800, color: "#FFFFFF" }}>REDSUN</span>
-                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#FF7A1A", boxShadow: "0 0 8px #FF7A1A" }} />
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#EF4444", boxShadow: "0 0 8px #EF4444" }} />
               </div>
 
               {/* Nav items */}
@@ -316,7 +316,7 @@ export default function HeroSection() {
                       color: item.active ? "#FFFFFF" : "#8E93A0",
                       cursor: "pointer",
                       paddingBottom: "2px",
-                      borderBottom: item.active ? "2px solid #FF7A1A" : "2px solid transparent",
+                      borderBottom: item.active ? "2px solid #EF4444" : "2px solid transparent",
                     }}
                   >
                     {item.name}
@@ -348,7 +348,7 @@ export default function HeroSection() {
                   width: 28,
                   height: 28,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, #FF7A1A, #8B5CF6)",
+                  background: "linear-gradient(135deg, #EF4444, #8B5CF6)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -435,8 +435,8 @@ export default function HeroSection() {
                         transition: "all 0.2s",
                       }}
                       onMouseEnter={(e) => {
-                        (e.target as HTMLElement).style.background = "rgba(255, 122, 26, 0.15)";
-                        (e.target as HTMLElement).style.borderColor = "rgba(255, 122, 26, 0.3)";
+                        (e.target as HTMLElement).style.background = "rgba(239, 68, 68, 0.15)";
+                        (e.target as HTMLElement).style.borderColor = "rgba(239, 68, 68, 0.3)";
                       }}
                       onMouseLeave={(e) => {
                         (e.target as HTMLElement).style.background = "rgba(255, 255, 255, 0.06)";
@@ -471,7 +471,7 @@ export default function HeroSection() {
                   <div style={{ fontSize: "14px", fontWeight: 700, color: "#FFFFFF", marginBottom: "4px" }}>
                     Monthly Revenue
                   </div>
-                  <div style={{ fontSize: "20px", fontWeight: 800, color: "#FF7A1A" }}>$84,250</div>
+                  <div style={{ fontSize: "20px", fontWeight: 800, color: "#EF4444" }}>$84,250</div>
                 </div>
                 <span style={{ fontSize: "11px", color: "#8E93A0", cursor: "pointer" }}>This week ▾</span>
               </div>
@@ -510,8 +510,8 @@ export default function HeroSection() {
                           width: "100%",
                           maxWidth: "14px",
                           borderRadius: "4px 4px 0 0",
-                          background: i === 6 ? "linear-gradient(180deg, #FF9A4A 0%, #FF7A1A 100%)" : "rgba(255, 122, 26, 0.45)",
-                          boxShadow: i === 6 ? "0 0 16px rgba(255, 122, 26, 0.8)" : "none",
+                          background: i === 6 ? "linear-gradient(180deg, #FF6B6B 0%, #EF4444 100%)" : "rgba(239, 68, 68, 0.45)",
+                          boxShadow: i === 6 ? "0 0 16px rgba(239, 68, 68, 0.8)" : "none",
                         }}
                       />
                     </div>
@@ -567,7 +567,7 @@ export default function HeroSection() {
                   color: "#FFFFFF",
                 }}
               >
-                <span style={{ fontSize: "12px", color: "#FF7A1A" }}>{logo.icon}</span>
+                <span style={{ fontSize: "12px", color: "#EF4444" }}>{logo.icon}</span>
                 <span>{logo.name}</span>
               </div>
             ))}
