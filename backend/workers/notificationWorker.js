@@ -18,7 +18,14 @@ const notificationWorker = new Worker(
             console.log("Employee added")
         }
 
-         console.log(job.data)  // Data passed when adding the job
+        // if error occue
+        if(job.name === "test-failed"){
+            console.log("Testing failed cases")
+
+            throw new Error("Something went wrong")
+        }
+
+        console.log(job.data)  // Data passed when adding the job
 
         console.log("Worker received job:", job.id);
         console.log("Job processed successfully!");

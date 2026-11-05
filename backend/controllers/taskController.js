@@ -338,6 +338,7 @@ const updateStatusByEmployee = async(req, res, next)=>{
 
     // BullMQ Flow 
     if(status === "completed" && task.status !== "completed"){
+        
         await notificationQueue.add("task-completed",{
             taskid: updateStatus._id,
             tasktitle: task.title,
