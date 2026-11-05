@@ -336,6 +336,17 @@ const updateStatusByEmployee = async(req, res, next)=>{
         status
     },{new:true, runValidators: true})
 
+    // BullMQ Flow 
+    if(status === "completed" && task.status !== "completed"){
+        await notificationQueue.add("task-completed",{
+            taskid: updateStatus._id,
+            tasktitle: task.title,
+            assignedBy: updateStatus.assignedBy,
+            assignedTo: updateStatus.assignedTo
+        })
+    }
+    
+    // Redis Delete old data and add the updated
     await redisClient.del(cacheKey)
 
     res.status(200).json({
