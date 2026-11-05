@@ -1,5 +1,6 @@
 import TeamDetailPage from "./TeamDetailPage";
 import { getTeam, type Team, type TeamRole } from "../teamData";
+import { notFound } from "next/navigation";
 
 type PageProps = {
   params: Promise<{ teamId: string }>;
@@ -14,15 +15,16 @@ export default async function TeamPage({ params, searchParams }: PageProps) {
   const createdAt = getValue(search.createdAt);
   const role = getValue(search.role);
   const existingTeam = getTeam(teamId);
-  const fallbackRole: TeamRole = role === "Manager" ? "Manager" : "Employee";
+  const fallbackRole: TeamRole | undefined = role === "Manager" || role === "Employee" ? role : undefined;
+  if (!existingTeam && (!name || !description || !createdAt || !fallbackRole)) notFound();
   const team: Team = existingTeam ?? {
     id: teamId,
-    name: name || teamId.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()),
-    description: description || "A shared space for this team to plan work and collaborate.",
-    createdAt: createdAt || "Nov 5, 2026",
-    role: fallbackRole,
+    name: name!,
+    description: description!,
+    createdAt: createdAt!,
+    role: fallbackRole!,
     color: "red",
-    members: [{ id: "jordan", name: "Jordan Davis", email: "jordan@acme.co", role: fallbackRole, joined: createdAt || "Nov 5, 2026", initials: "JD", tone: "red" }],
+    members: [],
     projects: [],
   };
 

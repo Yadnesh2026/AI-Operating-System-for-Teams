@@ -18,25 +18,9 @@ const sidebarItems = [
   { label: "Settings" },
 ];
 
-const tasks = [
-  { name: "API Gateway integration", status: "In Progress", assignee: "AL", priority: "High" },
-  { name: "Design system audit", status: "Review", assignee: "SM", priority: "Medium" },
-  { name: "Q4 roadmap planning", status: "In Progress", assignee: "JK", priority: "High" },
-  { name: "Performance optimization", status: "Todo", assignee: "DR", priority: "Medium" },
-  { name: "Security assessment", status: "Done", assignee: "PL", priority: "Low" },
-];
-
-const projects = [
-  { name: "Project Alpha", progress: 78, color: "#EF4444", daysLeft: 3 },
-  { name: "Project Beta", progress: 45, color: "#8B5CF6", daysLeft: 12 },
-  { name: "Project Gamma", progress: 92, color: "#4ADE80", daysLeft: 1 },
-];
-
-const meetings = [
-  { title: "Sprint Review", time: "10:00 AM", duration: "1h", attendees: 8 },
-  { title: "Design Sync", time: "2:30 PM", duration: "30m", attendees: 4 },
-  { title: "Stakeholder Update", time: "4:00 PM", duration: "45m", attendees: 12 },
-];
+const tasks: { name: string; status: string; assignee: string; priority: string }[] = [];
+const projects: { name: string; progress: number; color: string; daysLeft: number }[] = [];
+const meetings: { title: string; time: string; duration: string; attendees: number }[] = [];
 
 export default function ProductShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -266,8 +250,8 @@ export default function ProductShowcase() {
                     AJ
                   </div>
                   <div>
-                    <div style={{ fontSize: "12px", fontWeight: 600, color: "#F5F5F7" }}>Alex Johnson</div>
-                    <div style={{ fontSize: "10px", color: "#9297A5" }}>Product Lead</div>
+                    <div style={{ fontSize: "12px", fontWeight: 600, color: "#F5F5F7" }}>Your profile</div>
+                    <div style={{ fontSize: "10px", color: "#9297A5" }}>Account not connected</div>
                   </div>
                 </div>
 
@@ -296,10 +280,10 @@ export default function ProductShowcase() {
                 {/* Header */}
                 <div style={{ marginBottom: "24px" }}>
                   <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#F5F5F7", letterSpacing: "-0.03em", marginBottom: "4px" }}>
-                    Good morning, Alex 👋
+                    Welcome to your workspace
                   </h3>
                   <p style={{ fontSize: "13px", color: "#9297A5" }}>
-                    You have 3 tasks due today · Sprint review in 45 minutes
+                    Connect workspace data to see your current tasks and updates.
                   </p>
                 </div>
 
@@ -338,6 +322,7 @@ export default function ProductShowcase() {
                           <div style={{ fontSize: "10px", color: proj.color, marginTop: "3px" }}>{proj.progress}%</div>
                         </div>
                       ))}
+                      {projects.length === 0 && <div style={{ padding: "14px 0", color: "#9297A5", fontSize: "11px" }}>No project data available yet.</div>}
                     </div>
                   </div>
 
@@ -383,6 +368,7 @@ export default function ProductShowcase() {
                           </div>
                         </div>
                       ))}
+                      {meetings.length === 0 && <div style={{ padding: "14px 0", color: "#9297A5", fontSize: "11px" }}>No meeting data available yet.</div>}
                     </div>
                   </div>
                 </div>
@@ -479,6 +465,7 @@ export default function ProductShowcase() {
                         </span>
                       </div>
                     ))}
+                    {tasks.length === 0 && <div style={{ padding: "14px 4px", color: "#9297A5", fontSize: "11px" }}>No tasks available yet.</div>}
                   </div>
                 </div>
               </div>
@@ -519,11 +506,11 @@ export default function ProductShowcase() {
                       }}
                     />
                     <span style={{ fontSize: "10px", color: "#EF4444", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                      Risk Detected
+                      Workspace insights
                     </span>
                   </div>
                   <p style={{ fontSize: "12px", color: "#F5F5F7", lineHeight: 1.5, marginBottom: "6px" }}>
-                    Project Gamma is 92% complete but has a critical dependency on Task #47 which is 3 days overdue.
+                    Insights will appear when workspace data is connected.
                   </p>
                   <button
                     style={{
@@ -536,7 +523,7 @@ export default function ProductShowcase() {
                       fontWeight: 600,
                     }}
                   >
-                    View details →
+                    Connect workspace data →
                   </button>
                 </div>
 
@@ -553,7 +540,7 @@ export default function ProductShowcase() {
                     Daily Summary
                   </div>
                   <p style={{ fontSize: "12px", color: "#F5F5F7", lineHeight: 1.5 }}>
-                    Team velocity is up 6% this sprint. Focus on clearing 2 review-pending tasks to maintain cadence.
+                    A daily summary will appear when workspace data is available.
                   </p>
                 </div>
 
@@ -562,24 +549,7 @@ export default function ProductShowcase() {
                   <div style={{ fontSize: "10px", color: "#9297A5", marginBottom: "10px", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>
                     Recent Activity
                   </div>
-                  {[
-                    { text: "Sarah completed Design System v2.1", time: "2m ago" },
-                    { text: "Mike added 3 tasks to Sprint 14", time: "12m ago" },
-                    { text: "AI flagged deadline risk on Alpha", time: "35m ago" },
-                  ].map((activity, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        padding: "6px 0",
-                        borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.05)" : "none",
-                      }}
-                    >
-                      <div style={{ fontSize: "11px", color: "#F5F5F7", marginBottom: "2px", lineHeight: 1.4 }}>
-                        {activity.text}
-                      </div>
-                      <div style={{ fontSize: "10px", color: "#9297A5" }}>{activity.time}</div>
-                    </div>
-                  ))}
+                  <div style={{ padding: "6px 0", color: "#9297A5", fontSize: "11px" }}>No recent activity available.</div>
                 </div>
               </div>
             </div>

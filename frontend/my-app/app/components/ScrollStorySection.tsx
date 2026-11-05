@@ -189,43 +189,15 @@ function UnifiedVisual() {
             fontWeight: 600,
           }}
         >
-          All Connected
+          Awaiting Data
         </div>
       </div>
 
       {/* Content */}
       <div style={{ padding: "14px", flex: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
-        {[
-          { label: "Project Alpha", status: "On Track", progress: 78, color: "#EF4444" },
-          { label: "Q4 Release", status: "At Risk", progress: 45, color: "#FF5555" },
-          { label: "Design Sprint", status: "Ahead", progress: 90, color: "#4ADE80" },
-        ].map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: i * 0.12, duration: 0.4 }}
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              borderRadius: "8px",
-              padding: "10px 12px",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-              <span style={{ fontSize: "12px", color: "#F5F5F7", fontWeight: 500 }}>{item.label}</span>
-              <span style={{ fontSize: "10px", color: item.color }}>{item.status}</span>
-            </div>
-            <div style={{ height: "3px", background: "rgba(255,255,255,0.07)", borderRadius: "2px" }}>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${item.progress}%` }}
-                transition={{ delay: 0.3 + i * 0.12, duration: 0.6 }}
-                style={{ height: "100%", background: item.color, borderRadius: "2px" }}
-              />
-            </div>
-          </motion.div>
-        ))}
+        <div style={{ minHeight: "145px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed rgba(255,255,255,0.08)", borderRadius: "8px", padding: "16px", color: "#9297A5", fontSize: "11px", textAlign: "center" }}>
+          Project status will appear after workspace data is connected.
+        </div>
 
         {/* AI recommendation */}
         <motion.div
@@ -243,7 +215,7 @@ function UnifiedVisual() {
             AI Recommendation
           </div>
           <p style={{ fontSize: "11px", color: "#F5F5F7", lineHeight: 1.5 }}>
-            Reassign 2 tasks from Q4 Release to clear the blocker. This will move the project back on track.
+            Recommendations will appear after workspace data is connected.
           </p>
         </motion.div>
       </div>

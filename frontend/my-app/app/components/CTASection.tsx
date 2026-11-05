@@ -88,7 +88,7 @@ export default function CTASection() {
             }}
           >
             <a
-              href="#dashboard"
+              href="/register"
               className="btn-glow-orange"
               style={{ fontSize: "15px", padding: "14px 32px" }}
             >

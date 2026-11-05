@@ -14,24 +14,13 @@ const processingSteps = [
 
 const reportContent = {
   sprintProgress: {
-    completed: 14,
-    total: 22,
-    percent: 64,
+    completed: 0,
+    total: 0,
+    percent: 0,
   },
-  outstanding: [
-    { name: "API Gateway integration", owner: "Alex L.", priority: "High", due: "Nov 1" },
-    { name: "Load testing suite", owner: "David R.", priority: "High", due: "Nov 2" },
-    { name: "Documentation update", owner: "Maya P.", priority: "Medium", due: "Nov 3" },
-  ],
-  blockers: [
-    "Dashboard UI pending design review — 2 tasks blocked",
-    "Auth token refresh needs security sign-off",
-  ],
-  recommendations: [
-    "Prioritize Dashboard UI review today to unblock 2 downstream tasks",
-    "Request security sign-off on auth tokens by EOD to avoid Friday delay",
-    "Consider moving non-critical tasks to next sprint to protect the release",
-  ],
+  outstanding: [] as { name: string; owner: string; priority: string; due: string }[],
+  blockers: [] as string[],
+  recommendations: [] as string[],
 };
 
 export default function AIAssistantDemo() {
@@ -183,7 +172,7 @@ export default function AIAssistantDemo() {
                 }}
               >
                 <p style={{ fontSize: "14px", color: "#F5F5F7", lineHeight: 1.6, margin: 0 }}>
-                  Prepare a summary of our current sprint and identify anything that could delay Friday&apos;s release.
+                  Ask about your projects, tasks, or team activity after connecting workspace data.
                 </p>
               </div>
             </div>
@@ -369,6 +358,7 @@ export default function AIAssistantDemo() {
                           </div>
                         </motion.div>
                       ))}
+                      {reportContent.outstanding.length === 0 && <p style={{ color: "#9297A5", fontSize: "11px", margin: 0 }}>No task data available. Connect workspace data to create an analysis.</p>}
                     </div>
 
                     {/* Blockers */}
@@ -390,6 +380,7 @@ export default function AIAssistantDemo() {
                           <span style={{ fontSize: "12px", color: "#F5F5F7" }}>{blocker}</span>
                         </div>
                       ))}
+                      {reportContent.blockers.length === 0 && <span style={{ color: "#9297A5", fontSize: "11px" }}>No blocker data available.</span>}
                     </div>
 
                     {/* Recommendations */}
@@ -411,6 +402,7 @@ export default function AIAssistantDemo() {
                           <span style={{ fontSize: "12px", color: "#F5F5F7", lineHeight: 1.5 }}>{rec}</span>
                         </div>
                       ))}
+                      {reportContent.recommendations.length === 0 && <span style={{ color: "#9297A5", fontSize: "11px" }}>Recommendations will appear when workspace data is connected.</span>}
                     </div>
 
                     <button

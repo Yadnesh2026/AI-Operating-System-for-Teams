@@ -16,7 +16,7 @@ const modules = [
     description: "Project progress, task dependencies, and blockers",
     angle: -90, // top
     color: "#EF4444",
-    detail: "12 active · 3 at risk",
+    detail: "No data connected",
   },
   {
     id: "meetings",
@@ -25,7 +25,7 @@ const modules = [
     description: "Summaries, decisions, and action items",
     angle: 0, // right
     color: "#8B5CF6",
-    detail: "8 this week · 24 actions",
+    detail: "No data connected",
   },
   {
     id: "knowledge",
@@ -34,7 +34,7 @@ const modules = [
     description: "Connected docs, search, and relevant answers",
     angle: 90, // bottom
     color: "#4ADE80",
-    detail: "340 docs indexed",
+    detail: "No data connected",
   },
   {
     id: "automation",
@@ -43,7 +43,7 @@ const modules = [
     description: "Connected workflow steps and automated actions",
     angle: 180, // left
     color: "#EF4444",
-    detail: "18 workflows active",
+    detail: "No data connected",
   },
 ];
 
@@ -333,7 +333,7 @@ export default function AIIntelligenceSection() {
               </span>
             </div>
             <p style={{ fontSize: "14px", color: "#F5F5F7", lineHeight: 1.6, marginBottom: "12px" }}>
-              Based on this week&apos;s meetings, 3 action items from last Tuesday&apos;s design review are still unassigned. Project Alpha has a dependency on these items. Recommend assigning immediately to avoid sprint delay.
+              Workspace insights will appear here after your project, task, and team data is connected.
             </p>
             <div style={{ display: "flex", gap: "8px" }}>
               <button

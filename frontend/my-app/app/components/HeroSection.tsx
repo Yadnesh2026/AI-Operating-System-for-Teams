@@ -9,68 +9,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const integrations = [
-  {
-    name: "Flask",
-    type: "Users",
-    color: "#FF5555",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF5555" strokeWidth="2">
-        <path d="M10 2v7.31L4.66 19.3A2 2 0 0 0 6.34 22h11.32a2 2 0 0 0 1.68-2.7L14 9.31V2" />
-        <path d="M8.5 2h7" />
-        <path d="M7 16h10" />
-      </svg>
-    ),
-  },
-  {
-    name: "Porta",
-    type: "Users",
-    color: "#38BDF8",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" strokeWidth="2">
-        <rect width="18" height="18" x="3" y="3" rx="2" />
-        <path d="M9 3v18" />
-      </svg>
-    ),
-  },
-  {
-    name: "Hunter",
-    type: "Users",
-    color: "#2DD4BF",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="22" x2="18" y1="12" y2="12" />
-        <line x1="6" x2="2" y1="12" y2="12" />
-        <line x1="12" x2="12" y1="6" y2="2" />
-        <line x1="12" x2="12" y1="22" y2="18" />
-      </svg>
-    ),
-  },
-];
-
-const revenueBars = [
-  { day: "Day", height: "48%" },
-  { day: "Mon", height: "24%" },
-  { day: "Tue", height: "65%" },
-  { day: "Wed", height: "42%" },
-  { day: "Thu", height: "80%" },
-  { day: "Fri", height: "55%" },
-  { day: "Sat", height: "92%" },
-  { day: "Sun", height: "68%" },
-];
-
-const partnerLogos = [
-  { name: "Trace", icon: "◎" },
-  { name: "Volume", icon: "◒" },
-  { name: "Clues", icon: "✦" },
-  { name: "Rise", icon: "▲" },
-  { name: "Cloud", icon: "☁" },
-  { name: "Trace", icon: "◎" },
-  { name: "Clues", icon: "✦" },
-  { name: "Rise", icon: "▲" },
-];
-
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
@@ -230,7 +168,7 @@ export default function HeroSection() {
             Explore Platform
             <ArrowRight size={15} />
           </a>
-          <a href="#dashboard" className="btn-glow-orange">
+          <a href="/register" className="btn-glow-orange">
             Get Started
           </a>
         </motion.div>
@@ -323,7 +261,7 @@ export default function HeroSection() {
               </div>
             </div>
 
-            {/* Right: User / status icon */}
+            {/* Right: Workspace / preview status */}
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <div
                 style={{
@@ -338,8 +276,8 @@ export default function HeroSection() {
                   color: "#8E93A0",
                 }}
               >
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22C55E" }} />
-                <span>Live Feed</span>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#9297A5" }} />
+                <span>Preview</span>
               </div>
               <div
                 style={{
@@ -382,69 +320,15 @@ export default function HeroSection() {
                 Import Data into your Dashboard
               </div>
               <div style={{ fontSize: "12px", color: "#8E93A0", marginBottom: "20px" }}>
-                Sync and link to your store and train immediately
+                Connect data sources to populate your workspace.
               </div>
 
               {/* Integrations list */}
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "18px" }}>
-                {integrations.map((item) => (
-                  <div
-                    key={item.name}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "10px 14px",
-                      background: "rgba(255, 255, 255, 0.025)",
-                      border: "1px solid rgba(255, 255, 255, 0.05)",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "8px",
-                          background: "rgba(255, 255, 255, 0.04)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {item.icon}
-                      </div>
-                      <div>
-                        <div style={{ fontSize: "13px", fontWeight: 600, color: "#FFFFFF" }}>{item.name}</div>
-                        <div style={{ fontSize: "11px", color: "#8E93A0" }}>{item.type}</div>
-                      </div>
-                    </div>
-
-                    <button
-                      style={{
-                        padding: "5px 12px",
-                        fontSize: "11px",
-                        fontWeight: 500,
-                        color: "#FFFFFF",
-                        background: "rgba(255, 255, 255, 0.06)",
-                        border: "1px solid rgba(255, 255, 255, 0.1)",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        transition: "all 0.2s",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.target as HTMLElement).style.background = "rgba(239, 68, 68, 0.15)";
-                        (e.target as HTMLElement).style.borderColor = "rgba(239, 68, 68, 0.3)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.target as HTMLElement).style.background = "rgba(255, 255, 255, 0.06)";
-                        (e.target as HTMLElement).style.borderColor = "rgba(255, 255, 255, 0.1)";
-                      }}
-                    >
-                      Launch Importer
-                    </button>
-                  </div>
-                ))}
+                <div style={{ minHeight: "150px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px", border: "1px dashed rgba(255,255,255,0.08)", borderRadius: "10px", color: "#8E93A0", fontSize: "12px", textAlign: "center" }}>
+                  <span>No integrations connected.</span>
+                  <button type="button" disabled style={{ padding: "6px 12px", fontSize: "11px", color: "#8E93A0", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "6px", cursor: "not-allowed" }}>Connect an integration</button>
+                </div>
               </div>
 
               {/* Bottom Action Dropdown */}
@@ -467,9 +351,9 @@ export default function HeroSection() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 700, color: "#FFFFFF", marginBottom: "4px" }}>
-                    Monthly Revenue
+                    Workspace Activity
                   </div>
-                  <div style={{ fontSize: "20px", fontWeight: 800, color: "#EF4444" }}>$84,250</div>
+                  <div style={{ fontSize: "14px", fontWeight: 650, color: "#8E93A0" }}>No data available</div>
                 </div>
                 <span style={{ fontSize: "11px", color: "#8E93A0", cursor: "pointer" }}>This week ▾</span>
               </div>
@@ -487,49 +371,19 @@ export default function HeroSection() {
                     borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
                   }}
                 >
-                  {revenueBars.map((bar, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        height: "100%",
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      <motion.div
-                        initial={{ height: 0 }}
-                        whileInView={{ height: bar.height }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: i * 0.08, ease: "easeOut" }}
-                        style={{
-                          width: "100%",
-                          maxWidth: "14px",
-                          borderRadius: "4px 4px 0 0",
-                          background: i === 6 ? "linear-gradient(180deg, #FF6B6B 0%, #EF4444 100%)" : "rgba(239, 68, 68, 0.45)",
-                          boxShadow: i === 6 ? "0 0 16px rgba(239, 68, 68, 0.8)" : "none",
-                        }}
-                      />
-                    </div>
-                  ))}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", color: "#8E93A0", fontSize: "11px" }}>Activity analytics will appear when data is connected.</div>
                 </div>
 
                 {/* Day labels */}
                 <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "8px" }}>
-                  {revenueBars.map((bar, i) => (
-                    <span key={i} style={{ flex: 1, textAlign: "center", fontSize: "10px", color: "#8E93A0" }}>
-                      {bar.day}
-                    </span>
-                  ))}
+                  <span style={{ fontSize: "10px", color: "#8E93A0" }}>No activity to display</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* LOGO MARQUEE: "Join 4,000+ companies already growing" */}
+            {/* Workspace integrations placeholder */}
         <div style={{ textAlign: "center", marginTop: "48px" }}>
           <p
             style={{
@@ -540,7 +394,7 @@ export default function HeroSection() {
               marginBottom: "24px",
             }}
           >
-            Join 4,000+ companies already growing
+            Connect your workspace sources
           </p>
 
           <div
@@ -553,22 +407,7 @@ export default function HeroSection() {
               opacity: 0.7,
             }}
           >
-            {partnerLogos.map((logo, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "7px",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#FFFFFF",
-                }}
-              >
-                <span style={{ fontSize: "12px", color: "#EF4444" }}>{logo.icon}</span>
-                <span>{logo.name}</span>
-              </div>
-            ))}
+            <span style={{ color: "#8E93A0", fontSize: "12px" }}>Connected sources will appear here.</span>
           </div>
         </div>
       </div>

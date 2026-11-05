@@ -34,7 +34,7 @@ export default function TeamDetailPage({ initialTeam }: { initialTeam: Team }) {
     const cleanEmail = memberEmail.trim();
     if (!cleanName || !cleanEmail) return;
     const initials = cleanName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-    setMembers((current) => [...current, { id: `member-${Date.now()}`, name: cleanName, email: cleanEmail, role: "Employee", joined: "Nov 5, 2026", initials, tone: "red" }]);
+    setMembers((current) => [...current, { id: `member-${Date.now()}`, name: cleanName, email: cleanEmail, role: "Employee", joined: new Intl.DateTimeFormat("en", { month: "short", day: "2-digit", year: "numeric" }).format(new Date()), initials, tone: "red" }]);
     setMemberName("");
     setMemberEmail("");
     setDialog(null);

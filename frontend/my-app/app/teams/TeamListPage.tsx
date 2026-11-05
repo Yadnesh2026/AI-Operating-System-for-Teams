@@ -44,10 +44,10 @@ export default function TeamListPage() {
       id: `new-team-${Date.now()}`,
       name: cleanName,
       description: cleanDescription,
-      createdAt: "Nov 5, 2026",
+      createdAt: new Intl.DateTimeFormat("en", { month: "short", day: "2-digit", year: "numeric" }).format(new Date()),
       role: "Manager",
       color: "red",
-      members: [{ id: "jordan", name: "Jordan Davis", email: "jordan@acme.co", role: "Manager", joined: "Nov 5, 2026", initials: "JD", tone: "red" }],
+      members: [],
       projects: [],
     };
     setTeamList((current) => [createdTeam, ...current]);
@@ -108,7 +108,7 @@ export default function TeamListPage() {
               </article>
             );
           })}
-          {filteredTeams.length === 0 && <div className={styles.emptyState}><b>No teams found</b><p>Try another search, or create a new team.</p></div>}
+          {filteredTeams.length === 0 && <div className={styles.emptyState}><b>{teamList.length === 0 ? "No teams found. Create your first team." : "No teams found"}</b><p>{teamList.length === 0 ? "Your teams will appear here once you create or join one." : "Try another search, or create a new team."}</p></div>}
         </div>
         {createdMessage && <p className={styles.inlineMessage} role="status">{createdMessage}</p>}
       </div>
@@ -118,7 +118,7 @@ export default function TeamListPage() {
           <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="create-team-title">
             <div className={styles.modalHeader}><div><h2 id="create-team-title">Create a team</h2><p>Start a workspace for people working toward the same goal.</p></div><button className={styles.closeButton} onClick={() => setModalOpen(false)} aria-label="Close"><X size={17} /></button></div>
             <form className={styles.form} onSubmit={createTeam}>
-              <label className={styles.field}>Team name<input value={name} onChange={(event) => setName(event.target.value)} placeholder="e.g. Customer success" required maxLength={60} /></label>
+              <label className={styles.field}>Team name<input value={name} onChange={(event) => setName(event.target.value)} placeholder="Enter team name" required maxLength={60} /></label>
               <label className={styles.field}>Description<textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="What will this team work on?" required maxLength={240} /></label>
               <div className={styles.modalActions}><button type="button" className={styles.secondaryButton} onClick={() => setModalOpen(false)}>Cancel</button><button type="submit" className={styles.primaryButton}><Plus size={15} /> Create team</button></div>
             </form>
