@@ -5,7 +5,20 @@ const { Worker} = require("bullmq")
 const notificationWorker = new Worker(
     "notification",  // Name of the queue to listen to
     async (job)=>{   // The job received by the worker
-        console.log(job.data)  // Data passed when adding the job
+
+        if(job.name == "task-assigned"){
+            console.log("Task Assinged notification")
+        }
+
+        if(job.name === "task-completed"){
+            console.log("Task completed notification")
+        }
+
+        if(job.name === "employee-add"){
+            console.log("Employee added")
+        }
+
+         console.log(job.data)  // Data passed when adding the job
 
         console.log("Worker received job:", job.id);
         console.log("Job processed successfully!");

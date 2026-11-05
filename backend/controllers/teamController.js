@@ -3,6 +3,7 @@ const teamMembership = require("../model/TeamMembership")
 const User = require("../model/userModle")
 const mongoose = require("mongoose")
 const { redisClient } = require("../config/redis")
+const notificationQueue = require("../queues/notificationQueue");
 
 //Create an team
 
@@ -188,12 +189,17 @@ const addEmployee = async(req, res, next)=>{
             teamId: teamId,
             role: "employee"
         })
-        console.log("Logged-in user:", userId);
-        console.log("Team ID:", teamId);
-        console.log("Manager record:", manager);
 
-        console.log("Manager ID:", userId);
-        console.log("Team ID:", teamId);
+        // BullMQ
+        const addEmployeeNotification = await notificationQueue.add(
+            "employee-add",
+            {
+                teamId: teamId,
+                teamName: team.name,
+                employeeId: employeeUser,
+                addedBy: user
+            }
+        )
 
         //redis changes
         await redisClient.del(cachedKey)
