@@ -106,3 +106,44 @@
 .brand{width:100%;height:100px;justify-content:center;margin:0 0 14px}
 .brandLogo{display:block;width:150px;height:100px;object-fit:contain}
 @media(max-width:780px){.sidebar{padding-top:18px}.brand{height:38px;margin-bottom:25px}.brandLogo{width:54px;height:36px}}
+
+/* Refined dashboard hierarchy, aligned with the team directory */
+.content{position:relative;isolation:isolate}
+.content:before{position:absolute;z-index:-1;top:-95px;left:-65px;width:min(760px,85vw);height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,68,68,.075),transparent 70%);pointer-events:none;content:""}
+.greetingRow{margin-bottom:29px}
+.date{font-size:13px;letter-spacing:.01em}
+.greetingRow h1{font-size:34px;letter-spacing:-.05em}
+.greetingRow p{font-size:14px}
+.stats{gap:16px;margin-bottom:22px}
+.statCard{position:relative;overflow:hidden;min-height:132px;background:linear-gradient(145deg,rgba(20,22,30,.98),rgba(13,15,21,.98));box-shadow:0 10px 26px rgba(0,0,0,.1);transition:transform .18s,border-color .18s}
+.statCard:hover{transform:translateY(-2px);border-color:rgba(239,68,68,.25)}
+.statTop{font-size:13px}
+.statValue{font-size:30px;letter-spacing:-.04em}
+.statFoot{font-size:12px}
+.dashboardGrid{gap:18px}
+.panel{background:linear-gradient(145deg,rgba(19,21,29,.98),rgba(14,16,22,.98));box-shadow:0 10px 28px rgba(0,0,0,.1);transition:border-color .18s}
+.panel:hover{border-color:rgba(255,255,255,.13)}
+.panelHeader{margin-bottom:17px}
+.panelHeader h2{font-size:18px;letter-spacing:-.03em}
+.panelHeader p{font-size:13px}
+.taskSummary{min-height:47px;padding:0 14px;border:1px solid rgba(255,255,255,.045);border-radius:9px;background:rgba(255,255,255,.035)}
+.taskMetric{font-size:12px}
+.taskRow{min-height:65px}
+.taskTitle b{font-size:13px}
+.taskTitle small{font-size:12px}
+.activityRow{min-height:65px}
+.activityText p{font-size:12px;line-height:1.55}
+.activityText small{font-size:11px}
+.textLink{transition:gap .18s,color .18s}
+.textLink:hover{gap:9px;color:#ff9393}
+.projectsPanel{overflow:hidden}
+.projectHeading{font-size:10px;letter-spacing:.06em}
+.projectRow{min-height:66px}
+.projectName b{font-size:13px}
+.projectName small,.dueDate,.progressCell small{font-size:11px}
+.notificationCard{position:relative;overflow:hidden;background:radial-gradient(ellipse at 100% 0%,rgba(239,68,68,.12),transparent 58%),linear-gradient(145deg,#171416,#101116);box-shadow:0 10px 28px rgba(0,0,0,.12)}
+.notificationCard h2{font-size:18px}
+.notificationCard p{font-size:13px;line-height:1.65}
+.noticeLabel{letter-spacing:.11em}
+.footer{padding-top:25px;font-size:12px}
+@media(max-width:780px){.greetingRow h1{font-size:29px}.stats{gap:12px}.dashboardGrid{gap:14px}}

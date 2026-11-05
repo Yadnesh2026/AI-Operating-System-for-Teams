@@ -95,6 +95,7 @@ export default function TeamListPage() {
                 </div>
                 <div className={styles.cardMeta}>
                   <span className={styles.metaItem}><UsersRound size={14} /> {team.members.length} {team.members.length === 1 ? "member" : "members"}</span>
+                  <span className={styles.metaItem}><FolderKanban size={14} /> {team.projects.length} {team.projects.length === 1 ? "project" : "projects"}</span>
                   <span className={styles.metaItem}><CalendarDays size={14} /> Created {team.createdAt}</span>
                 </div>
                 <div className={styles.cardFooter}>
