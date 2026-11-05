@@ -102,3 +102,7 @@
 .downTrend{color:#ff6b6b!important}
 .high{background:rgba(240,68,68,.14)!important;color:#ff7777!important}
 .progressOrange{background:#f06464!important}
+.sidebar{padding-top:14px}
+.brand{width:100%;height:100px;justify-content:center;margin:0 0 14px}
+.brandLogo{display:block;width:150px;height:100px;object-fit:contain}
+@media(max-width:780px){.sidebar{padding-top:18px}.brand{height:38px;margin-bottom:25px}.brandLogo{width:54px;height:36px}}

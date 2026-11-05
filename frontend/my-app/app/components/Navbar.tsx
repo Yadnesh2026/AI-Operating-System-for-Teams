@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { LayoutDashboard, LogIn, Menu, UserPlus, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -50,8 +51,8 @@ export default function Navbar() {
           left: 0,
           right: 0,
           zIndex: 100,
-          padding: "0 32px",
-          height: "68px",
+          padding: "4px 32px 0",
+          height: "88px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -62,7 +63,7 @@ export default function Navbar() {
           transition: "background 0.3s ease, border-color 0.3s ease",
         }}
       >
-        {/* Logo - REDSUN with glowing sun dot */}
+        {/* RedSun brand mark */}
         <a
           href="#"
           onClick={(e) => {
@@ -76,25 +77,13 @@ export default function Navbar() {
             textDecoration: "none",
           }}
         >
-          <span
-            style={{
-              fontSize: "17px",
-              fontWeight: 800,
-              letterSpacing: "0.02em",
-              color: "#FFFFFF",
-              fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-            }}
-          >
-            REDSUN
-          </span>
-          <div
-            style={{
-              width: "7px",
-              height: "7px",
-              borderRadius: "50%",
-              background: "#EF4444",
-              boxShadow: "0 0 10px #EF4444, 0 0 20px rgba(239, 68, 68, 0.8)",
-            }}
+          <Image
+            src="/redsun-gradient-orbit-logo.png"
+            alt="RedSun"
+            width={120}
+            height={80}
+            priority
+            style={{ width: "122px", height: "82px", objectFit: "contain", display: "block" }}
           />
         </a>
 

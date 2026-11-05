@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { gsap } from "gsap";
@@ -294,10 +295,7 @@ export default function HeroSection() {
           >
             {/* Left: Brand logo in dashboard */}
             <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ fontSize: "14px", fontWeight: 800, color: "#FFFFFF" }}>REDSUN</span>
-                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#EF4444", boxShadow: "0 0 8px #EF4444" }} />
-              </div>
+              <Image src="/redsun-gradient-orbit-logo.png" alt="RedSun" width={64} height={43} style={{ width: "64px", height: "43px", objectFit: "contain" }} />
 
               {/* Nav items */}
               <div style={{ display: "flex", alignItems: "center", gap: "18px" }} className="hidden sm:flex">

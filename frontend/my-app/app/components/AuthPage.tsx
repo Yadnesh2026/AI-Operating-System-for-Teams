@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, type FormEvent } from "react";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
 
@@ -22,7 +23,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
       <div className="auth-orb auth-orb-two" aria-hidden="true" />
       <header className="auth-header">
         <Link className="auth-brand" href="/" aria-label="RedSun home">
-          <span>REDSUN</span><i aria-hidden="true" />
+          <Image src="/redsun-gradient-orbit-logo.png" alt="RedSun" width={78} height={52} priority />
         </Link>
         <Link className="auth-back-link" href="/">Back to home <ArrowRight size={15} /></Link>
       </header>
@@ -52,7 +53,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
           </form>
 
           <div className="auth-switch">{isRegister ? "Already have an account?" : "New to RedSun?"} <Link href={isRegister ? "/login" : "/register"}>{isRegister ? "Sign in" : "Create an account"}</Link></div>
-          <div className="auth-card-footer"><span>REDSUN</span><i /> <small>Thoughtful tools. Clearer decisions.</small></div>
+          <div className="auth-card-footer"><Image src="/redsun-gradient-orbit-logo.png" alt="RedSun" width={54} height={36} /> <small>Thoughtful tools. Clearer decisions.</small></div>
         </div>
       </section>
       <footer className="auth-legal"><span>© 2026 RedSun</span><span>Made for a clearer way forward</span></footer>

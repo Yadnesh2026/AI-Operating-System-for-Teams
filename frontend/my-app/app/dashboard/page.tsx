@@ -1,5 +1,5 @@
 // Dashboard overview and workspace navigation.
-import Link from "next/link";
+import WorkspaceSidebar from "../components/WorkspaceSidebar";
 import {
   ArrowDownRight,
   ArrowRight,
@@ -7,27 +7,15 @@ import {
   Bell,
   CalendarDays,
   Check,
-  ChevronDown,
   CircleHelp,
   ClipboardList,
   FolderKanban,
-  LayoutDashboard,
   MoreHorizontal,
   Plus,
   Search,
-  Settings2,
   UsersRound,
-  Zap,
 } from "lucide-react";
 import styles from "./dashboard.module.css";
-
-const navigation = [
-  { label: "Overview", icon: LayoutDashboard, active: true },
-  { label: "My Teams", icon: UsersRound },
-  { label: "Projects", icon: FolderKanban },
-  { label: "My Tasks", icon: ClipboardList, count: "8" },
-  { label: "Notifications", icon: Bell, count: "3" },
-];
 
 const projects = [
   { name: "Website redesign", team: "Design team", progress: 72, color: "orange", date: "Nov 18" },
@@ -44,19 +32,7 @@ const activities = [
 export default function DashboardPage() {
   return (
     <main className={styles.shell}>
-      <aside className={styles.sidebar}>
-        <Link href="/" className={styles.brand}><span className={styles.brandMark}><Zap size={18} fill="currentColor" /></span><span>REDSUN<span className={styles.brandDot}>.</span></span></Link>
-        <button className={styles.workspace}><span className={styles.workspaceIcon}>A</span><span className={styles.workspaceText}><b>Acme Studio</b><small>Free workspace</small></span><ChevronDown size={15} /></button>
-        <div className={styles.navLabel}>WORKSPACE</div>
-        <nav className={styles.nav} aria-label="Main navigation">
-          {navigation.map(({ label, icon: Icon, active, count }) => <a key={label} href="#" className={`${styles.navItem} ${active ? styles.active : ""}`} aria-current={active ? "page" : undefined}><Icon size={18} strokeWidth={1.8} /><span>{label}</span>{count && <small>{count}</small>}</a>)}
-        </nav>
-        <div className={styles.sidebarBottom}>
-          <div className={styles.helpCard}><span className={styles.helpIcon}><CircleHelp size={16} /></span><b>Need a hand?</b><p>Visit our help center to learn more.</p><a href="#">Explore help center <ArrowRight size={13} /></a></div>
-          <a href="#" className={styles.navItem}><Settings2 size={18} /><span>Settings</span></a>
-          <button className={styles.profile}><span className={`${styles.avatar} ${styles.avatarPeach}`}>JD</span><span className={styles.profileText}><b>Jordan Davis</b><small>jordan@acme.co</small></span><MoreHorizontal size={18} /></button>
-        </div>
-      </aside>
+      <WorkspaceSidebar active="overview" />
 
       <section className={styles.main}>
         <header className={styles.topbar}><div className={styles.breadcrumb}>Workspace <span>/</span> <b>Overview</b></div><div className={styles.topActions}><button className={styles.search}><Search size={16} /><span>Search anything...</span><kbd>⌘ K</kbd></button><button className={styles.iconButton} aria-label="Help"><CircleHelp size={18} /></button><button className={styles.iconButton} aria-label="Notifications"><Bell size={18} /><i /></button><span className={`${styles.avatar} ${styles.avatarPeach}`}>JD</span></div></header>

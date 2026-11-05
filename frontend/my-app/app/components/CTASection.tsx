@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function CTASection() {
   return (
@@ -136,19 +137,8 @@ export function Footer() {
         >
           {/* Brand */}
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "14px" }}>
-              <span style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "0.02em", color: "#FFFFFF" }}>
-                REDSUN
-              </span>
-              <div
-                style={{
-                  width: "6px",
-                  height: "6px",
-                  borderRadius: "50%",
-                  background: "#EF4444",
-                  boxShadow: "0 0 8px #EF4444",
-                }}
-              />
+            <div style={{ display: "flex", alignItems: "center", marginBottom: "14px" }}>
+              <Image src="/redsun-gradient-orbit-logo.png" alt="RedSun" width={78} height={52} />
             </div>
             <p style={{ fontSize: "13px", color: "#8E93A0", lineHeight: 1.65, maxWidth: "230px" }}>
               Intelligent operating system for engineering and product teams.
