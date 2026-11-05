@@ -57,11 +57,12 @@ const createTask = async(req,res, next)=>{
         })
 
         // BullMQ queu added 
-        await notificationQueue.add("task-assigned",{
+        const job = await notificationQueue.add("task-assigned",{ //adds a job to the queue.
             taskId: createTask._id,
             assignedTo: assignedTo,
             assignedBy: user
         })
+        console.log("Job added succesfully",job.id);
 
         // Redis Invalidation
         await redisClient.del(cacheKey)

@@ -6,6 +6,9 @@ const notificationWorker = new Worker(
     "notification",  // Name of the queue to listen to
     async (job)=>{   // The job received by the worker
         console.log(job.data)  // Data passed when adding the job
+
+        console.log("Worker received job:", job.id);
+        console.log("Job processed successfully!");
     },
     {
         connection:{ // Redis conenction detaos 
@@ -14,6 +17,8 @@ const notificationWorker = new Worker(
         }
     }
 )
+
+
 
 // 1. createTask controller
 // 2. notificationQueue.add()
