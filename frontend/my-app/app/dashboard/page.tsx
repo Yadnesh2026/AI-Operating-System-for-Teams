@@ -19,9 +19,7 @@ import styles from "./dashboard.module.css";
 
 
 export default function DashboardPage() {
-  const today = new Intl.DateTimeFormat("en", {
-    weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata",
-  }).format(new Date());
+  const today = "";
 
   return (
     <main className={styles.shell}>
