@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, type FormEvent } from "react";
+import api from "../lib/axios"
 import {
   ArrowRight,
   Eye,
@@ -21,18 +22,29 @@ export default function AuthPage({ mode }: AuthPageProps) {
 
 
   // Handle the Submit Butto
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit (event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    try{
     const formData = new FormData(event.currentTarget);
 
-    const name = formData.get("name"),
+    const name = formData.get("name")
     const email = formData.get("email")
     const password = formData.get("password")
 
     console.log({name, email, password})
 
+    const payload = {
+      name,
+      email,
+      password
+    }
+    const sendData = await api.post("/register",payload)
+    console.log(sendData.data)
 
+    }catch(err){
+      console.log("Form Error")
+    }
   }
 
   return (
