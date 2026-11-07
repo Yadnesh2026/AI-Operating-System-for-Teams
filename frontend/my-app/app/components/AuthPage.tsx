@@ -10,8 +10,10 @@ import {
   EyeOff,
   LockKeyhole,
   Mail,
+  Router,
   UserRound,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type AuthPageProps = { mode: "login" | "register" };
 
@@ -19,6 +21,8 @@ export default function AuthPage({ mode }: AuthPageProps) {
   const isRegister = mode === "register";
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+
+  const router = useRouter();
 
 
   // Handle the Submit Butto
@@ -57,8 +61,8 @@ export default function AuthPage({ mode }: AuthPageProps) {
 
     const sendLoginData = await api.post("/login",payload)
     console.log(sendLoginData.data)
+    router.push("/dashboard");
   }
-
     }catch(err){
       console.log("Form Error")
     }
