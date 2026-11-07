@@ -26,6 +26,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
     event.preventDefault();
 
     try{
+      if(isRegister){
     const formData = new FormData(event.currentTarget);
 
     const name = formData.get("name")
@@ -41,6 +42,22 @@ export default function AuthPage({ mode }: AuthPageProps) {
     }
     const sendData = await api.post("/register",payload)
     console.log(sendData.data)
+
+    setMessage(sendData.data.message)
+  }else{
+    // event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email")
+    const password = formData.get("password")
+
+    const payload = {
+      email,
+      password
+    }
+
+    const sendLoginData = await api.post("/login",payload)
+    console.log(sendLoginData.data)
+  }
 
     }catch(err){
       console.log("Form Error")
