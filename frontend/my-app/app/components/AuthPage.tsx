@@ -62,6 +62,9 @@ export default function AuthPage({ mode }: AuthPageProps) {
     const sendLoginData = await api.post("/login",payload)
     console.log(sendLoginData.data)
     router.push("/dashboard");
+
+    // Store JWT Token
+    localStorage.setItem("token",sendLoginData.data.token)
   }
     }catch(err){
       console.log("Form Error")
