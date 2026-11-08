@@ -11,10 +11,4 @@ router.post("/login",rateLimitMiddleware,loginController)
 router.get("/profile",authMiddleware,profile)
 
 
-
-
-
-
-
-
 module.exports = router
