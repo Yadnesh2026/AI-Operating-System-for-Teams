@@ -16,4 +16,9 @@ router.get("/profile",authMiddleware,profile)
 
 
 
+router.get("")
+router.push("")
+router.get("")
+
+
 module.exports = router
