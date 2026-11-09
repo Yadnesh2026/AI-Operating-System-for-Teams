@@ -11,7 +11,7 @@ router.post("/login",rateLimitMiddleware,loginController)
 router.get("/profile",authMiddleware,profile)
 
 
-// -- Authentication completed
+// -- Authentication completed --------------
 
 
 module.exports = router
