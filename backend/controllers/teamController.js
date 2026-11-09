@@ -134,10 +134,6 @@ const getTeamDetails = async(req, res, next)=>{
     }
 }
 
-
-
-// adding new team to route
-
 // Add employee to the team
 const addEmployee = async(req, res, next)=>{
     try{
