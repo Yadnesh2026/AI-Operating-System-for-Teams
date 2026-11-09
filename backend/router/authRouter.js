@@ -14,4 +14,9 @@ router.get("/profile",authMiddleware,profile)
 
 // -- Authentication completed --------------
 
+
+
+
+
+
 module.exports = router
