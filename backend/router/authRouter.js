@@ -13,8 +13,6 @@ router.get("/profile",authMiddleware,profile)
 
 // -- Authentication completed --------------
 
-Router.doc("addded")
-
 
 
 
