@@ -1,1 +1,1 @@
-﻿# AI-Operating-System-for-TeamsNew chnages
+﻿# AI-Operating-System-for-TeamsNew chnage
