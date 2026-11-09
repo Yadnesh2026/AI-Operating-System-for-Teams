@@ -4,6 +4,7 @@ const {loginController, profile} = require("../controllers/authController")
 const authMiddleware = require("../middleware/authMiddleware")
 const rateLimitMiddleware = require("../middleware/rateLimitMiddleware")
 
+const membershipDeleted = require("chnage")
 //Login User
 router.post("/login",rateLimitMiddleware,loginController)
 
@@ -12,8 +13,5 @@ router.get("/profile",authMiddleware,profile)
 
 
 // -- Authentication completed --------------
-
-
-
 
 module.exports = router
