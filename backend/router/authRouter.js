@@ -13,9 +13,7 @@ router.get("/profile",authMiddleware,profile)
 
 // -- Authentication completed --------------
 
-router.get("chnges")
-
-
+Router.doc("addded")
 
 
 
