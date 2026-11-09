@@ -327,6 +327,8 @@ const deleteTeam = async(req,res)=>{
         })
     }
 
+    const delete
+
     // Delete the membership first
     const deleteTeamMemberships = await teamMembership.deleteMany({teamId})
 
