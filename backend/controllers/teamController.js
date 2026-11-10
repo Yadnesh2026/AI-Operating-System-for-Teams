@@ -116,7 +116,7 @@ const getTeamDetails = async(req, res, next)=>{
 
     //Check weather logged-in user belongs to that team or not 
     const membership = await teamMembership.find({teamId: teamId, userId: userId}).populate("userId");
-    if(!membership){
+    if(membership.length === 0){
         return res.status(403).json({
             message: "Members does not exist"
         })
@@ -133,7 +133,6 @@ const getTeamDetails = async(req, res, next)=>{
         next(err)
     }
 }
-
 
 
 
