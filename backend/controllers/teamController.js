@@ -5,7 +5,7 @@ const mongoose = require("mongoose")
 const { redisClient } = require("../config/redis")
 const notificationQueue = require("../queues/notificationQueue");
 
-//Create an team
+// Create a team and make the logged-in user its manager.
 
 // Create team.
 // Save team.
@@ -18,7 +18,8 @@ const createTeam = async(req, res, next)=>{
     const {name, description} = req.body
     const creatorId = req.user.id
 
-    const cahcedKey = `team: ${creatorId}`
+    // Match getAllTeams so the next list request fetches fresh data.
+    const cahcedKey = `teams:${creatorId}`
 
     if(!name || !description){
         return res.status(400).json({
@@ -26,6 +27,7 @@ const createTeam = async(req, res, next)=>{
         })
     }
 
+    // Save the team details and record who created it.
     const newTeam = new TeamModel({
         name,
         description,
@@ -34,12 +36,14 @@ const createTeam = async(req, res, next)=>{
 
     await newTeam.save()
 
+     // Add the creator to the team with manager permissions.
      const newTeamMembership = await teamMembership.create({
         userId: creatorId,
         teamId: newTeam._id,
         role: "manager"
     })
 
+    // Remove any cached team list so the new team appears immediately.
     await redisClient.del(cahcedKey)
 
 
@@ -54,13 +58,13 @@ const createTeam = async(req, res, next)=>{
 }
 
 
-//Get all team for specific user 
+// Get the teams that belong to the logged-in user.
 const getAllTeams = async(req,res, next)=>{
     try{
         const id = req.user.id
 
-        // Redis part 
-        const cahcedKey = `teams: ${id}`
+        // Return the cached list when available to avoid querying MongoDB again.
+        const cahcedKey = `teams:${id}`
         const cachedTeam = await redisClient.get(cahcedKey)
 
         if(cachedTeam){
@@ -77,9 +81,10 @@ const getAllTeams = async(req,res, next)=>{
 // JSON.parse() converts a JSON string back into a JavaScript array.
 
 
+        // Otherwise, get the user's memberships and include each team's details.
         const search = await teamMembership.find({userId: id}).populate("teamId")
 
-        // Redis Store the data 
+        // Cache the result for 60 seconds; team changes clear this same key.
         const storeData = await redisClient.set(cahcedKey, JSON.stringify(search),{
             EX:60
         })
@@ -266,7 +271,7 @@ const updateTeamInfo = async(req,res,next)=>{
         const userId = req.user.id //manager
         const {name, description} = req.body
 
-        const cahcedKey = `teams: ${userId}`
+        const cahcedKey = `teams:${userId}`
 
         //Check weather the team exist or not
         const team = await TeamModel.findById(teamId)
