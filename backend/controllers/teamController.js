@@ -120,18 +120,22 @@ const getTeamDetails = async(req, res, next)=>{
         })
     }
 
-    //Check weather logged-in user belongs to that team or not 
-    const membership = await teamMembership.find({teamId: teamId, userId: userId}).populate("userId");
-    if(membership.length === 0){
+    // Confirm the logged-in user belongs to this team before returning its roster.
+    const requesterMembership = await teamMembership.findOne({ teamId, userId });
+    if(!requesterMembership){
         return res.status(403).json({
             message: "Members does not exist"
         })
     }
 
+    // Return every member, not just the logged-in user's membership record.
+    const membership = await teamMembership.find({ teamId }).populate("userId");
+
     // Return details
     res.status(200).json({
         message: "Team Details successfull",
         team: team,
+        requesterRole: requesterMembership.role,
         membership: membership
     })
 
@@ -146,7 +150,7 @@ const addEmployee = async(req, res, next)=>{
     try{
         const teamId = req.params.teamId
         const userId = req.user.id
-        const employeeUser = req.body.userId // employee means manager click on that user than his id should come
+        const employeeIdentifier = req.body.userId.trim()
 
         // Redis implimentation
         const cachedKey = `teams:${userId}`
@@ -172,15 +176,18 @@ const addEmployee = async(req, res, next)=>{
         }
 
         // To add the user
-        const user = await User.findById(employeeUser)
+        // Accept either a MongoDB user ID or the account email entered in the UI.
+        const user = mongoose.Types.ObjectId.isValid(employeeIdentifier)
+            ? await User.findById(employeeIdentifier)
+            : await User.findOne({ email: employeeIdentifier.toLowerCase() })
         if(!user){
             return res.status(404).json({
-                message: "employee does not exist"
+                message: "No registered user was found with that email or ID"
             })
         }
 
         //Check that this user is already in a team or not
-        const existingMembership = await teamMembership.findOne({userId: employeeUser,
+        const existingMembership = await teamMembership.findOne({userId: user._id,
             teamId: teamId
         })
         if(existingMembership){
@@ -191,7 +198,7 @@ const addEmployee = async(req, res, next)=>{
 
         // Create the team means add that employee in the team
         const addEmployee = await teamMembership.create({
-            userId: employeeUser,
+            userId: user._id,
             teamId: teamId,
             role: "employee"
         })
@@ -202,8 +209,8 @@ const addEmployee = async(req, res, next)=>{
             {
                 teamId: teamId,
                 teamName: team.name,
-                employeeId: employeeUser,
-                addedBy: user
+                employeeId: user._id,
+                addedBy: userId
             }
         )
 

@@ -25,7 +25,8 @@ const notificationWorker = new Worker(
             throw new Error("Something went wrong")
         }
 
-        console.log(job.data)  // Data passed when adding the job
+        // Log only identifiers and event metadata; never dump user documents or credentials.
+        console.log({ jobName: job.name, teamId: job.data.teamId, employeeId: job.data.employeeId })
 
         console.log("Worker received job:", job.id);
         console.log("Job processed successfully!");

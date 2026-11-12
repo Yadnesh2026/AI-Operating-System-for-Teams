@@ -7,7 +7,10 @@ const teamValidation = Joi.object({
 
 
 const addEmployeeValidation = Joi.object({
-    userId: Joi.string().hex().length(24).required()
+    userId: Joi.alternatives().try(
+        Joi.string().hex().length(24),
+        Joi.string().email()
+    ).required()
 });
 
 const updateDetailsOfTeam = Joi.object({
