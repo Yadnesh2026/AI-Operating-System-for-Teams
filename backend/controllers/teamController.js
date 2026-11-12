@@ -65,8 +65,8 @@ const getAllTeams = async(req,res, next)=>{
 
         if(cachedTeam){
             const team = await JSON.parse(cachedTeam)
-
-            res.status(200).json({
+            
+              return res.status(200).json({
                 message: "Cached Data exist",
                 sources: "redis",
                 teams: team
@@ -86,7 +86,8 @@ const getAllTeams = async(req,res, next)=>{
 
         if(search.length === 0){
             return res.status(201).json({
-                message:"No teams found"
+                message:"No teams found",
+                teams: []
             })
         }
 
@@ -140,7 +141,7 @@ const addEmployee = async(req, res, next)=>{
     try{
         const teamId = req.params.teamId
         const userId = req.user.id
-        const employeeUser = req.body.userId // Employee means manager click on that user than his id should come
+        const employeeUser = req.body.userId // employee means manager click on that user than his id should come
 
         // Redis implimentation
         const cachedKey = `teams:${userId}`
@@ -169,7 +170,7 @@ const addEmployee = async(req, res, next)=>{
         const user = await User.findById(employeeUser)
         if(!user){
             return res.status(404).json({
-                message: "Employee does not exist"
+                message: "employee does not exist"
             })
         }
 
@@ -179,7 +180,7 @@ const addEmployee = async(req, res, next)=>{
         })
         if(existingMembership){
             return res.status(409).json({
-                message:"Employee is already in a team"
+                message:"employee is already in a team"
             })
         }
 
@@ -205,7 +206,7 @@ const addEmployee = async(req, res, next)=>{
         await redisClient.del(cachedKey)
 
         res.status(201).json({
-            message: "Employee added",
+            message: "employee added",
             employee: addEmployee
         })
 
@@ -251,7 +252,7 @@ const deleteEmployee = async(req,res,next)=>{
 
 
         res.status(200).json({
-            message: "Employee deleted Successfully ",
+            message: "employee deleted Successfully ",
             deleteEmployee
         })
     }catch(err){

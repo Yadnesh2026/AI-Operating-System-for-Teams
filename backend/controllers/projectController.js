@@ -168,7 +168,7 @@ const updateProject = async(req, res)=>{
     const checkManagar = await teamMembership.findOne({teamId:teamId, userId: userId, role:"manager"})
     if(!checkManagar){
         return res.status(400).json({
-            message: "Manager is not of this team"
+            message: "manager is not of this team"
         })
     }
 
@@ -218,7 +218,7 @@ const deleteProject = async(req, res)=>{
     const checkManagar = await teamMembership.findOne({teamId:teamId, userId: userId, role:"manager"})
     if(!checkManagar){
         return res.status(400).json({
-            message: "Manager is not of this team"
+            message: "manager is not of this team"
         })
     }
 

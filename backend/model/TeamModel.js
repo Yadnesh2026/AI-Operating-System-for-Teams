@@ -14,6 +14,8 @@ const teamSchema = new mongoose.Schema({
         ref: "User",
         required: true
     }
+},{
+    timestamps: true
 })
 
 const Team = mongoose.model("Team", teamSchema)

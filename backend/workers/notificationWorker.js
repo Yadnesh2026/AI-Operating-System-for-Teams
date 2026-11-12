@@ -15,7 +15,7 @@ const notificationWorker = new Worker(
         }
 
         if(job.name === "employee-add"){
-            console.log("Employee added")
+            console.log("employee added")
         }
 
         // if error occue

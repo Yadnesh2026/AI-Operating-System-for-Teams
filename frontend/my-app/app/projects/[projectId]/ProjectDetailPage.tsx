@@ -49,7 +49,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   }, [projectId]);
 
   const team = teams.find((item) => item.name === project?.team);
-  const isManager = team?.role === "Manager";
+  const isManager = team?.role === "manager";
   const employees = team?.members ?? [];
   const pending = tasks.filter((task) => task.status === "To do").length;
   const inProgress = tasks.filter((task) => task.status === "In progress").length;

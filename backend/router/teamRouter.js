@@ -18,7 +18,7 @@ router.get("/getDetails/:teamId",authMiddleware,getTeamDetails)
 // Add employee to the team
 router.post("/addEmployee/:teamId/members",authMiddleware,validate(addEmployeeValidation),addEmployee)
 
-//Delete Employee
+//Delete employee
 router.delete("/deleteEmployee/:teamId/:userId",authMiddleware,deleteEmployee)
 
 //Update team info by manager

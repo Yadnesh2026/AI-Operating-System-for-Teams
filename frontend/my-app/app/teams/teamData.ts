@@ -1,36 +1,37 @@
-export type TeamRole = "Manager" | "Employee";
 
-export type TeamMember = {
-  id: string;
+export type TeamRole = "manager" | "employee";
+
+// Same structure as backend TeamModel
+export type Team = {
+  _id: string;
   name: string;
-  email: string;
-  role: TeamRole;
-  joined: string;
-  initials: string;
-  tone: "red" | "violet" | "blue" | "green";
+  description: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
+// Same structure as backend TeamMembership
+export type TeamMembership = {
+  _id: string;
+  userId: string;
+  teamId: Team | string;
+  role: TeamRole;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+// Member details returned by populated userId
+export type TeamMember = {
+  _id: string;
+  name: string;
+  email: string;
+};
+
+// Existing project structure — keep until we integrate projects
 export type TeamProject = {
   name: string;
   status: "On track" | "In progress" | "Planning";
   progress: number;
   due: string;
 };
-
-export type Team = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  role: TeamRole;
-  color: "red" | "violet" | "blue" | "green";
-  members: TeamMember[];
-  projects: TeamProject[];
-};
-
-// Empty until the UI receives workspace data from the app's future data layer.
-export const teams: Team[] = [];
-
-export function getTeam(id: string) {
-  return teams.find((team) => team.id === id);
-}
