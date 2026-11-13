@@ -102,6 +102,7 @@ export default function TeamDetailPage({ teamId }: { teamId: string }) {
   async function removeEmployee(member: PopulatedMembership) {
     setRemovingUserId(member.userId._id);
     setMessage("");
+    
     try {
       await api.delete(`/deleteEmployee/${teamId}/${member.userId._id}`);
       await fetchDetails();
