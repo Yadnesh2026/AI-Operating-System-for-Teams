@@ -4,19 +4,22 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, CalendarDays, Check, CircleAlert, ClipboardList, Clock3, FolderKanban, ListTodo, Pencil, Plus, Search, Trash2, UsersRound, X } from "lucide-react";
 import Link from "next/link";
-import { teams } from "../../teams/teamData";
-import { initialProjects, PROJECT_STORAGE_KEY, type ProjectCardData } from "../projectData";
+import type { Project } from "../projectData";
 import { seedTasks, taskStorageKey, type Priority, type TaskCardData, type TaskCardStatus } from "../taskData";
+import api from "../../lib/axios";
 import styles from "./project-detail.module.css";
 
 type Task = TaskCardData;
 type TaskFilter = "All tasks" | TaskCardStatus;
+type ProjectView = Project & { id: string; team: string };
 
 const taskFilters: TaskFilter[] = ["All tasks", "To do", "In progress", "Completed"];
 
 export default function ProjectDetailPage({ projectId }: { projectId: string }) {
   const router = useRouter();
-  const [project, setProject] = useState<ProjectCardData | null>(null);
+  const [project, setProject] = useState<ProjectView | null>(null);
+  const [isManager, setIsManager] = useState(false);
+  const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<TaskFilter>("All tasks");
@@ -32,25 +35,47 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   const [editDescription, setEditDescription] = useState("");
 
   useEffect(() => {
-    const savedProjects = window.localStorage.getItem(PROJECT_STORAGE_KEY);
-    let projectList = initialProjects;
-    if (savedProjects) {
-      try { projectList = JSON.parse(savedProjects) as ProjectCardData[]; } catch { window.localStorage.removeItem(PROJECT_STORAGE_KEY); }
+    let cancelled = false;
+    async function loadProject() {
+      try {
+        const teamResponse = await api.get("/getAllTeams");
+        const teamRecords = (teamResponse.data.teams ?? [])
+          .map((membership: { teamId: { _id: string; name: string } | string; role: string }) =>
+            typeof membership.teamId === "string" ? null : { ...membership.teamId, role: membership.role },
+          )
+          .filter((item: { _id: string; name: string; role: string } | null): item is { _id: string; name: string; role: string } => item !== null);
+        const projectLists = await Promise.all(teamRecords.map(async (item) => {
+          const response = await api.get(`/project/${item._id}`);
+          return { team: item, projects: (response.data.projects ?? []) as Project[] };
+        }));
+        const match = projectLists.flatMap(({ team: teamRecord, projects: records }) =>
+          records.filter((record) => record._id === projectId).map((record) => ({ record, teamRecord })),
+        )[0];
+        if (cancelled) return;
+        if (match) {
+          setProject({ ...match.record, id: match.record._id, team: match.teamRecord.name });
+          setEditName(match.record.name);
+          setEditDescription(match.record.description);
+          setIsManager(match.teamRecord.role === "manager");
+          const details = await api.get(`/getDetails/${match.teamRecord._id}`);
+          const members = details.data.membership ?? [];
+          setEmployees(members
+            .filter((membership: { role: string; userId?: { _id?: string; name?: string } }) => membership.role === "employee" && membership.userId?._id && membership.userId.name)
+            .map((membership: { userId: { _id: string; name: string } }) => ({ id: membership.userId._id, name: membership.userId.name })));
+        }
+      } catch (error) {
+        console.error("Could not load project", error);
+      } finally {
+        if (!cancelled) setLoaded(true);
+      }
     }
-    const current = projectList.find((item) => item.id === projectId) ?? null;
-    setProject(current);
-    setEditName(current?.name ?? "");
-    setEditDescription(current?.description ?? "");
+    void loadProject();
     const savedTasks = window.localStorage.getItem(taskStorageKey(projectId));
     if (savedTasks) {
       try { setTasks(JSON.parse(savedTasks) as Task[]); } catch { setTasks(seedTasks[projectId] ?? []); }
     } else setTasks(seedTasks[projectId] ?? []);
-    setLoaded(true);
+    return () => { cancelled = true; };
   }, [projectId]);
-
-  const team = teams.find((item) => item.name === project?.team);
-  const isManager = team?.role === "manager";
-  const employees = team?.members ?? [];
   const pending = tasks.filter((task) => task.status === "To do").length;
   const inProgress = tasks.filter((task) => task.status === "In progress").length;
   const completed = tasks.filter((task) => task.status === "Completed").length;
@@ -65,12 +90,6 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   function saveTasks(next: Task[]) {
     setTasks(next);
     window.localStorage.setItem(taskStorageKey(projectId), JSON.stringify(next));
-    if (project) {
-      const projectList = readProjects();
-      const updated = projectList.map((item) => item.id === projectId ? { ...item, tasks: next.length, progress: next.length ? Math.round(next.filter((task) => task.status === "Completed").length / next.length * 100) : 0, status: next.length > 0 && next.every((task) => task.status === "Completed") ? "Completed" as const : "In progress" as const } : item);
-      window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(updated));
-      setProject(updated.find((item) => item.id === projectId) ?? project);
-    }
   }
 
   function createTask(event: FormEvent<HTMLFormElement>) {
@@ -85,20 +104,24 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
     saveTasks(tasks.map((task) => task.id === taskId ? { ...task, status } : task));
   }
 
-  function saveProject(event: FormEvent<HTMLFormElement>) {
+  async function saveProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!project || !editName.trim()) return;
-    const updatedProject: ProjectCardData = { ...project, name: editName.trim(), description: editDescription.trim() };
-    setProject(updatedProject);
-    window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(readProjects().map((item) => item.id === projectId ? updatedProject : item)));
-    setEditModal(false);
+    try {
+      const response = await api.put(`/project/${project.teamId}/${project._id}`, { name: editName.trim(), description: editDescription.trim() });
+      if (response.data.project) setProject((current) => current ? { ...current, ...response.data.project } : current);
+      setEditModal(false);
+    } catch (error) {
+      console.error("Could not update project", error);
+    }
   }
 
   function deleteProject() {
     if (!project || !window.confirm(`Delete “${project.name}”? This cannot be undone.`)) return;
-    window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(readProjects().filter((item) => item.id !== projectId)));
-    window.localStorage.removeItem(taskStorageKey(projectId));
-    router.push("/projects");
+    void api.delete(`/project/${project.teamId}/${project._id}`).then(() => {
+      window.localStorage.removeItem(taskStorageKey(projectId));
+      router.push("/projects");
+    }).catch((error) => console.error("Could not delete project", error));
   }
 
   if (!loaded) return <main className={styles.page} aria-busy="true" />;
@@ -132,10 +155,4 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
 
     {editModal && <div className={styles.backdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) setEditModal(false); }}><section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="edit-project-title"><div className={styles.modalHeader}><div><span className={styles.modalIcon}><Pencil size={17} /></span><h2 id="edit-project-title">Edit project</h2><p>Update the project details.</p></div><button className={styles.closeButton} aria-label="Close" onClick={() => setEditModal(false)}><X size={18} /></button></div><form className={styles.form} onSubmit={saveProject}><label>Project name<input required value={editName} onChange={(event) => setEditName(event.target.value)} /></label><label>Description<textarea rows={3} value={editDescription} onChange={(event) => setEditDescription(event.target.value)} /></label><div className={styles.modalActions}><button type="button" className={styles.cancelButton} onClick={() => setEditModal(false)}>Cancel</button><button type="submit" className={styles.createButton}>Save changes</button></div></form></section></div>}
   </main>;
-}
-
-function readProjects(): ProjectCardData[] {
-  const saved = window.localStorage.getItem(PROJECT_STORAGE_KEY);
-  if (!saved) return [...initialProjects];
-  try { return JSON.parse(saved) as ProjectCardData[]; } catch { return [...initialProjects]; }
 }

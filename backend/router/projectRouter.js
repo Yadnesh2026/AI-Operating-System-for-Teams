@@ -10,13 +10,13 @@ router.post("/project/:teamId",authMiddleware,createProject)
 router.get("/project/:teamId",authMiddleware,getAllProjects)
 
 // Get details of specfic project
-router.get("/project/:teamId/:projetId",authMiddleware,getOneProjectDetails)
+router.get("/project/:teamId/:projectId",authMiddleware,getOneProjectDetails)
 
 // Update details of specific project
-router.put("/project/:teamId/:projetId",authMiddleware,updateProject)
+router.put("/project/:teamId/:projectId",authMiddleware,updateProject)
 
 // Delete of project
-router.delete("/project/:teamId/:projetId",authMiddleware,deleteProject)
+router.delete("/project/:teamId/:projectId",authMiddleware,deleteProject)
 
 
 

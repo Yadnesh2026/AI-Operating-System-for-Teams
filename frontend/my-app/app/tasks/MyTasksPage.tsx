@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, Check, Clock3, ClipboardList, ListTodo, Search, UserRound } from "lucide-react";
-import { initialProjects, PROJECT_STORAGE_KEY, type ProjectCardData } from "../projects/projectData";
+import type { Project } from "../projects/projectData";
 import { seedTasks, taskStorageKey, type TaskCardData, type TaskCardStatus } from "../projects/taskData";
+import type { Team } from "../teams/teamData";
+import api from "../lib/axios";
 import styles from "./tasks.module.css";
 
 type Filter = "All" | TaskCardStatus;
@@ -25,26 +27,37 @@ export default function MyTasksPage() {
         userName = (JSON.parse(profile) as { name?: string }).name?.trim() ?? "";
       } catch { window.localStorage.removeItem("redsun-settings-v2"); }
     }
-    let projects: ProjectCardData[] = initialProjects;
-    const savedProjects = window.localStorage.getItem(PROJECT_STORAGE_KEY);
-    if (savedProjects) {
-      try { projects = JSON.parse(savedProjects) as ProjectCardData[]; } catch { window.localStorage.removeItem(PROJECT_STORAGE_KEY); }
-    }
-    const assigned: AssignedTask[] = [];
-    for (const project of projects) {
-      let projectTasks = seedTasks[project.id] ?? [];
-      const stored = window.localStorage.getItem(taskStorageKey(project.id));
-      if (stored) {
-        try { projectTasks = JSON.parse(stored) as TaskCardData[]; } catch { /* Keep the empty initial task list if stored data is invalid. */ }
+    async function loadAssignedTasks() {
+      try {
+        const teamsResponse = await api.get("/getAllTeams");
+        const teams = (teamsResponse.data.teams ?? [])
+          .map((membership: { teamId: Team | string }) => membership.teamId)
+          .filter((item: Team | string): item is Team => typeof item !== "string");
+        const projectGroups = await Promise.all(teams.map(async (team) => {
+          const response = await api.get(`/project/${team._id}`);
+          return { team, projects: (response.data.projects ?? []) as Project[] };
+        }));
+        const assigned: AssignedTask[] = [];
+        for (const { team, projects } of projectGroups) {
+          for (const project of projects) {
+            let projectTasks = seedTasks[project._id] ?? [];
+            const stored = window.localStorage.getItem(taskStorageKey(project._id));
+            if (stored) {
+              try { projectTasks = JSON.parse(stored) as TaskCardData[]; } catch { /* Keep an empty list when local task data is invalid. */ }
+            }
+            for (const task of projectTasks) {
+              if (userName && task.assignee === userName) assigned.push({ ...task, projectId: project._id, projectName: project.name, assignedBy: team.name });
+            }
+          }
+        }
+        setTasks(assigned);
+      } catch (error) {
+        console.error("Could not load assigned tasks", error);
+      } finally {
+        setLoaded(true);
       }
-      // This local task data does not include manager records from the backend.
-      const manager = "Team manager";
-      for (const task of projectTasks) {
-        if (userName && task.assignee === userName) assigned.push({ ...task, projectId: project.id, projectName: project.name, assignedBy: manager });
-      }
     }
-    setTasks(assigned);
-    setLoaded(true);
+    void loadAssignedTasks();
   }, []);
 
   const visibleTasks = useMemo(() => tasks.filter((task) => {
@@ -61,10 +74,6 @@ export default function MyTasksPage() {
     const source = stored ? JSON.parse(stored) as TaskCardData[] : seedTasks[projectId] ?? [];
     const next = source.map((task) => task.id === taskId ? { ...task, status } : task);
     window.localStorage.setItem(taskStorageKey(projectId), JSON.stringify(next));
-    const projectListRaw = window.localStorage.getItem(PROJECT_STORAGE_KEY);
-    const projectList = projectListRaw ? JSON.parse(projectListRaw) as ProjectCardData[] : initialProjects;
-    const updatedProjects = projectList.map((project) => project.id === projectId ? { ...project, tasks: next.length, progress: next.length ? Math.round(next.filter((task) => task.status === "Completed").length / next.length * 100) : 0, status: next.length && next.every((task) => task.status === "Completed") ? "Completed" as const : "In progress" as const } : project);
-    window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(updatedProjects));
   }
 
   if (!loaded) return <main className={styles.page} aria-busy="true" />;

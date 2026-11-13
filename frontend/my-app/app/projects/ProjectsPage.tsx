@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   ArrowRight,
   CalendarDays,
@@ -13,20 +13,24 @@ import {
   X,
 } from "lucide-react";
 import type { Team } from "../teams/teamData";
-import {
-  initialProjects,
-  PROJECT_STORAGE_KEY,
-  type ProjectCardData,
-} from "./projectData";
+import type { Project } from "./projectData";
 import api from "../lib/axios";
 import styles from "./projects.module.css";
 
 const filters = ["All projects", "In progress", "Completed"] as const;
 type Filter = (typeof filters)[number];
+type ProjectCard = Project & {
+  team: string;
+  tasks: number;
+  progress: number;
+  status: "In progress" | "Completed";
+};
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState(initialProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
   const [filter, setFilter] = useState<Filter>("All projects");
   const [query, setQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -34,34 +38,48 @@ export default function ProjectsPage() {
   const [description, setDescription] = useState("");
   const [team, setTeam] = useState("");
 
-  useEffect(() => {
-    const saved = window.localStorage.getItem(PROJECT_STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as ProjectCardData[];
-        if (Array.isArray(parsed)) setProjects(parsed);
-      } catch {
-        window.localStorage.removeItem(PROJECT_STORAGE_KEY);
-      }
-    }
-
-    // Load the signed-in user's teams for the project form's team selector.
-    void api
-      .get("/getAllTeams")
-      .then((response) => {
-        const memberships = response.data.teams ?? [];
-        const availableTeams = memberships
-          .map((membership: { teamId: Team | string }) => membership.teamId)
-          .filter(
-            (item: Team | string): item is Team => typeof item !== "string",
-          );
-        setTeams(availableTeams);
-        setTeam((current) => current || availableTeams[0]?.name || "");
-      })
-      .catch(() => {
-        setTeams([]);
-      });
+  const loadProjects = useCallback(async (availableTeams: Team[]) => {
+    const results = await Promise.all(
+      availableTeams.map(async (teamRecord) => {
+        const response = await api.get(`/project/${teamRecord._id}`);
+        return (response.data.projects ?? []) as Project[];
+      }),
+    );
+    const cards = results.flatMap((records, teamIndex) =>
+      records.map((record) => toProjectCard(record, availableTeams[teamIndex])),
+    );
+    setProjects(cards);
   }, []);
+
+  const refreshProjects = useCallback(async () => {
+
+
+    setLoading(true);
+    setMessage("");
+    try {
+      const response = await api.get("/getAllTeams");
+      const memberships = response.data.teams ?? [];
+      const availableTeams = memberships
+        .map((membership: { teamId: Team | string }) => membership.teamId)
+        .filter((item: Team | string): item is Team => typeof item !== "string");
+      setTeams(availableTeams);
+      setTeam((current) => current || availableTeams[0]?._id || "");
+      await loadProjects(availableTeams);
+
+
+    } catch (error) {
+      console.error("Could not load projects", error);
+      setMessage("Could not load projects. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [loadProjects]);
+
+
+
+  useEffect(() => {
+    void refreshProjects();
+  }, [refreshProjects]);
 
   const visibleProjects = useMemo(
     () =>
@@ -76,35 +94,70 @@ export default function ProjectsPage() {
     [filter, projects, query],
   );
 
-  function createProject(event: FormEvent<HTMLFormElement>) {
+  // backend data to frontend 
+  async function fetchTeams() {
+    try{
+      setLoading(true);
+
+      const fetchData = await api.get("/getAllTeams");
+      const memberships = fetchData.data.teams ?? [];
+
+      const availableTeams:Team[] = memberships.map((membership:{teamId: Team})=>
+      membership.teamId);
+
+      setTeams(availableTeams)
+
+      // Fetch all the Projects belongs to differnt teams 
+      const projectResponses = await Promise.all( //Promise.all waits untill the all request finish
+        availableTeams.map((team) =>
+          api.get(`/project/${team._id}`)
+        )
+      );
+
+      console.log("Project responses:", projectResponses);
+
+      const allProjects:Project[] = projectResponses.flatMap( // FlatMap(): Combines the arrays retured by each API response
+        (response)=> response.data.projects ?? []
+      );
+
+      setProjects(allProjects)
+      console.log("All Projects",allProjects)
+      console.log("Available teams",availableTeams)
+
+
+    }catch(err){
+      console.log("Error fetching teams",err)
+      setMessage("Could not load the teams.")
+    }finally{
+      setLoading(false)
+    }
+  }
+
+  async function createProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!name.trim() || !team) return;
-    const project: ProjectCardData = {
-      id: `project-${Date.now()}`,
-      name: name.trim(),
-      description:
-        description.trim() ||
-        "A new project for the team to plan and deliver together.",
-      team,
-      tasks: 0,
-      progress: 0,
-      createdAt: new Intl.DateTimeFormat("en", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      }).format(new Date()),
-      status: "In progress",
-    };
-    setProjects((current) => {
-      const next = [project, ...current];
-      window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
-    setFilter("All projects");
-    setQuery("");
-    setName("");
-    setDescription("");
-    setModalOpen(false);
+    setMessage("");
+    try {
+      const response = await api.post(`/project/${team}`, {
+        name: name.trim(),
+        description: description.trim() || "Project created from the workspace.",
+      });
+      const teamRecord = teams.find((item) => item._id === team);
+      if (teamRecord && response.data.project) {
+        const created = toProjectCard(response.data.project as Project, teamRecord);
+        setProjects((current) => [created, ...current]);
+      } else {
+        await loadProjects(teams);
+      }
+      setFilter("All projects");
+      setQuery("");
+      setName("");
+      setDescription("");
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Could not create project", error);
+      setMessage("Could not create project. Check your access and try again.");
+    }
   }
 
   return (
@@ -262,12 +315,14 @@ export default function ProjectsPage() {
             <FolderKanban size={22} />
           </span>
           <h2>
-            {projects.length === 0
+              {loading ? "Loading projects…" : message || (projects.length === 0
               ? "No projects available."
-              : "No projects found"}
+              : "No projects found")}
           </h2>
           <p>
-            {projects.length === 0
+              {loading
+                ? "Projects are loading."
+                : projects.length === 0
               ? "Projects will appear here when they’re created or connected."
               : "Try another search or choose a different filter."}
           </p>
@@ -344,7 +399,7 @@ export default function ProjectsPage() {
                     {teams.length ? "Choose a team" : "No teams available"}
                   </option>
                   {teams.map((item) => (
-                    <option key={item._id} value={item.name}>
+                    <option key={item._id} value={item._id}>
                       {item.name}
                     </option>
                   ))}
@@ -368,6 +423,7 @@ export default function ProjectsPage() {
                   Create project
                 </button>
               </div>
+              {message && <p role="alert" className={styles.optional}>{message}</p>}
             </form>
           </section>
         </div>
@@ -375,3 +431,28 @@ export default function ProjectsPage() {
     </main>
   );
 }
+
+function toProjectCard(project: Project, team: Team): ProjectCard {
+  return {
+    ...project,
+    id: project._id,
+    team: team.name,
+    tasks: 0,
+    progress: 0,
+    status: "In progress",
+  };
+}
+
+
+
+// Before mapping
+// Membership 1 → role + teamId object
+
+// Membership 2 → role + teamId object
+
+// Extract teamId
+
+// After mapping
+// Team 1 → AI Development
+
+// Team 2 → Frontend Team
