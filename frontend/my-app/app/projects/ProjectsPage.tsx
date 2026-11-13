@@ -276,7 +276,8 @@ export default function ProjectsPage() {
               </div>
               <Link
                 className={styles.viewLink}
-                href={`/projects/${project._id}`}
+                href={`/projects/${project._id}?teamId=${project.teamId}`}
+                // /projects/PROJECT_ID?teamId=TEAM_ID
               >
                 View project <ArrowRight size={15} />
               </Link>

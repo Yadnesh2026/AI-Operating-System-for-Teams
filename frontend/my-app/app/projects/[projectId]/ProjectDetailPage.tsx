@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   CalendarDays,
   Check,
-  CircleAlert,
   ClipboardList,
   Clock3,
   FolderKanban,
@@ -19,22 +17,12 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import type { Project } from "../projectData";
-import {
-  seedTasks,
-  taskStorageKey,
-  type Priority,
-  type TaskCardData,
-  type TaskCardStatus,
-} from "../taskData";
-import api from "../../lib/axios";
 import styles from "./project-detail.module.css";
+import api from "../../lib/axios";
+import type { Project } from "../projectData";
+import type { Team } from "@/app/teams/teamData";
 
-type Task = TaskCardData;
-type TaskFilter = "All tasks" | TaskCardStatus;
-type ProjectView = Project & { id: string; team: string };
-type TeamRecord = { _id: string; name: string; role: string };
-
+type TaskFilter = "All tasks" | "To do" | "In progress" | "Completed";
 const taskFilters: TaskFilter[] = [
   "All tasks",
   "To do",
@@ -44,223 +32,87 @@ const taskFilters: TaskFilter[] = [
 
 export default function ProjectDetailPage({
   projectId,
-}: {
-  projectId: string;
+  teamId
+}:{
+  projectId: string,
+  teamId: string
 }) {
-  const router = useRouter();
-  const [project, setProject] = useState<ProjectView | null>(null);
-  const [isManager, setIsManager] = useState(false);
-  const [employees, setEmployees] = useState<{ id: string; name: string }[]>(
-    [],
-  );
-  const [loaded, setLoaded] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [filter, setFilter] = useState<TaskFilter>("All tasks");
-  const [query, setQuery] = useState("");
+
   const [taskModal, setTaskModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [assignee, setAssignee] = useState("");
-  const [priority, setPriority] = useState<Priority>("Medium");
-  const [dueDate, setDueDate] = useState("");
-  const [editName, setEditName] = useState("");
-  const [editDescription, setEditDescription] = useState("");
+  const [filter, setFilter] = useState<TaskFilter>("All tasks");
+  const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    let cancelled = false;
-    async function loadProject() {
-      try {
-        const teamResponse = await api.get("/getAllTeams");
-        const teamRecords: TeamRecord[] = (teamResponse.data.teams ?? [])
-          .map(
-            (membership: {
-              teamId: { _id: string; name: string } | string;
-              role: string;
-            }) =>
-              typeof membership.teamId === "string"
-                ? null
-                : { ...membership.teamId, role: membership.role },
-          )
-          .filter(
-            (
-              item: { _id: string; name: string; role: string } | null,
-            ): item is { _id: string; name: string; role: string } =>
-              item !== null,
-          );
-        const projectLists: { team: TeamRecord; projects: Project[] }[] = await Promise.all(
-          teamRecords.map(async (item) => {
-            const response = await api.get(`/project/${item._id}`);
-            return {
-              team: item,
-              projects: (response.data.projects ?? []) as Project[],
-            };
-          }),
-        );
-        const match = projectLists.flatMap(
-          ({ team: teamRecord, projects: records }) =>
-            records
-              .filter((record) => record._id === projectId)
-              .map((record) => ({ record, teamRecord })),
-        )[0];
-        if (cancelled) return;
-        if (match) {
-          setProject({
-            ...match.record,
-            id: match.record._id,
-            team: match.teamRecord.name,
-          });
-          setEditName(match.record.name);
-          setEditDescription(match.record.description);
-          setIsManager(match.teamRecord.role === "manager");
-          const details = await api.get(`/getDetails/${match.teamRecord._id}`);
-          const members = details.data.membership ?? [];
-          setEmployees(
-            members
-              .filter(
-                (membership: {
-                  role: string;
-                  userId?: { _id?: string; name?: string };
-                }) =>
-                  membership.role === "employee" &&
-                  membership.userId?._id &&
-                  membership.userId.name,
-              )
-              .map((membership: { userId: { _id: string; name: string } }) => ({
-                id: membership.userId._id,
-                name: membership.userId.name,
-              })),
-          );
-        }
-      } catch (error) {
-        console.error("Could not load project", error);
-      } finally {
-        if (!cancelled) setLoaded(true);
-      }
+  const [project, setProject]= useState<Project| null>(null);
+  const [team, setTeam] = useState<Team | null>(null)
+  const [editName, setEditName] = useState("")
+  const [editDescription, setEditDescription] = useState("")
+
+  // fetch the projects from backend
+  useEffect(()=>{
+      async function fetchProjects() {
+      try{
+        const response = await api.get(`/project/${teamId}/${projectId}`)
+
+        setProject(response.data.project)
+        
+      }catch(err){
+      console.log("Error fetching project",err)
     }
-    void loadProject();
-    const savedTasks = window.localStorage.getItem(taskStorageKey(projectId));
-    if (savedTasks) {
-      try {
-        setTasks(JSON.parse(savedTasks) as Task[]);
-      } catch {
-        setTasks(seedTasks[projectId] ?? []);
-      }
-    } else setTasks(seedTasks[projectId] ?? []);
-    return () => {
-      cancelled = true;
-    };
-  }, [projectId]);
-  const pending = tasks.filter((task) => task.status === "To do").length;
-  const inProgress = tasks.filter(
-    (task) => task.status === "In progress",
-  ).length;
-  const completed = tasks.filter((task) => task.status === "Completed").length;
-  const progress = tasks.length
-    ? Math.round((completed / tasks.length) * 100)
-    : 0;
-
-  const visibleTasks = useMemo(
-    () =>
-      tasks.filter((task) => {
-        const matchesFilter = filter === "All tasks" || task.status === filter;
-        const matchesSearch =
-          `${task.title} ${task.description} ${task.assignee}`
-            .toLowerCase()
-            .includes(query.trim().toLowerCase());
-        return matchesFilter && matchesSearch;
-      }),
-    [filter, query, tasks],
-  );
-
-  function saveTasks(next: Task[]) {
-    setTasks(next);
-    window.localStorage.setItem(
-      taskStorageKey(projectId),
-      JSON.stringify(next),
-    );
-  }
-
-  function createTask(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!taskTitle.trim()) return;
-    const next = [
-      {
-        id: `task-${Date.now()}`,
-        title: taskTitle.trim(),
-        description: taskDescription.trim(),
-        assignee,
-        status: "To do" as const,
-        priority,
-        dueDate,
-      },
-      ...tasks,
-    ];
-    saveTasks(next);
-    setTaskTitle("");
-    setTaskDescription("");
-    setAssignee("");
-    setPriority("Medium");
-    setDueDate("");
-    setTaskModal(false);
-  }
-
-  function updateTaskStatus(taskId: string, status: TaskCardStatus) {
-    saveTasks(
-      tasks.map((task) => (task.id === taskId ? { ...task, status } : task)),
-    );
-  }
-
-  async function saveProject(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!project || !editName.trim()) return;
-    try {
-      const response = await api.put(
-        `/project/${project.teamId}/${project._id}`,
-        { name: editName.trim(), description: editDescription.trim() },
-      );
-      if (response.data.project)
-        setProject((current) =>
-          current ? { ...current, ...response.data.project } : current,
-        );
-      setEditModal(false);
-    } catch (error) {
-      console.error("Could not update project", error);
     }
+
+    fetchProjects();
+  },[teamId, projectId])
+
+  // Fetch the team data
+  useEffect(()=>{
+    async function teamData() {
+      try{
+      const response = await api.get(`/getDetails/${teamId}`)
+      setTeam(response.data.team)
+
+      }catch(err){
+        console.log("Team data does not fetched",err)
+      }
+      
+    }
+    teamData()
+  },[teamId])
+
+  // Update the project name or description PUT
+  useEffect(()=>{
+    async function updateDetails() {
+
+    }
+  })
+
+  
+  const tasks: {
+    id: string;
+    title: string;
+    description: string;
+    assignee: string;
+    status: string;
+    priority: string;
+    dueDate: string;
+  }[] = [];
+
+  const employees: { id: string; name: string }[] = [];
+  const pending = 0;
+  const inProgress = 0;
+  const completed = 0;
+  const progress = 0;
+  const visibleTasks = tasks;
+
+  function preventPlaceholderSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+
   }
 
-  function deleteProject() {
-    if (
-      !project ||
-      !window.confirm(`Delete “${project.name}”? This cannot be undone.`)
-    )
-      return;
-    void api
-      .delete(`/project/${project.teamId}/${project._id}`)
-      .then(() => {
-        window.localStorage.removeItem(taskStorageKey(projectId));
-        router.push("/projects");
-      })
-      .catch((error) => console.error("Could not delete project", error));
+  if(!project){
+    return <p>Loading Projects...</p>
   }
-
-  if (!loaded) return <main className={styles.page} aria-busy="true" />;
-  if (!project)
-    return (
-      <main className={styles.page}>
-        <section className={styles.notFound}>
-          <span>
-            <CircleAlert size={22} />
-          </span>
-          <h1>Project not found</h1>
-          <p>
-            This project may have been removed or the link may be incorrect.
-          </p>
-          <Link href="/projects">Back to projects</Link>
-        </section>
-      </main>
-    );
-
   return (
     <main className={styles.page}>
       <Link href="/projects" className={styles.backLink}>
@@ -277,25 +129,28 @@ export default function ProjectDetailPage({
             <p>{project.description}</p>
             <div className={styles.teamBadge}>
               <UsersRound size={14} />
-              {project.team}
+              {team?.name}
             </div>
           </div>
         </div>
-        {isManager && (
+        {
           <div className={styles.managerActions}>
             <button
               className={styles.editButton}
-              onClick={() => setEditModal(true)}
+              onClick={() => {setEditModal(true)
+                setEditName(project.name)
+                setEditDescription(project.description)
+              }}
             >
               <Pencil size={14} />
               Edit project
             </button>
-            <button className={styles.deleteButton} onClick={deleteProject}>
+            <button className={styles.deleteButton} onClick={() => {}}>
               <Trash2 size={14} />
               Delete
             </button>
           </div>
-        )}
+        }
       </section>
 
       <section className={styles.overview} aria-label="Project overview">
@@ -438,12 +293,7 @@ export default function ProjectDetailPage({
                   className={styles.statusSelect}
                   aria-label={`Status for ${task.title}`}
                   value={task.status}
-                  onChange={(event) =>
-                    updateTaskStatus(
-                      task.id,
-                      event.target.value as TaskCardStatus,
-                    )
-                  }
+                  onChange={() => {}}
                 >
                   <option>To do</option>
                   <option>In progress</option>
@@ -455,14 +305,7 @@ export default function ProjectDetailPage({
             <div className={styles.empty}>
               <h3>No tasks found</h3>
               <p>Try a different filter or search term.</p>
-              <button
-                onClick={() => {
-                  setFilter("All tasks");
-                  setQuery("");
-                }}
-              >
-                Clear filters
-              </button>
+              <button onClick={() => {}}>Clear filters</button>
             </div>
           )}
         </div>
@@ -497,14 +340,13 @@ export default function ProjectDetailPage({
                 <X size={18} />
               </button>
             </div>
-            <form className={styles.form} onSubmit={createTask}>
+            <form className={styles.form} onSubmit={preventPlaceholderSubmit}>
               <label>
                 Task title
                 <input
                   required
                   autoFocus
-                  value={taskTitle}
-                  onChange={(event) => setTaskTitle(event.target.value)}
+                  defaultValue=""
                   placeholder="What needs to get done?"
                 />
               </label>
@@ -512,18 +354,14 @@ export default function ProjectDetailPage({
                 Description
                 <textarea
                   rows={3}
-                  value={taskDescription}
-                  onChange={(event) => setTaskDescription(event.target.value)}
+                  defaultValue=""
                   placeholder="Add a few details about this task"
                 />
               </label>
               <div className={styles.formRow}>
                 <label>
                   Assign employee
-                  <select
-                    value={assignee}
-                    onChange={(event) => setAssignee(event.target.value)}
-                  >
+                  <select defaultValue="">
                     <option value="">Unassigned</option>
                     {employees.map((member) => (
                       <option key={member.id} value={member.name}>
@@ -534,12 +372,7 @@ export default function ProjectDetailPage({
                 </label>
                 <label>
                   Priority
-                  <select
-                    value={priority}
-                    onChange={(event) =>
-                      setPriority(event.target.value as Priority)
-                    }
-                  >
+                  <select defaultValue="Medium">
                     <option>Low</option>
                     <option>Medium</option>
                     <option>High</option>
@@ -548,11 +381,7 @@ export default function ProjectDetailPage({
               </div>
               <label>
                 Due date
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(event) => setDueDate(event.target.value)}
-                />
+                <input type="date" defaultValue="" />
               </label>
               <div className={styles.modalActions}>
                 <button
@@ -601,22 +430,14 @@ export default function ProjectDetailPage({
                 <X size={18} />
               </button>
             </div>
-            <form className={styles.form} onSubmit={saveProject}>
+            <form className={styles.form} onSubmit={preventPlaceholderSubmit}>
               <label>
                 Project name
-                <input
-                  required
-                  value={editName}
-                  onChange={(event) => setEditName(event.target.value)}
-                />
+                <input required value={project.name} onChange ={(e)=>setEditName(e.target.name)} />
               </label>
               <label>
                 Description
-                <textarea
-                  rows={3}
-                  value={editDescription}
-                  onChange={(event) => setEditDescription(event.target.value)}
-                />
+                <textarea rows={3} value={project.description} onChange={(e)=>setEditDescription(e.target.value)} />
               </label>
               <div className={styles.modalActions}>
                 <button
