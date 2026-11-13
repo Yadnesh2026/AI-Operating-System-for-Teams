@@ -93,7 +93,8 @@ const getAllProjects = async(req, res, next)=>{
     if(project.length === 0){ // Its an array thats why project.length === 0
     return res.status(200).json({
         message: "Project does not exist",
-        source: "mongoDB"
+        source: "mongoDB",
+        projects: []
         })
     }
 
@@ -129,7 +130,7 @@ const getOneProjectDetails = async(req, res, next)=>{
     }
 
     // get the Project when user select
-    const project = await Project.findOne({ projectId: projectId, teamId: teamId})
+    const project = await Project.findOne({ _id: projectId, teamId: teamId})
     if(!project){
         return res.status(400).json({
             message: "Project does not exist"

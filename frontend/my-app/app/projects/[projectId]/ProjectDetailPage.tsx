@@ -5,18 +5,18 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, CalendarDays, Check, CircleAlert, ClipboardList, Clock3, FolderKanban, ListTodo, Pencil, Plus, Search, Trash2, UsersRound, X } from "lucide-react";
 import Link from "next/link";
 import { teams } from "../../teams/teamData";
-import { initialProjects, PROJECT_STORAGE_KEY, type Project } from "../projectData";
-import { seedTasks, taskStorageKey, type Priority, type ProjectTask, type TaskStatus } from "../taskData";
+import { initialProjects, PROJECT_STORAGE_KEY, type ProjectCardData } from "../projectData";
+import { seedTasks, taskStorageKey, type Priority, type TaskCardData, type TaskCardStatus } from "../taskData";
 import styles from "./project-detail.module.css";
 
-type Task = ProjectTask;
-type TaskFilter = "All tasks" | TaskStatus;
+type Task = TaskCardData;
+type TaskFilter = "All tasks" | TaskCardStatus;
 
 const taskFilters: TaskFilter[] = ["All tasks", "To do", "In progress", "Completed"];
 
 export default function ProjectDetailPage({ projectId }: { projectId: string }) {
   const router = useRouter();
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<ProjectCardData | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<TaskFilter>("All tasks");
@@ -35,7 +35,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
     const savedProjects = window.localStorage.getItem(PROJECT_STORAGE_KEY);
     let projectList = initialProjects;
     if (savedProjects) {
-      try { projectList = JSON.parse(savedProjects) as Project[]; } catch { window.localStorage.removeItem(PROJECT_STORAGE_KEY); }
+      try { projectList = JSON.parse(savedProjects) as ProjectCardData[]; } catch { window.localStorage.removeItem(PROJECT_STORAGE_KEY); }
     }
     const current = projectList.find((item) => item.id === projectId) ?? null;
     setProject(current);
@@ -81,14 +81,14 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
     setTaskTitle(""); setTaskDescription(""); setAssignee(""); setPriority("Medium"); setDueDate(""); setTaskModal(false);
   }
 
-  function updateTaskStatus(taskId: string, status: TaskStatus) {
+  function updateTaskStatus(taskId: string, status: TaskCardStatus) {
     saveTasks(tasks.map((task) => task.id === taskId ? { ...task, status } : task));
   }
 
   function saveProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!project || !editName.trim()) return;
-    const updatedProject = { ...project, name: editName.trim(), description: editDescription.trim() };
+    const updatedProject: ProjectCardData = { ...project, name: editName.trim(), description: editDescription.trim() };
     setProject(updatedProject);
     window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(readProjects().map((item) => item.id === projectId ? updatedProject : item)));
     setEditModal(false);
@@ -124,7 +124,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
       <div className={styles.taskToolbar}><div className={styles.filters} role="tablist" aria-label="Filter tasks">{taskFilters.map((item) => <button key={item} role="tab" aria-selected={filter === item} className={filter === item ? styles.activeFilter : ""} onClick={() => setFilter(item)}>{item}<span>{item === "All tasks" ? tasks.length : tasks.filter((task) => task.status === item).length}</span></button>)}</div><label className={styles.search}><Search size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search tasks" aria-label="Search tasks" /></label></div>
       <div className={styles.taskList}>{visibleTasks.length ? visibleTasks.map((task) => <article className={styles.taskRow} key={task.id}>
         <div className={styles.taskInfo}><span className={`${styles.taskCheck} ${task.status === "Completed" ? styles.checked : ""}`}>{task.status === "Completed" && <Check size={14} />}</span><div><h3>{task.title}</h3><p>{task.description || "No description provided."}</p><div className={styles.taskMeta}><span className={styles.assignee}><UsersRound size={12} />{task.assignee || "Unassigned"}</span>{task.dueDate && <span><CalendarDays size={12} />Due {new Date(`${task.dueDate}T00:00:00`).toLocaleDateString("en", { month: "short", day: "numeric" })}</span>}</div></div></div>
-        <span className={`${styles.priority} ${styles[`priority${task.priority}`]}`}>{task.priority}</span><select className={styles.statusSelect} aria-label={`Status for ${task.title}`} value={task.status} onChange={(event) => updateTaskStatus(task.id, event.target.value as TaskStatus)}><option>To do</option><option>In progress</option><option>Completed</option></select>
+        <span className={`${styles.priority} ${styles[`priority${task.priority}`]}`}>{task.priority}</span><select className={styles.statusSelect} aria-label={`Status for ${task.title}`} value={task.status} onChange={(event) => updateTaskStatus(task.id, event.target.value as TaskCardStatus)}><option>To do</option><option>In progress</option><option>Completed</option></select>
       </article>) : <div className={styles.empty}><h3>No tasks found</h3><p>Try a different filter or search term.</p><button onClick={() => { setFilter("All tasks"); setQuery(""); }}>Clear filters</button></div>}</div>
     </section>
 
@@ -134,8 +134,8 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   </main>;
 }
 
-function readProjects(): Project[] {
+function readProjects(): ProjectCardData[] {
   const saved = window.localStorage.getItem(PROJECT_STORAGE_KEY);
   if (!saved) return [...initialProjects];
-  try { return JSON.parse(saved) as Project[]; } catch { return [...initialProjects]; }
+  try { return JSON.parse(saved) as ProjectCardData[]; } catch { return [...initialProjects]; }
 }

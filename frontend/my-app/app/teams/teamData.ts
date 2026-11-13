@@ -1,37 +1,8 @@
 
-export type TeamRole = "manager" | "employee";
-
-// Same structure as backend TeamModel
-export type Team = {
-  _id: string;
-  name: string;
-  description: string;
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-// Same structure as backend TeamMembership
-export type TeamMembership = {
-  _id: string;
-  userId: string;
+// Compatibility exports for team pages; canonical backend shapes live in backendTypes.
+export type { TeamRole } from "../lib/backendTypes";
+export type Team = import("../lib/backendTypes").TeamRecord;
+export type TeamMembership = Omit<import("../lib/backendTypes").TeamMembershipRecord, "teamId"> & {
   teamId: Team | string;
-  role: TeamRole;
-  createdAt?: string;
-  updatedAt?: string;
 };
-
-// Member details returned by populated userId
-export type TeamMember = {
-  _id: string;
-  name: string;
-  email: string;
-};
-
-// Existing project structure — keep until we integrate projects
-export type TeamProject = {
-  name: string;
-  status: "On track" | "In progress" | "Planning";
-  progress: number;
-  due: string;
-};
+export type TeamMember = Pick<import("../lib/backendTypes").UserRecord, "_id" | "name" | "email">;

@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, Check, Clock3, ClipboardList, ListTodo, Search, UserRound } from "lucide-react";
-import { initialProjects, PROJECT_STORAGE_KEY, type Project } from "../projects/projectData";
-import { seedTasks, taskStorageKey, type ProjectTask, type TaskStatus } from "../projects/taskData";
+import { initialProjects, PROJECT_STORAGE_KEY, type ProjectCardData } from "../projects/projectData";
+import { seedTasks, taskStorageKey, type TaskCardData, type TaskCardStatus } from "../projects/taskData";
 import styles from "./tasks.module.css";
 
-type Filter = "All" | TaskStatus;
-type AssignedTask = ProjectTask & { projectId: string; projectName: string; assignedBy: string };
+type Filter = "All" | TaskCardStatus;
+type AssignedTask = TaskCardData & { projectId: string; projectName: string; assignedBy: string };
 const filters: Filter[] = ["All", "To do", "In progress", "Completed"];
-const labelStatus: Record<TaskStatus, string> = { "To do": "To Do", "In progress": "In Progress", Completed: "Completed" };
+const labelStatus: Record<TaskCardStatus, string> = { "To do": "To Do", "In progress": "In Progress", Completed: "Completed" };
 
 export default function MyTasksPage() {
   const [tasks, setTasks] = useState<AssignedTask[]>([]);
@@ -25,17 +25,17 @@ export default function MyTasksPage() {
         userName = (JSON.parse(profile) as { name?: string }).name?.trim() ?? "";
       } catch { window.localStorage.removeItem("redsun-settings-v2"); }
     }
-    let projects = initialProjects;
+    let projects: ProjectCardData[] = initialProjects;
     const savedProjects = window.localStorage.getItem(PROJECT_STORAGE_KEY);
     if (savedProjects) {
-      try { projects = JSON.parse(savedProjects) as Project[]; } catch { window.localStorage.removeItem(PROJECT_STORAGE_KEY); }
+      try { projects = JSON.parse(savedProjects) as ProjectCardData[]; } catch { window.localStorage.removeItem(PROJECT_STORAGE_KEY); }
     }
     const assigned: AssignedTask[] = [];
     for (const project of projects) {
       let projectTasks = seedTasks[project.id] ?? [];
       const stored = window.localStorage.getItem(taskStorageKey(project.id));
       if (stored) {
-        try { projectTasks = JSON.parse(stored) as ProjectTask[]; } catch { /* Keep the empty initial task list if stored data is invalid. */ }
+        try { projectTasks = JSON.parse(stored) as TaskCardData[]; } catch { /* Keep the empty initial task list if stored data is invalid. */ }
       }
       // This local task data does not include manager records from the backend.
       const manager = "Team manager";
@@ -53,16 +53,16 @@ export default function MyTasksPage() {
     return matchesFilter && matchesSearch;
   }), [filter, query, tasks]);
 
-  const count = (status: TaskStatus) => tasks.filter((task) => task.status === status).length;
+  const count = (status: TaskCardStatus) => tasks.filter((task) => task.status === status).length;
 
-  function updateStatus(taskId: string, projectId: string, status: TaskStatus) {
+  function updateStatus(taskId: string, projectId: string, status: TaskCardStatus) {
     setTasks((current) => current.map((task) => task.id === taskId && task.projectId === projectId ? { ...task, status } : task));
     const stored = window.localStorage.getItem(taskStorageKey(projectId));
-    const source = stored ? JSON.parse(stored) as ProjectTask[] : seedTasks[projectId] ?? [];
+    const source = stored ? JSON.parse(stored) as TaskCardData[] : seedTasks[projectId] ?? [];
     const next = source.map((task) => task.id === taskId ? { ...task, status } : task);
     window.localStorage.setItem(taskStorageKey(projectId), JSON.stringify(next));
     const projectListRaw = window.localStorage.getItem(PROJECT_STORAGE_KEY);
-    const projectList = projectListRaw ? JSON.parse(projectListRaw) as Project[] : initialProjects;
+    const projectList = projectListRaw ? JSON.parse(projectListRaw) as ProjectCardData[] : initialProjects;
     const updatedProjects = projectList.map((project) => project.id === projectId ? { ...project, tasks: next.length, progress: next.length ? Math.round(next.filter((task) => task.status === "Completed").length / next.length * 100) : 0, status: next.length && next.every((task) => task.status === "Completed") ? "Completed" as const : "In progress" as const } : project);
     window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(updatedProjects));
   }
@@ -86,7 +86,7 @@ export default function MyTasksPage() {
         <div className={styles.taskMain}><span className={`${styles.taskCheck} ${task.status === "Completed" ? styles.checked : ""}`}>{task.status === "Completed" && <Check size={14} />}</span><div className={styles.taskText}><h3>{task.title}</h3><p>{task.description || "No description provided."}</p><div className={styles.taskDetails}><span className={styles.projectLabel}><span className={styles.projectDot} />{task.projectName}</span><span><UserRound size={13} />Assigned by {task.assignedBy}</span></div></div></div>
         <span className={`${styles.status} ${task.status === "Completed" ? styles.completed : task.status === "In progress" ? styles.inProgress : ""}`}>{labelStatus[task.status]}</span>
         <span className={styles.dueDate}><CalendarDays size={14} />{task.dueDate ? new Date(`${task.dueDate}T00:00:00`).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" }) : "No due date"}</span>
-        <select className={styles.statusSelect} aria-label={`Update status for ${task.title}`} value={task.status} onChange={(event) => updateStatus(task.id, task.projectId, event.target.value as TaskStatus)}><option>To do</option><option>In progress</option><option>Completed</option></select>
+        <select className={styles.statusSelect} aria-label={`Update status for ${task.title}`} value={task.status} onChange={(event) => updateStatus(task.id, task.projectId, event.target.value as TaskCardStatus)}><option>To do</option><option>In progress</option><option>Completed</option></select>
       </article>) : <div className={styles.empty}><span><ClipboardList size={22} /></span><h3>{tasks.length ? "No matching tasks" : "No tasks assigned yet."}</h3><p>{tasks.length ? "Try another search or status filter." : "Tasks assigned to your profile will show up here."}</p>{tasks.length > 0 && <button onClick={() => { setFilter("All"); setQuery(""); }}>Clear filters</button>}</div>}</div>
     </section>
   </main>;
