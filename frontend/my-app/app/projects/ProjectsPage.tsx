@@ -27,7 +27,7 @@ type ProjectCard = Project & {
 };
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectCard[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -39,18 +39,29 @@ export default function ProjectsPage() {
   const [team, setTeam] = useState("");
 
   const loadProjects = useCallback(async (availableTeams: Team[]) => {
+
     const results = await Promise.all(
       availableTeams.map(async (teamRecord) => {
         const response = await api.get(`/project/${teamRecord._id}`);
         return (response.data.projects ?? []) as Project[];
-      }),
+      })
     );
+
+    console.log("Project API results:", results);
+
+
+
     const cards = results.flatMap((records, teamIndex) =>
       records.map((record) => toProjectCard(record, availableTeams[teamIndex])),
     );
     setProjects(cards);
+
+    console.log("Final project cards:", cards);
   }, []);
 
+
+
+  // COnnection for backend project to show in frontend 
   const refreshProjects = useCallback(async () => {
 
 
@@ -59,11 +70,13 @@ export default function ProjectsPage() {
     try {
       const response = await api.get("/getAllTeams");
       const memberships = response.data.teams ?? [];
+
       const availableTeams = memberships
         .map((membership: { teamId: Team | string }) => membership.teamId)
         .filter((item: Team | string): item is Team => typeof item !== "string");
       setTeams(availableTeams);
       setTeam((current) => current || availableTeams[0]?._id || "");
+
       await loadProjects(availableTeams);
 
 
@@ -93,45 +106,6 @@ export default function ProjectsPage() {
       }),
     [filter, projects, query],
   );
-
-  // backend data to frontend 
-  async function fetchTeams() {
-    try{
-      setLoading(true);
-
-      const fetchData = await api.get("/getAllTeams");
-      const memberships = fetchData.data.teams ?? [];
-
-      const availableTeams:Team[] = memberships.map((membership:{teamId: Team})=>
-      membership.teamId);
-
-      setTeams(availableTeams)
-
-      // Fetch all the Projects belongs to differnt teams 
-      const projectResponses = await Promise.all( //Promise.all waits untill the all request finish
-        availableTeams.map((team) =>
-          api.get(`/project/${team._id}`)
-        )
-      );
-
-      console.log("Project responses:", projectResponses);
-
-      const allProjects:Project[] = projectResponses.flatMap( // FlatMap(): Combines the arrays retured by each API response
-        (response)=> response.data.projects ?? []
-      );
-
-      setProjects(allProjects)
-      console.log("All Projects",allProjects)
-      console.log("Available teams",availableTeams)
-
-
-    }catch(err){
-      console.log("Error fetching teams",err)
-      setMessage("Could not load the teams.")
-    }finally{
-      setLoading(false)
-    }
-  }
 
   async function createProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -256,7 +230,7 @@ export default function ProjectsPage() {
       {visibleProjects.length ? (
         <div className={styles.projectGrid}>
           {visibleProjects.map((project, index) => (
-            <article className={styles.projectCard} key={project.id}>
+            <article className={styles.projectCard} key={project._id}>
               <div className={styles.cardTop}>
                 <span
                   className={`${styles.projectIcon} ${styles[`tone${index % 4}`]}`}
@@ -302,7 +276,7 @@ export default function ProjectsPage() {
               </div>
               <Link
                 className={styles.viewLink}
-                href={`/projects/${project.id}`}
+                href={`/projects/${project._id}`}
               >
                 View project <ArrowRight size={15} />
               </Link>
@@ -435,7 +409,6 @@ export default function ProjectsPage() {
 function toProjectCard(project: Project, team: Team): ProjectCard {
   return {
     ...project,
-    id: project._id,
     team: team.name,
     tasks: 0,
     progress: 0,
