@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowRight, CalendarDays, Check, FolderKanban, ListTodo, Plus, Search, X } from "lucide-react";
-import { teams } from "../teams/teamData";
+import type { Team } from "../teams/teamData";
 import { initialProjects, PROJECT_STORAGE_KEY, type Project } from "./projectData";
+import api from "../lib/axios";
 import styles from "./projects.module.css";
 
 const filters = ["All projects", "In progress", "Completed"] as const;
@@ -12,12 +13,13 @@ type Filter = typeof filters[number];
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState(initialProjects);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [filter, setFilter] = useState<Filter>("All projects");
   const [query, setQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [team, setTeam] = useState(teams[0]?.name ?? "");
+  const [team, setTeam] = useState("");
 
   useEffect(() => {
     const saved = window.localStorage.getItem(PROJECT_STORAGE_KEY);
@@ -27,6 +29,18 @@ export default function ProjectsPage() {
         if (Array.isArray(parsed)) setProjects(parsed);
       } catch { window.localStorage.removeItem(PROJECT_STORAGE_KEY); }
     }
+
+    // Load the signed-in user's teams for the project form's team selector.
+    void api.get("/getAllTeams").then((response) => {
+      const memberships = response.data.teams ?? [];
+      const availableTeams = memberships
+        .map((membership: { teamId: Team | string }) => membership.teamId)
+        .filter((item: Team | string): item is Team => typeof item !== "string");
+      setTeams(availableTeams);
+      setTeam((current) => current || availableTeams[0]?.name || "");
+    }).catch(() => {
+      setTeams([]);
+    });
   }, []);
 
   const visibleProjects = useMemo(() => projects.filter((project) => {
@@ -84,7 +98,7 @@ export default function ProjectsPage() {
           <form onSubmit={createProject} className={styles.form}>
             <label>Project name<input required autoFocus value={name} onChange={(event) => setName(event.target.value)} placeholder="Enter project name" /></label>
             <label>Description <span className={styles.optional}>(optional)</span><textarea rows={3} value={description} onChange={(event) => setDescription(event.target.value)} placeholder="What is this project about?" /></label>
-            <label>Select team<select required value={team} onChange={(event) => setTeam(event.target.value)}><option value="" disabled>{teams.length ? "Choose a team" : "No teams available"}</option>{teams.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}</select>{teams.length === 0 && <span className={styles.optional}>Create or join a team before creating a project.</span>}</label>
+            <label>Select team<select required value={team} onChange={(event) => setTeam(event.target.value)}><option value="" disabled>{teams.length ? "Choose a team" : "No teams available"}</option>{teams.map((item) => <option key={item._id} value={item.name}>{item.name}</option>)}</select>{teams.length === 0 && <span className={styles.optional}>Create or join a team before creating a project.</span>}</label>
             <div className={styles.modalActions}><button type="button" className={styles.cancelButton} onClick={() => setModalOpen(false)}>Cancel</button><button type="submit" className={styles.createButton}><Plus size={16} />Create project</button></div>
           </form>
         </section>

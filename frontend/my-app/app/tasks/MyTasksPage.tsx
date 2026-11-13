@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, Check, Clock3, ClipboardList, ListTodo, Search, UserRound } from "lucide-react";
-import { teams } from "../teams/teamData";
 import { initialProjects, PROJECT_STORAGE_KEY, type Project } from "../projects/projectData";
 import { seedTasks, taskStorageKey, type ProjectTask, type TaskStatus } from "../projects/taskData";
 import styles from "./tasks.module.css";
@@ -38,8 +37,8 @@ export default function MyTasksPage() {
       if (stored) {
         try { projectTasks = JSON.parse(stored) as ProjectTask[]; } catch { /* Keep the empty initial task list if stored data is invalid. */ }
       }
-      const owningTeam = teams.find((team) => team.name === project.team);
-      const manager = owningTeam?.members.find((member) => member.role === "manager")?.name ?? "Not specified";
+      // This local task data does not include manager records from the backend.
+      const manager = "Team manager";
       for (const task of projectTasks) {
         if (userName && task.assignee === userName) assigned.push({ ...task, projectId: project.id, projectName: project.name, assignedBy: manager });
       }
