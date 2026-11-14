@@ -38,20 +38,6 @@ export type ProjectRecord = {
   updatedAt: string;
 };
 
-export type TaskStatus = "todo" | "in-progress" | "completed";
-
-export type TaskRecord = {
-  _id: Id;
-  title: string;
-  description: string;
-  assignedTo: Id;
-  assignedBy: Id;
-  projectId: Id;
-  status: TaskStatus;
-  createdAt: string;
-  updatedAt: string;
-};
-
 // Populated Mongoose references returned by the current team detail endpoint.
 export type PopulatedTeamMembership = Omit<TeamMembershipRecord, "userId" | "teamId"> & {
   userId: Pick<UserRecord, "_id" | "name" | "email">;

@@ -41,8 +41,6 @@ export default function ProjectDetailPage({
 
   const [taskModal, setTaskModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  const [filter, setFilter] = useState<TaskFilter>("All tasks");
-  const [query, setQuery] = useState("");
 
   const [project, setProject]= useState<Project| null>(null);
   const [team, setTeam] = useState<Team | null>(null)
@@ -103,10 +101,6 @@ export default function ProjectDetailPage({
 
   function preventPlaceholderSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-  }
-
-  function createTask(){
-    event
   }
 
   // Update Project edit btn 
@@ -264,27 +258,22 @@ export default function ProjectDetailPage({
               <button
                 key={item}
                 role="tab"
-                aria-selected={filter === item}
-                className={filter === item ? styles.activeFilter : ""}
-                onClick={() => setFilter(item)}
+                aria-selected={item === "All tasks"}
+                className={item === "All tasks" ? styles.activeFilter : ""}
+                onClick={() => {}}
               >
                 {item}
                 <span>
                   {item === "All tasks"
                     ? tasks.length
-                    : tasks.filter((task) => task.status === item).length}
+                    : 0}
                 </span>
               </button>
             ))}
           </div>
           <label className={styles.search}>
             <Search size={16} />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search tasks"
-              aria-label="Search tasks"
-            />
+            <input placeholder="Search tasks" aria-label="Search tasks" />
           </label>
         </div>
         <div className={styles.taskList}>
@@ -376,7 +365,7 @@ export default function ProjectDetailPage({
                 <X size={18} />
               </button>
             </div>
-            <form className={styles.form} onSubmit={createTask}>
+            <form className={styles.form} onSubmit={preventPlaceholderSubmit}>
               <label>
                 Task title
                 <input
