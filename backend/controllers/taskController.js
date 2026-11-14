@@ -120,7 +120,7 @@ const getAllTask = async (req,res,next)=>{
     }
 
     //fetch all projects
-    const allTask = await TaskModel.find({projectId: projectId})
+    const allTask = await TaskModel.find({projectId: projectId}).populate("assignedTo","name")
 
     // Redis store this data - CACHE MISS
     await redisClient.set(cacheKey, JSON.stringify(allTask),{
@@ -128,8 +128,10 @@ const getAllTask = async (req,res,next)=>{
     })
 
     if (allTask.length === 0) {
-    return res.status(400).json({
-        message: "Task does not exist"
+    return res.status(200).json({
+        message: "No tasks found for this project",
+        source: "mongodb",
+        tasks: []
     });
 }
 

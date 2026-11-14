@@ -112,6 +112,12 @@ const getTeamDetails = async(req, res, next)=>{
     const teamId = req.params.teamId
     const userId = req.user.id
 
+    if(!mongoose.isValidObjectId(teamId)){
+        return res.status(400).json({
+            message: "Invalid team ID"
+        })
+    }
+
     // Find the team 
     const team = await TeamModel.findById(teamId)
     if(!team){

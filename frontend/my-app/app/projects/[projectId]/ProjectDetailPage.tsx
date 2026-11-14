@@ -22,6 +22,7 @@ import api from "../../lib/axios";
 import type { Project } from "../projectData";
 import type { Team } from "@/app/teams/teamData";
 import { useRouter } from "next/navigation";
+import type { Task } from "../taskData";
 
 type TaskFilter = "All tasks" | "To do" | "In progress" | "Completed";
 const taskFilters: TaskFilter[] = [
@@ -30,6 +31,7 @@ const taskFilters: TaskFilter[] = [
   "In progress",
   "Completed",
 ];
+const isObjectId = (value: string) => /^[a-f\d]{24}$/i.test(value);
 
 export default function ProjectDetailPage({
   projectId,
@@ -46,12 +48,30 @@ export default function ProjectDetailPage({
   const [team, setTeam] = useState<Team | null>(null)
   const [editName, setEditName] = useState("")
   const [editDescription, setEditDescription] = useState("")
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const router = useRouter();
+
+  // Fetch the tasks
+  useEffect(()=>{
+
+      async function fetchTasks() {
+        if (!isObjectId(teamId) || !isObjectId(projectId)) return;
+        try{
+          const response = await api.get(`/task/${teamId}/${projectId}`)
+          setTasks(response.data.tasks ?? [])
+
+        }catch(err){
+          console.log("Tasks Fetch error", err)
+        }
+    }
+    fetchTasks()
+  },[teamId,projectId])
 
   // fetch the projects from backend
   useEffect(()=>{
       async function fetchProjects() {
+      if (!isObjectId(teamId) || !isObjectId(projectId)) return;
       try{
         const response = await api.get(`/project/${teamId}/${projectId}`)
 
@@ -68,6 +88,7 @@ export default function ProjectDetailPage({
   // Fetch the team data
   useEffect(()=>{
     async function teamData() {
+      if (!isObjectId(teamId)) return;
       try{
       const response = await api.get(`/getDetails/${teamId}`)
       setTeam(response.data.team)
@@ -81,22 +102,12 @@ export default function ProjectDetailPage({
   },[teamId])
 
 
-  
-  const tasks: {
-    id: string;
-    title: string;
-    description: string;
-    assignee: string;
-    status: string;
-    priority: string;
-    dueDate: string;
-  }[] = [];
-
   const employees: { id: string; name: string }[] = [];
   const pending = 0;
   const inProgress = 0;
   const completed = 0;
   const progress = 0;
+
   const visibleTasks = tasks;
 
   function preventPlaceholderSubmit(event: FormEvent<HTMLFormElement>) {
@@ -137,6 +148,17 @@ export default function ProjectDetailPage({
 
 
   // Project is loading 
+  if (!isObjectId(teamId) || !isObjectId(projectId)) {
+    return (
+      <main className={styles.page}>
+        <p>Project link is missing a valid project or team ID.</p>
+        <Link href="/projects" className={styles.backLink}>
+          <ArrowLeft size={15} /> All projects
+        </Link>
+      </main>
+    );
+  }
+
   if(!project){
     return <p>Loading Projects...</p>
   }
@@ -278,13 +300,14 @@ export default function ProjectDetailPage({
         </div>
         <div className={styles.taskList}>
           {visibleTasks.length ? (
+
             visibleTasks.map((task) => (
-              <article className={styles.taskRow} key={task.id}>
+              <article className={styles.taskRow} key={task._id}>
                 <div className={styles.taskInfo}>
                   <span
-                    className={`${styles.taskCheck} ${task.status === "Completed" ? styles.checked : ""}`}
+                    className={`${styles.taskCheck} ${task.status === "completed" ? styles.checked : ""}`}
                   >
-                    {task.status === "Completed" && <Check size={14} />}
+                    {task.status === "completed" && <Check size={14} />}
                   </span>
                   <div>
                     <h3>{task.title}</h3>
@@ -292,7 +315,11 @@ export default function ProjectDetailPage({
                     <div className={styles.taskMeta}>
                       <span className={styles.assignee}>
                         <UsersRound size={12} />
-                        {task.assignee || "Unassigned"}
+
+                       {typeof task.assignedTo === "object" && task.assignedTo !== null
+                          ? task.assignedTo.name
+                          : "Unassigned"}
+                          
                       </span>
                       {task.dueDate && (
                         <span>
@@ -320,9 +347,9 @@ export default function ProjectDetailPage({
                   value={task.status}
                   onChange={() => {}}
                 >
-                  <option>To do</option>
-                  <option>In progress</option>
-                  <option>Completed</option>
+                  <option value="todo">To do</option>
+                  <option value="in-progress">In progress</option>
+                  <option value="completed">Completed</option>
                 </select>
               </article>
             ))

@@ -31,6 +31,7 @@ type TeamDetails = {
   membership: PopulatedMembership[];
 };
 type Dialog = "add" | "edit" | "delete" | null;
+const isObjectId = (value: string) => /^[a-f\d]{24}$/i.test(value);
 
 export default function TeamDetailPage({ teamId }: { teamId: string }) {
   const router = useRouter();
@@ -49,6 +50,12 @@ export default function TeamDetailPage({ teamId }: { teamId: string }) {
 
   // 	Fetch team details
   async function fetchDetails() {
+    if (!isObjectId(teamId)) {
+      setMessage("Invalid team ID.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await api.get(`/getDetails/${teamId}`);
       const nextDetails = response.data as TeamDetails;
