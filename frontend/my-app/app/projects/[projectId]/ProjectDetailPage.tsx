@@ -106,8 +106,30 @@ export default function ProjectDetailPage({
 
   function preventPlaceholderSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+  }
+
+  function createTask(){
+    event
+  }
 
 
+  async function updateProject(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    try{
+      const response =  await api.put(`/project/${teamId}/${projectId}`,
+        {
+          name: editName,
+          description: editDescription
+        }
+      )
+
+      setProject(response.data.project)
+      setEditModal(false); // Close the popup after updating
+    }catch(err){
+      console.log("Update error",err)
+    }
+    
   }
 
   if(!project){
@@ -137,7 +159,8 @@ export default function ProjectDetailPage({
           <div className={styles.managerActions}>
             <button
               className={styles.editButton}
-              onClick={() => {setEditModal(true)
+              onClick={() => {
+                setEditModal(true)
                 setEditName(project.name)
                 setEditDescription(project.description)
               }}
@@ -340,7 +363,7 @@ export default function ProjectDetailPage({
                 <X size={18} />
               </button>
             </div>
-            <form className={styles.form} onSubmit={preventPlaceholderSubmit}>
+            <form className={styles.form} onSubmit={createTask}>
               <label>
                 Task title
                 <input
@@ -430,14 +453,14 @@ export default function ProjectDetailPage({
                 <X size={18} />
               </button>
             </div>
-            <form className={styles.form} onSubmit={preventPlaceholderSubmit}>
+            <form className={styles.form} onSubmit={updateProject}>
               <label>
                 Project name
-                <input required value={project.name} onChange ={(e)=>setEditName(e.target.name)} />
+                <input required value={editName} onChange ={(e)=>setEditName(e.target.value)} />
               </label>
               <label>
                 Description
-                <textarea rows={3} value={project.description} onChange={(e)=>setEditDescription(e.target.value)} />
+                <textarea rows={3} value={editDescription} onChange={(e)=>setEditDescription(e.target.value)} />
               </label>
               <div className={styles.modalActions}>
                 <button
