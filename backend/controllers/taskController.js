@@ -254,7 +254,7 @@ const updateTask = async(req, res, next)=>{
 
     const updateTask = await TaskModel.findOneAndUpdate({_id:taskId, projectId:projectId},{
        updateData
-    }, { new: true, runValidators: true })
+    }, { returnDocument: 'after', runValidators: true })
 
     await redisClient.del(cacheKey)
 
@@ -334,7 +334,7 @@ const updateStatusByEmployee = async(req, res, next)=>{
     // Update Task Status
     const updateStatus = await TaskModel.findOneAndUpdate({_id:taskId, projectId: projectId},{
         status
-    },{new:true, runValidators: true})
+    },{returnDocument: 'after', runValidators: true})
 
     // BullMQ Flow 
     if(status === "completed" && task.status !== "completed"){

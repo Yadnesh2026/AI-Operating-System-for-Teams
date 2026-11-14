@@ -147,7 +147,8 @@ const getOneProjectDetails = async(req, res, next)=>{
     }
 }
 
-const updateProject = async(req, res)=>{
+// Update project Edit Btn
+const updateProject = async(req, res, next)=>{
     try{
     const {name, description} = req.body
     const teamId = req.params.teamId
@@ -184,7 +185,7 @@ const updateProject = async(req, res)=>{
     // Update Project
     const project = await Project.findOneAndUpdate({_id:projectId,teamId},{
         name, description
-    },{new: true, runValidators: true})
+    },{returnDocument: 'after', runValidators: true})
 
     // Redis deleion of old cache - Redis invalidation
     await redisClient.del(CacheKey)

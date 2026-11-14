@@ -300,7 +300,7 @@ const updateTeamInfo = async(req,res,next)=>{
         const updateTeam = await TeamModel.findByIdAndUpdate(teamId,{
             name,
             description
-        },{new: true, runValidators: true})
+        },{returnDocument: 'after', runValidators: true})
 
         await redisClient.del(cahcedKey)
 

@@ -69,8 +69,7 @@ const updateUser = async (req, res, next)=>{
             name,
             email
         },
-        {new: true}, //new: true tells Mongoose to return the updated document instead.
-        {runValidators: true}  ) 
+        {returnDocument: 'after', runValidators: true}  ) 
     
         if(!user){
         return res.status(400).json({

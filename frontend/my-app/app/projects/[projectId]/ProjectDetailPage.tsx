@@ -21,6 +21,7 @@ import styles from "./project-detail.module.css";
 import api from "../../lib/axios";
 import type { Project } from "../projectData";
 import type { Team } from "@/app/teams/teamData";
+import { useRouter } from "next/navigation";
 
 type TaskFilter = "All tasks" | "To do" | "In progress" | "Completed";
 const taskFilters: TaskFilter[] = [
@@ -47,6 +48,8 @@ export default function ProjectDetailPage({
   const [team, setTeam] = useState<Team | null>(null)
   const [editName, setEditName] = useState("")
   const [editDescription, setEditDescription] = useState("")
+
+  const router = useRouter();
 
   // fetch the projects from backend
   useEffect(()=>{
@@ -79,12 +82,6 @@ export default function ProjectDetailPage({
     teamData()
   },[teamId])
 
-  // Update the project name or description PUT
-  useEffect(()=>{
-    async function updateDetails() {
-
-    }
-  })
 
   
   const tasks: {
@@ -112,7 +109,7 @@ export default function ProjectDetailPage({
     event
   }
 
-
+  // Update Project edit btn 
   async function updateProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -123,18 +120,34 @@ export default function ProjectDetailPage({
           description: editDescription
         }
       )
-
       setProject(response.data.project)
       setEditModal(false); // Close the popup after updating
     }catch(err){
       console.log("Update error",err)
     }
-    
   }
 
+  // Delete Project
+  async function deleteProject() {
+
+    try{
+      const response = await api.delete(`/project/${teamId}/${projectId}`)
+      console.log("Project Deleted",response.data)
+
+      router.push("/projects")
+    }catch(err){
+      console.log("Delete Project",err)
+    }
+  }
+
+
+
+  // Project is loading 
   if(!project){
     return <p>Loading Projects...</p>
   }
+
+
   return (
     <main className={styles.page}>
       <Link href="/projects" className={styles.backLink}>
@@ -168,7 +181,7 @@ export default function ProjectDetailPage({
               <Pencil size={14} />
               Edit project
             </button>
-            <button className={styles.deleteButton} onClick={() => {}}>
+            <button className={styles.deleteButton} onClick={deleteProject}>
               <Trash2 size={14} />
               Delete
             </button>
