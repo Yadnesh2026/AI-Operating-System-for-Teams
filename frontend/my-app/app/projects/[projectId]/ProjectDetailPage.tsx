@@ -300,7 +300,6 @@ export default function ProjectDetailPage({
         </div>
         <div className={styles.taskList}>
           {visibleTasks.length ? (
-
             visibleTasks.map((task) => (
               <article className={styles.taskRow} key={task._id}>
                 <div className={styles.taskInfo}>
