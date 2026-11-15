@@ -12,8 +12,3 @@ export type Task = {
   dueDate?: string;
   priority?: "Low" | "Medium" | "High";
 };
-
-
-
-
-
