@@ -20,6 +20,8 @@ The goal is to evolve beyond traditional project management tools by introducing
 
 ## Key Features
 
+
+
 ### Authentication & Security
 - User registration and login.
 - JWT-based authentication.
