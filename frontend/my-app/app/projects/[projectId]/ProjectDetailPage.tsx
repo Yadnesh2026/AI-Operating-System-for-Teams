@@ -298,6 +298,9 @@ export default function ProjectDetailPage({
             <input placeholder="Search tasks" aria-label="Search tasks" />
           </label>
         </div>
+
+
+        
         <div className={styles.taskList}>
           {visibleTasks.length ? (
             visibleTasks.map((task) => (
