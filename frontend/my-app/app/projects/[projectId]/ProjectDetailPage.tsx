@@ -50,6 +50,10 @@ export default function ProjectDetailPage({
   const [editDescription, setEditDescription] = useState("")
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
+
   const router = useRouter();
 
   // Fetch the tasks
@@ -392,21 +396,27 @@ export default function ProjectDetailPage({
                 <X size={18} />
               </button>
             </div>
+
+
             <form className={styles.form} onSubmit={preventPlaceholderSubmit}>
               <label>
                 Task title
+
                 <input
                   required
                   autoFocus
-                  defaultValue=""
+                  value={taskTitle}
+                  onChange={(e)=> setTaskTitle(e.target.value)}
                   placeholder="What needs to get done?"
                 />
+
               </label>
               <label>
                 Description
                 <textarea
                   rows={3}
-                  defaultValue=""
+                  value={taskDescription}
+                  onChange={(e)=> setTaskDescription(e.target.value)}
                   placeholder="Add a few details about this task"
                 />
               </label>
@@ -435,6 +445,7 @@ export default function ProjectDetailPage({
                 Due date
                 <input type="date" defaultValue="" />
               </label>
+
               <div className={styles.modalActions}>
                 <button
                   type="button"
@@ -449,6 +460,8 @@ export default function ProjectDetailPage({
                 </button>
               </div>
             </form>
+
+
           </section>
         </div>
       )}
