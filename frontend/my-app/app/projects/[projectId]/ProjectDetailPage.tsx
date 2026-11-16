@@ -423,13 +423,15 @@ export default function ProjectDetailPage({
               <div className={styles.formRow}>
                 <label>
                   Assign employee
-                  <select defaultValue="">
+                  <select value={assignedTo} onChange={(e)=> setAssignedTo(e.target.value)}>
                     <option value="">Unassigned</option>
+
                     {employees.map((member) => (
-                      <option key={member.id} value={member.name}>
+                      <option key={member.id} value={member.id}>
                         {member.name}
                       </option>
                     ))}
+
                   </select>
                 </label>
                 <label>
