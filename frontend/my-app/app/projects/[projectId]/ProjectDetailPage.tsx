@@ -95,7 +95,7 @@ export default function ProjectDetailPage({
       if (!isObjectId(teamId)) return;
       try{
 
-      const response = await api.get(`/getDetails/${teamId}`)
+      const response = await api.get(`/getDetails/${teamId}`);
 
       console.log("Response data",response.data)
       setTeam(response.data.team)
