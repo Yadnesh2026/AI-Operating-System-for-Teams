@@ -54,6 +54,7 @@ export default function ProjectDetailPage({
   const [taskDescription, setTaskDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
 
+
   const router = useRouter();
 
   // Fetch the tasks
@@ -108,7 +109,9 @@ export default function ProjectDetailPage({
   },[teamId])
 
 
-  const employees: { id: string; name: string }[] = [];
+  // Create empty array to store your team Employee and show them in dropdown of assign
+  const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
+
   const pending = 0;
   const inProgress = 0;
   const completed = 0;
