@@ -94,13 +94,15 @@ export default function ProjectDetailPage({
     async function teamData() {
       if (!isObjectId(teamId)) return;
       try{
+
       const response = await api.get(`/getDetails/${teamId}`)
+
+      console.log("Response data",response.data)
       setTeam(response.data.team)
 
       }catch(err){
         console.log("Team data does not fetched",err)
       }
-      
     }
     teamData()
   },[teamId])
