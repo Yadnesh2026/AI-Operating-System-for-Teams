@@ -101,6 +101,16 @@ export default function ProjectDetailPage({
       console.log("Response data",response.data)
       setTeam(response.data.team)
 
+
+      // To add the employee in dropdown of while creating a task
+      const teamEmployee = response.data.membership.filter((member: any)=> member.role === "employee")
+      .map((member: any)=>({
+        id: member.userId._id,
+        name: member.userId.name
+      }));
+
+      setEmployees(teamEmployee)
+
       }catch(err){
         console.log("Team data does not fetched",err)
       }
