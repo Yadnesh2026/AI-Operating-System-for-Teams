@@ -362,7 +362,7 @@
 }
 .taskRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 74px 116px;
+  grid-template-columns: minmax(0, 1fr) 222px;
   align-items: center;
   gap: 13px;
   min-height: 91px;
@@ -448,21 +448,44 @@
   color: #7bd4a0;
 }
 .statusSelect {
-  height: 31px;
-  padding: 0 8px;
+  height: 37px;
+  padding: 0 10px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 7px;
   outline: 0;
   background: #14161d;
   color: #c6cad3;
   font: inherit;
-  font-size: 10px;
+  font-size: 11px;
 }
 .statusSelect:focus {
   border-color: rgba(239, 68, 68, 0.42);
 }
 .statusSelect option {
   background: #14161d;
+}
+.taskActions {
+  display: flex;
+  width: 222px;
+  align-items: center;
+  justify-self: end;
+  gap: 8px;
+}
+.taskActions .statusSelect {
+  min-width: 0;
+  flex: 1;
+}
+.taskActions .editButton {
+  min-height: 37px;
+  flex: none;
+  padding: 0 10px;
+  font-size: 12px;
+}
+.taskActions .deleteButton {
+  width: 37px;
+  min-height: 37px;
+  flex: none;
+  padding: 0;
 }
 .empty {
   padding: 38px 20px;
@@ -737,12 +760,15 @@
     font-size: 9px;
   }
   .taskRow {
-    grid-template-columns: minmax(0, 1fr) 59px;
+    grid-template-columns: minmax(0, 1fr);
     gap: 9px;
     padding: 12px 0;
   }
-  .taskRow .statusSelect {
+  .taskRow .taskActions {
     grid-column: 1/-1;
+    width: 100%;
+  }
+  .taskRow .statusSelect {
     width: 100%;
   }
   .taskInfo p {

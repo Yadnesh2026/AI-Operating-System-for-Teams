@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const {createTask, getAllTask,getTaskDetails,updateTask,updateStatusByEmployee,deleteTask} = require("../controllers/taskController")
+const {createTask, getAllTask,getTaskDetails,updateTask,updateStatusByEmployee,deleteTask, getMyTask} = require("../controllers/taskController")
 const authMiddleware = require("../middleware/authMiddleware")
 const {taskValidation,updateTaskValidation} = require("../validation/taskValidation")
 const validate = require("../middleware/validateMiddleware")
@@ -19,6 +19,9 @@ router.put("/task/:teamId/:projectId/:taskId",authMiddleware,validate(updateTask
 
 // Update status of task from employee
 router.patch("/task/:teamId/:projectId/:taskId/assign",authMiddleware,updateStatusByEmployee)
+
+// Get My Tasks
+router.get("/mytasks",authMiddleware, getMyTask)
 
 // Delete task
 router.delete("/task/:teamId/:projectId/:taskId",authMiddleware,deleteTask)

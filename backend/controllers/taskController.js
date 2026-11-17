@@ -208,7 +208,7 @@ const updateTask = async(req, res, next)=>{
         })
     }
 
-    const user = await teamMembership.findOne({userId: userId, team:teamId, role:"manager"})
+    const user = await teamMembership.findOne({userId: userId, teamId:teamId, role:"manager"})
     if(!user){
         return res.status(400).json({
             message: "User does not belongs to this team"
@@ -254,9 +254,11 @@ const updateTask = async(req, res, next)=>{
         updateData.assignedTo = assignedTo;
     }
 
-    const updateTask = await TaskModel.findOneAndUpdate({_id:taskId, projectId:projectId},{
-       updateData
-    }, { returnDocument: 'after', runValidators: true })
+    const updateTask = await TaskModel.findOneAndUpdate(
+        {_id: taskId, projectId},
+        updateData,
+        { returnDocument: 'after', runValidators: true }
+    ).populate("assignedTo", "name")
 
     await redisClient.del(cacheKey)
 
@@ -362,12 +364,41 @@ const updateStatusByEmployee = async(req, res, next)=>{
     }
 }
 
+const getMyTask = async(req, res, next)=>{
+    try{
+        const userId = req.user.id
+
+        const myTasks = await TaskModel.find({
+            assignedTo: userId
+        }).populate({
+            path: "projectId",
+            select: "name description teamId",
+            populate: { path: "teamId", select: "name" }
+        })
+
+        if(myTasks.length == 0){
+            return res.status(200).json({
+                message: "No Task Found",
+                tasks: []
+            })
+        }
+
+        res.status(200).json({
+            message: "My tasks fetched successfully",
+            tasks: myTasks
+        });
+    }catch(err){
+        next(err)
+    }
+}
+
 const deleteTask =async(req, res,next)=>{
     try{
     const userId=req.user.id
     const teamId = req.params.teamId
     const projectId= req.params.projectId
     const taskId= req.params.taskId
+    const cacheKey = `tasks:${teamId}:${projectId}`
 
     //Check if team consist or not
     const team = await TeamModel.findById(teamId)
@@ -403,6 +434,7 @@ const deleteTask =async(req, res,next)=>{
 
     // Delete Task
     const deleteT = await TaskModel.findOneAndDelete({_id: taskId , projectId: projectId})
+    await redisClient.del(cacheKey)
 
     res.status(200).json({
         message: "Task deleted",
@@ -418,4 +450,4 @@ const deleteTask =async(req, res,next)=>{
 
 
 
-module.exports ={ createTask,getAllTask,getTaskDetails, updateTask, updateStatusByEmployee,deleteTask}
+module.exports ={ createTask,getAllTask,getTaskDetails, updateTask, updateStatusByEmployee,getMyTask,deleteTask}

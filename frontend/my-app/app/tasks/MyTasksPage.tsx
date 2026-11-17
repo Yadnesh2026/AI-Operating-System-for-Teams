@@ -10,29 +10,76 @@ import {
   UserRound,
 } from "lucide-react";
 import styles from "./tasks.module.css";
+import { useEffect, useState } from "react";
+import api from "../lib/axios";
 
 type Filter = "All" | "To do" | "In progress" | "Completed";
+
 type AssignedTask = {
-  id: string;
+  _id: string;
   title: string;
   description: string;
-  status: "To do" | "In progress" | "Completed";
-  dueDate: string;
-  projectId: string;
-  projectName: string;
+  status: "todo" | "in-progress" | "completed";
+  projectId: {
+    _id: string;
+    name: string;
+    description: string;
+    teamId?: {
+      _id: string;
+      name: string;
+    };
+  };
   assignedBy: string;
 };
+
 const filters: Filter[] = ["All", "To do", "In progress", "Completed"];
 const labelStatus: Record<AssignedTask["status"], string> = {
-  "To do": "To Do",
-  "In progress": "In Progress",
-  Completed: "Completed",
+  todo: "To Do",
+  "in-progress": "In Progress",
+  completed: "Completed",
 };
 
 
 
 export default function MyTasksPage() {
-  const tasks: AssignedTask[] = [];
+  const [tasks, setTasks] = useState<AssignedTask[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState<Filter>("All");
+
+  const todo = tasks.filter((task) => task.status === "todo").length;
+
+  const completed = tasks.filter((task) => task.status === "completed").length;
+
+  const inProgress = tasks.filter(
+    (task) => task.status === "in-progress",
+  ).length;
+
+  useEffect(()=>{
+    async function fetchMyTasks() {
+      try{
+        const response = await api.get(`/mytasks`);
+
+        setTasks(response.data.tasks ?? [])
+
+        console.log("my Tasks",response.data.tasks)
+
+      }catch(err){
+        console.log("Fetch Tasks error",err)
+      }
+    }
+
+    void fetchMyTasks();
+  }, []);
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  const filteredTasks = tasks.filter((task) =>
+    `${task.title} ${task.description} ${task.projectId.name} ${task.projectId.teamId?.name ?? ""}`
+      .toLowerCase()
+      .includes(normalizedSearch),
+  );
+
+  const 
 
   return (
     <main className={styles.page}>
@@ -44,7 +91,12 @@ export default function MyTasksPage() {
         </div>
         <label className={styles.search}>
           <Search size={17} />
-          <input placeholder="Search tasks" aria-label="Search tasks" />
+          <input
+            placeholder="Search tasks, projects, or teams"
+            aria-label="Search tasks, projects, or teams"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
         </label>
       </header>
 
@@ -63,7 +115,7 @@ export default function MyTasksPage() {
             <Clock3 size={19} />
           </span>
           <div>
-            <b>0</b>
+            <b>{todo}</b>
             <span>To Do</span>
           </div>
         </article>
@@ -72,7 +124,7 @@ export default function MyTasksPage() {
             <ListTodo size={19} />
           </span>
           <div>
-            <b>0</b>
+            <b>{inProgress}</b>
             <span>In Progress</span>
           </div>
         </article>
@@ -81,7 +133,7 @@ export default function MyTasksPage() {
             <Check size={19} />
           </span>
           <div>
-            <b>0</b>
+            <b>{completed}</b>
             <span>Completed</span>
           </div>
         </article>
@@ -118,21 +170,21 @@ export default function MyTasksPage() {
             ))}
           </div>
           <span className={styles.resultCount}>
-            {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+            {filteredTasks.length} {filteredTasks.length === 1 ? "task" : "tasks"}
           </span>
         </div>
         <div className={styles.taskList}>
-          {tasks.length ? (
-            tasks.map((task) => (
+          {filteredTasks.length ? (
+            filteredTasks.map((task) => (
               <article
                 className={styles.taskRow}
-                key={`${task.projectId}-${task.id}`}
+                key={`${task.projectId._id}-${task._id}`}
               >
                 <div className={styles.taskMain}>
                   <span
-                    className={`${styles.taskCheck} ${task.status === "Completed" ? styles.checked : ""}`}
+                    className={`${styles.taskCheck} ${task.status === "completed" ? styles.checked : ""}`}
                   >
-                    {task.status === "Completed" && <Check size={14} />}
+                    {task.status === "completed" && <Check size={14} />}
                   </span>
                   <div className={styles.taskText}>
                     <h3>{task.title}</h3>
@@ -140,8 +192,14 @@ export default function MyTasksPage() {
                     <div className={styles.taskDetails}>
                       <span className={styles.projectLabel}>
                         <span className={styles.projectDot} />
-                        {task.projectName}
+                        {task.projectId.name}
                       </span>
+                      {task.projectId.teamId?.name && (
+                        <span>
+                          <span className={styles.projectDot} />
+                          {task.projectId.teamId.name}
+                        </span>
+                      )}
                       <span>
                         <UserRound size={13} />
                         Assigned by {task.assignedBy}
@@ -150,18 +208,13 @@ export default function MyTasksPage() {
                   </div>
                 </div>
                 <span
-                  className={`${styles.status} ${task.status === "Completed" ? styles.completed : task.status === "In progress" ? styles.inProgress : ""}`}
+                  className={`${styles.status} ${task.status === "completed" ? styles.completed : task.status === "in-progress" ? styles.inProgress : ""}`}
                 >
                   {labelStatus[task.status]}
                 </span>
                 <span className={styles.dueDate}>
                   <CalendarDays size={14} />
-                  {task.dueDate
-                    ? new Date(`${task.dueDate}T00:00:00`).toLocaleDateString(
-                        "en",
-                        { month: "short", day: "numeric", year: "numeric" },
-                      )
-                    : "No due date"}
+                  No due date
                 </span>
                 <select
                   className={styles.statusSelect}
@@ -169,9 +222,9 @@ export default function MyTasksPage() {
                   value={task.status}
                   onChange={() => {}}
                 >
-                  <option>To do</option>
-                  <option>In progress</option>
-                  <option>Completed</option>
+                  <option value="todo">To do</option>
+                  <option value="in-progress">In progress</option>
+                  <option value="completed">Completed</option>
                 </select>
               </article>
             ))
@@ -185,15 +238,11 @@ export default function MyTasksPage() {
               </h3>
               <p>
                 {tasks.length
-                  ? "Try another search or status filter."
+                  ? "Try another search term."
                   : "Tasks assigned to your profile will show up here."}
               </p>
               {tasks.length > 0 && (
-                <button
-                  onClick={() => {}}
-                >
-                  Clear filters
-                </button>
+                <button onClick={() => setSearchTerm("")}>Clear search</button>
               )}
             </div>
           )}

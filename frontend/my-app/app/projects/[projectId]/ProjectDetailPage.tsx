@@ -54,6 +54,15 @@ export default function ProjectDetailPage({
   const [taskDescription, setTaskDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
 
+  // Update Task
+const [editTaskId, setEditTaskId] = useState("");
+const [editTaskTitle, setEditTaskTitle] = useState("");
+const [editTaskDescription, setEditTaskDescription] = useState("");
+const [editTaskAssignedTo, setEditTaskAssignedTo] = useState("");
+const [editTaskPriority, setEditTaskPriority] = useState<"Low" | "Medium" | "High">("Medium");
+const [editTaskDueDate, setEditTaskDueDate] = useState("");
+const [editTaskModal, setEditTaskModal] = useState(false);
+
 
   const router = useRouter();
 
@@ -118,6 +127,85 @@ export default function ProjectDetailPage({
     teamData()
   },[teamId])
 
+  // Create an task Backend Integration
+  async function createTask(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    try{
+      const response = await api.post(`/task/${teamId}/${projectId}`,{
+        title: taskTitle,
+        description: taskDescription,
+        assignedTo: assignedTo
+      })
+
+      setTasks((prevTasks)=>[  // prevTasks means the previous/current value of the tasks state.
+        ...prevTasks,response.data.createTask
+      ]);
+
+      setTaskTitle("")
+      setTaskDescription("")
+      setAssignedTo("")
+      setTaskModal(false)
+
+    }catch(err){
+      console.log("Create Task Error",err)
+    }
+  }
+
+  // Update status of employee task
+  async function updateTaskStatus(taskId: string, status: string) {
+    try{
+      const response = await api.patch(`/task/${teamId}/${projectId}/${taskId}/assign`,
+      {status}
+    );
+    setTasks((prevTasks)=>
+      prevTasks.map((task)=>
+        task._id === taskId ? response.data.updateStatus : task
+      ));
+
+    console.log(response.data)
+    }catch(err){
+      console.log("Update status error",err)
+    }
+  }
+
+  // Update Task edit
+  async function updateTask(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    try{
+      const response = await api.put(`/task/${teamId}/${projectId}/${editTaskId}`,{
+        title: editTaskTitle,
+        description: editTaskDescription,
+        assignedTo: editTaskAssignedTo
+      })
+
+      setTasks((prevTasks)=>  //If the task ID matches, replace it with the updated task. Otherwise, keep the existing task.
+        prevTasks.map((task)=>
+            task._id === editTaskId ? response.data.updateTask : task))
+
+      console.log(response.data)
+
+      setEditTaskModal(false)
+    }catch(err){
+      console.log("Update task error",err)
+    }
+  }
+
+  //Delete task
+  async function deleteTask(taskId: string){
+    try{
+      await api.delete(`/task/${teamId}/${projectId}/${taskId}`)
+
+      setTasks((currentTasks) =>
+        currentTasks.filter((task) => task._id !== taskId),
+      );
+
+    }catch(err){
+      console.log("Delete Task",err)
+    }
+  }
+
+
 
   // Create empty array to store your team Employee and show them in dropdown of assign
   const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
@@ -128,10 +216,6 @@ export default function ProjectDetailPage({
   const progress = 0;
 
   const visibleTasks = tasks;
-
-  function preventPlaceholderSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-  }
 
   // Update Project edit btn 
   async function updateProject(event: FormEvent<HTMLFormElement>) {
@@ -323,11 +407,6 @@ export default function ProjectDetailPage({
             visibleTasks.map((task) => (
               <article className={styles.taskRow} key={task._id}>
                 <div className={styles.taskInfo}>
-                  <span
-                    className={`${styles.taskCheck} ${task.status === "completed" ? styles.checked : ""}`}
-                  >
-                    {task.status === "completed" && <Check size={14} />}
-                  </span>
                   <div>
                     <h3>{task.title}</h3>
                     <p>{task.description || "No description provided."}</p>
@@ -355,21 +434,44 @@ export default function ProjectDetailPage({
                     </div>
                   </div>
                 </div>
-                <span
-                  className={`${styles.priority} ${styles[`priority${task.priority}`]}`}
-                >
-                  {task.priority}
-                </span>
-                <select
-                  className={styles.statusSelect}
-                  aria-label={`Status for ${task.title}`}
-                  value={task.status}
-                  onChange={() => {}}
-                >
-                  <option value="todo">To do</option>
-                  <option value="in-progress">In progress</option>
-                  <option value="completed">Completed</option>
-                </select>
+                <div className={styles.taskActions}>
+                  <select
+                    className={styles.statusSelect}
+                    aria-label={`Status for ${task.title}`}
+                    value={task.status}
+                    onChange={(e) => updateTaskStatus(task._id, e.target.value)}
+                  >
+                    <option value="todo">To do</option>
+                    <option value="in-progress">In progress</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                  <button
+                    type="button"
+                    className={styles.editButton}
+                    aria-label={`Edit ${task.title}`}
+                    onClick={() => {
+                      setEditTaskId(task._id);
+                      setEditTaskTitle(task.title);
+                      setEditTaskDescription(task.description);
+                      setEditTaskAssignedTo(task.assignedTo?._id ?? "");
+                      setEditTaskPriority(task.priority ?? "Medium");
+                      setEditTaskDueDate(task.dueDate ?? "");
+                      setEditTaskModal(true);
+                    }}
+                  >
+                    <Pencil size={16} />
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    aria-label={`Delete ${task.title}`}
+                    title="Delete task"
+                    onClick={() => deleteTask(task._id)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </article>
             ))
           ) : (
@@ -413,7 +515,7 @@ export default function ProjectDetailPage({
             </div>
 
 
-            <form className={styles.form} onSubmit={preventPlaceholderSubmit}>
+            <form className={styles.form} onSubmit={createTask}>
               <label>
                 Task title
 
@@ -479,6 +581,114 @@ export default function ProjectDetailPage({
             </form>
 
 
+          </section>
+        </div>
+      )}
+
+      {editTaskModal && (
+        <div
+          className={styles.backdrop}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setEditTaskModal(false);
+          }}
+        >
+          <section
+            className={styles.modal}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-task-title"
+          >
+            <div className={styles.modalHeader}>
+              <div>
+                <span className={styles.modalIcon}>
+                  <Pencil size={17} />
+                </span>
+                <h2 id="edit-task-title">Edit task</h2>
+                <p>Update the task details.</p>
+              </div>
+              <button
+                type="button"
+                className={styles.closeButton}
+                aria-label="Close"
+                onClick={() => setEditTaskModal(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <form
+              className={styles.form}
+              onSubmit={updateTask}
+              data-task-id={editTaskId}
+            >
+              <label>
+                Task title
+                <input
+                  required
+                  autoFocus
+                  value={editTaskTitle}
+                  onChange={(event) => setEditTaskTitle(event.target.value)}
+                  placeholder="What needs to get done?"
+                />
+              </label>
+              <label>
+                Description
+                <textarea
+                  rows={3}
+                  value={editTaskDescription}
+                  onChange={(event) => setEditTaskDescription(event.target.value)}
+                  placeholder="Add a few details about this task"
+                />
+              </label>
+              <div className={styles.formRow}>
+                <label>
+                  Assign employee
+                  <select
+                    value={editTaskAssignedTo}
+                    onChange={(event) => setEditTaskAssignedTo(event.target.value)}
+                  >
+                    <option value="">Unassigned</option>
+                    {employees.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Priority
+                  <select
+                    value={editTaskPriority}
+                    onChange={(event) =>
+                      setEditTaskPriority(event.target.value as "Low" | "Medium" | "High")
+                    }
+                  >
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                  </select>
+                </label>
+              </div>
+              <label>
+                Due date
+                <input
+                  type="date"
+                  value={editTaskDueDate}
+                  onChange={(event) => setEditTaskDueDate(event.target.value)}
+                />
+              </label>
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={() => setEditTaskModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className={styles.createButton}>
+                  Save changes
+                </button>
+              </div>
+            </form>
           </section>
         </div>
       )}
