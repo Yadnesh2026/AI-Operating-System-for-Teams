@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   ArrowRight,
-  CalendarDays,
   Check,
   FolderKanban,
   ListTodo,
@@ -138,7 +137,6 @@ export default function ProjectsPage() {
     <main className={styles.page}>
       <div className={styles.pageHeading}>
         <div>
-          <span className={styles.eyebrow}>Workspace</span>
           <h1>Projects</h1>
           <p>
             Plan the work, track progress, and keep every team moving forward.
@@ -270,7 +268,6 @@ export default function ProjectsPage() {
                   {project.tasks} tasks
                 </span>
                 <span>
-                  <CalendarDays size={14} />
                   Created {project.createdAt}
                 </span>
               </div>

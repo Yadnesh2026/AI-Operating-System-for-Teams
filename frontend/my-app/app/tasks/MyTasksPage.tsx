@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  CalendarDays,
   Check,
   Clock3,
   ClipboardList,
@@ -33,6 +32,7 @@ type AssignedTask = {
 };
 
 const filters: Filter[] = ["All", "To do", "In progress", "Completed"];
+
 const labelStatus: Record<AssignedTask["status"], string> = {
   todo: "To Do",
   "in-progress": "In Progress",
@@ -79,13 +79,49 @@ export default function MyTasksPage() {
       .includes(normalizedSearch),
   );
 
-  const 
+  // All Tasks btns implementation
+  const visibleTask = filteredTasks.filter((task)=>{
+    if(activeFilter === "All") return true;
+    if(activeFilter === "To do") return task.status  === "todo";
+    if(activeFilter === "In progress") return task.status === "in-progress";
+    if(activeFilter === "Completed") return task.status === "completed";
+    return false;
+
+  })
+
+  async function updateStatus(
+    task: AssignedTask,
+    newStatus: AssignedTask["status"],
+  ) {
+    const teamId = task.projectId.teamId?._id;
+
+    if (!teamId) {
+      console.error("This task has no team ID");
+      return;
+    }
+
+    try {
+      const response = await api.patch(
+        `/task/${teamId}/${task.projectId._id}/${task._id}/assign`,
+        { status: newStatus },
+      );
+
+      setTasks((currentTasks) =>
+        currentTasks.map((item) =>
+          item._id === task._id
+            ? { ...item, status: response.data.updateStatus.status }
+            : item,
+        ),
+      );
+    } catch (error) {
+      console.error("Could not update task status", error);
+    }
+  }
 
   return (
     <main className={styles.page}>
       <header className={styles.pageHeading}>
         <div>
-          <span className={styles.eyebrow}>Workspace</span>
           <h1>My Tasks</h1>
           <p>Track and manage your assigned work.</p>
         </div>
@@ -156,9 +192,9 @@ export default function MyTasksPage() {
               <button
                 key={item}
                 role="tab"
-                aria-selected={item === "All"}
-                className={item === "All" ? styles.activeFilter : ""}
-                onClick={() => {}}
+                aria-selected={item === activeFilter}
+                className={item === activeFilter ? styles.activeFilter : ""}
+                onClick={() => setActiveFilter(item)}
               >
                 {item === "To do"
                   ? "To Do"
@@ -170,12 +206,14 @@ export default function MyTasksPage() {
             ))}
           </div>
           <span className={styles.resultCount}>
-            {filteredTasks.length} {filteredTasks.length === 1 ? "task" : "tasks"}
+            {visibleTask.length} {visibleTask.length === 1 ? "task" : "tasks"}
           </span>
         </div>
         <div className={styles.taskList}>
-          {filteredTasks.length ? (
-            filteredTasks.map((task) => (
+
+          {visibleTask.length ? (
+
+            visibleTask.map((task) => (
               <article
                 className={styles.taskRow}
                 key={`${task.projectId._id}-${task._id}`}
@@ -213,14 +251,18 @@ export default function MyTasksPage() {
                   {labelStatus[task.status]}
                 </span>
                 <span className={styles.dueDate}>
-                  <CalendarDays size={14} />
                   No due date
                 </span>
                 <select
                   className={styles.statusSelect}
                   aria-label={`Update status for ${task.title}`}
                   value={task.status}
-                  onChange={() => {}}
+                  onChange={(event) =>
+                    updateStatus(
+                      task,
+                      event.target.value as AssignedTask["status"],
+                    )
+                  }
                 >
                   <option value="todo">To do</option>
                   <option value="in-progress">In progress</option>

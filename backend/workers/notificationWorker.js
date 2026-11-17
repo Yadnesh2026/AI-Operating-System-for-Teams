@@ -1,17 +1,26 @@
 // notificationWorker.js — processes jobs in the background.
 
 const { Worker} = require("bullmq")
+const NotificationModel = require("../../backend/model/NotificationModel")
 
 const notificationWorker = new Worker(
     "notification",  // Name of the queue to listen to
     async (job)=>{   // The job received by the worker
 
         if(job.name == "task-assigned"){
-            console.log("Task Assinged notification")
+            await NotificationModel.create({
+                userId: job.data.assignedTo,
+                message: "You have been assigned a new task"
+            })
         }
 
         if(job.name === "task-completed"){
-            console.log("Task completed notification")
+            await NotificationModel.create({
+                userId: job.data.assignedTo,
+                message: "Your task hsa been completed"
+            })
+
+            console.log("Notification saved successfully")
         }
 
         if(job.name === "employee-add"){
@@ -21,7 +30,6 @@ const notificationWorker = new Worker(
         // if error occue
         if(job.name === "test-failed"){
             console.log("Testing failed cases")
-
             throw new Error("Something went wrong")
         }
 

@@ -3,7 +3,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
-  CalendarDays,
   Check,
   ClipboardList,
   Clock3,
@@ -421,7 +420,6 @@ const [editTaskModal, setEditTaskModal] = useState(false);
                       </span>
                       {task.dueDate && (
                         <span>
-                          <CalendarDays size={12} />
                           Due{" "}
                           {new Date(
                             `${task.dueDate}T00:00:00`,

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 import {
   ArrowLeft,
-  CalendarDays,
   Check,
   Pencil,
   Shield,
@@ -287,7 +286,7 @@ export default function TeamDetailPage({ teamId }: { teamId: string }) {
             )}
           </div>
           <div className={styles.createdLine}>
-            <CalendarDays size={15} /> Team created{" "}
+            Team created{" "}
             {new Date(team.createdAt).toLocaleDateString()}
           </div>
           <div className={styles.managerNote}>

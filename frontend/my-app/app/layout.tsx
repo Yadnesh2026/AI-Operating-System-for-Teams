@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RedSun — Intelligent Solutions Powered by AI",
+  title: "RedSun - Intelligent Solutions Powered by AI",
   description:
     "Gain clarity and harness the power of your data with RedSun. Our intuitive dashboard provides real-time analytics.",
 };

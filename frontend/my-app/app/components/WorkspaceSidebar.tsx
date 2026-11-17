@@ -8,7 +8,6 @@ import {
   Settings2,
   UsersRound,
   ChevronDown,
-  CircleHelp,
   ArrowRight,
 } from "lucide-react";
 import styles from "../dashboard/dashboard.module.css";

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
-  CalendarDays,
   Check,
   Plus,
   Search,
@@ -89,7 +88,6 @@ export default function TeamListPage() {
         {/* Page title and button that opens the create-team form. */}
         <div className={styles.pageHeading}>
           <div>
-            <span className={styles.eyebrow}>Workspace</span>
             <h1>My Teams</h1>
             <p>
               Manage your teams and collaborate with the people moving work
@@ -162,7 +160,6 @@ export default function TeamListPage() {
                 </div>
                 <div className={styles.cardMeta}>
                   <span className={styles.metaItem}>
-                    <CalendarDays size={14} />
                     Created {new Date(team.createdAt).toLocaleDateString()}
                   </span>
                 </div>
