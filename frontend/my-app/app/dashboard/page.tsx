@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 // Dashboard overview and workspace navigation.
 import Link from "next/link";
@@ -18,7 +18,6 @@ import {
 import styles from "./dashboard.module.css";
 import api from "../lib/axios";
 import { useEffect, useState } from "react";
-
 
 // State type of all the components
 type Team = {
@@ -50,60 +49,79 @@ type TeamMembership = {
   };
 };
 
-
-
-
-
+type Notification = {
+  _id: string;
+  message: string;
+  createdAt: string;
+};
 
 export default function DashboardPage() {
+  // State of team Projects and tasks
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // State of team Projects and tasks 
-const [teams, setTeams] = useState<Team[]>([]);
-const [projects, setProjects] = useState<Project[]>([]);
-const [tasks, setTasks] = useState<Task[]>([]);
-const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState<Notification[]>([]);
 
+  // Fetch all the team Project and tasks
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        // Fetch all teams
+        const teamResponse = await api.get("/getAllTeams");
+        const teamData = teamResponse.data.teams ?? [];
 
-// Fetch all the team Project and tasks
-useEffect(()=>{
-  async function fetchDashboardData() {
-    try{
-      // Fetch all teams
-      const teamResponse = await api.get("/getAllTeams");
-      const teamData = teamResponse.data.teams ?? [];
+        setTeams(teamData);
 
-      setTeams(teamData)
+        // Fetch my tasks
+        const taskResponse = await api.get("/mytasks");
+        setTasks(taskResponse.data.tasks ?? []);
 
-      // Fetch my tasks
-      const taskResponse = await api.get("/mytasks");
-      setTasks(taskResponse.data.tasks ?? [])
+        // Fetch project for each team
+        const projectResponse = await Promise.all(
+          //Promise.all() waits until all those API requests finish.
+          teamData.map((team: TeamMembership) => {
+            return api.get(`/project/${team.teamId._id}`);
+          }),
+        );
 
-      // Fetch project for each team
-      const projectResponse = await Promise.all(  //Promise.all() waits until all those API requests finish.
-        teamData.map((team: TeamMembership)=>{
-          api.get(`/project/${team.teamId._id}`)
-        })
-      )
+        console.log("Project Responses:", projectResponse);
 
-      console.log("Project Responses:", projectResponses)
-      
-      // All the projects comes from all the teams
-      const allProjects = projectResponse.flatMap(
-        (response)=> response.data.projects ?? []
-      )
+        // All the projects comes from all the teams
+        const allProjects = projectResponse.flatMap(
+          (response) => response.data.projects ?? [],
+        );
 
-      setProjects(allProjects)
+        setProjects(allProjects);
 
+        // Notfication API
+        const notificationResponse = await api.get("/notifications");
 
-    }catch(err){
-      console.log("Error while fetching",err)
-    }finally{
-      setLoading(false);
+        setNotification(notificationResponse.data.notifications ?? []);
+      } catch (err) {
+        console.log("Error while fetching", err);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
-  fetchDashboardData()
-},[])
+    fetchDashboardData();
+  }, []);
+
+  // Calcuate the tasks and data total teams
+  const totalTeams = teams.length;
+
+  // Total Active projects
+  const totalProjects = projects.length;
+
+  // Open Tasks
+  const openTasks = tasks.filter((task) => task.status !== "completed").length;
+
+  // Completed tasks
+  const completedTasks = tasks.filter(
+    (task) => task.status == "completed",
+  ).length;
 
   return (
     <main className={styles.shell}>
@@ -152,9 +170,13 @@ useEffect(()=>{
                   <UsersRound size={17} />
                 </span>
               </div>
-              <div className={styles.statValue}>0</div>
-              <div className={styles.statFoot}>No team data yet</div>
+              <div className={styles.statValue}>{totalTeams}</div>
+
+              <div className={styles.statFoot}>
+                {totalTeams > 0 ? `Teams Available` : "No Teams Available"}
+              </div>
             </article>
+
             <article className={styles.statCard}>
               <div className={styles.statTop}>
                 <span>Active projects</span>
@@ -162,8 +184,12 @@ useEffect(()=>{
                   <FolderKanban size={17} />
                 </span>
               </div>
-              <div className={styles.statValue}>0</div>
-              <div className={styles.statFoot}>No project data yet</div>
+              <div className={styles.statValue}>{totalProjects}</div>
+              <div className={styles.statFoot}>
+                {projects.length > 0
+                  ? "Projects Available"
+                  : "No Projects Available"}
+              </div>
             </article>
             <article className={styles.statCard}>
               <div className={styles.statTop}>
@@ -172,8 +198,12 @@ useEffect(()=>{
                   <ClipboardList size={17} />
                 </span>
               </div>
-              <div className={styles.statValue}>0</div>
-              <div className={styles.statFoot}>No task data yet</div>
+              <div className={styles.statValue}>{openTasks}</div>
+              <div className={styles.statFoot}>
+                {tasks.length > 0
+                  ? "Tasks Available"
+                  : "No Open Task Available"}
+              </div>
             </article>
             <article className={styles.statCard}>
               <div className={styles.statTop}>
@@ -182,8 +212,10 @@ useEffect(()=>{
                   <Check size={17} />
                 </span>
               </div>
-              <div className={styles.statValue}>0</div>
-              <div className={styles.statFoot}>No completion data yet</div>
+              <div className={styles.statValue}>{completedTasks}</div>
+              <div className={styles.statFoot}>
+                {completedTasks > 0 ? "Tasks Available" : "No Tasks Available"}
+              </div>
             </article>
           </section>
 
@@ -232,10 +264,23 @@ useEffect(()=>{
                   <MoreHorizontal size={18} />
                 </button>
               </div>
+
               <div className={styles.activityList}>
-                <div className={styles.dashboardEmpty}>
-                  No recent activity yet.
-                </div>
+                {notification.length > 0 ? (
+                  notification.slice(0, 4).map((notification) => (
+                    <div key={notification._id}>
+                      <p>{notification.message}</p>
+
+                      <small>
+                        {new Date(notification.createdAt).toLocaleString()}
+                      </small>
+                    </div>
+                  ))
+                ) : (
+                  <div className={styles.dashboardEmpty}>
+                    No recent activity yet.
+                  </div>
+                )}
               </div>
               <Link
                 className={`${styles.textLink} ${styles.activityLink}`}
@@ -255,17 +300,19 @@ useEffect(()=>{
                   All projects <ArrowRight size={14} />
                 </Link>
               </div>
-              <div className={styles.projectTable}>
-                <div className={styles.projectHeading}>
-                  <span>PROJECT</span>
-                  <span>PROGRESS</span>
-                  <span>DUE DATE</span>
-                  <span />
-                </div>
+
+              {projects.length > 0 ? (
+                projects.slice(0, 4).map((project) => (
+                  <div key={project._id}>
+                    <h3>{project.name}</h3>
+                    <p>{project.description}</p>
+                  </div>
+                ))
+              ) : (
                 <div className={styles.dashboardEmpty}>
                   No projects available.
                 </div>
-              </div>
+              )}
             </section>
 
             <section className={styles.notificationCard}>
