@@ -42,6 +42,14 @@ type Task = {
   };
 };
 
+type TeamMembership = {
+  _id: string;
+  teamId: {
+    _id: string;
+    name: string;
+  };
+};
+
 
 
 
@@ -72,11 +80,13 @@ useEffect(()=>{
 
       // Fetch project for each team
       const projectResponse = await Promise.all(  //Promise.all() waits until all those API requests finish.
-        teamData.map((team: Team)=>{
-          api.get(`/project/${team._id}`)
+        teamData.map((team: TeamMembership)=>{
+          api.get(`/project/${team.teamId._id}`)
         })
       )
 
+      console.log("Project Responses:", projectResponses)
+      
       // All the projects comes from all the teams
       const allProjects = projectResponse.flatMap(
         (response)=> response.data.projects ?? []
