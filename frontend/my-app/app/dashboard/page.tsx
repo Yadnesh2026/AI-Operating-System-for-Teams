@@ -62,7 +62,7 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [notification, setNotification] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   // Fetch all the team Project and tasks
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function DashboardPage() {
         // Notfication API
         const notificationResponse = await api.get("/notifications");
 
-        setNotification(notificationResponse.data.notifications ?? []);
+        setNotifications(notificationResponse.data.notifications ?? []);
       } catch (err) {
         console.log("Error while fetching", err);
       } finally {
@@ -123,6 +123,13 @@ export default function DashboardPage() {
     (task) => task.status == "completed",
   ).length;
 
+  // todo tasks
+  const todoTasks = tasks.filter((task)=> task.status == "todo").length
+
+  // in Progrees tasks
+  const inProgressTasks = tasks.filter((task)=> task.status == "in-progress").length
+ 
+
   return (
     <main className={styles.shell}>
       <WorkspaceSidebar active="overview" />
@@ -135,7 +142,6 @@ export default function DashboardPage() {
             <button className={styles.search}>
               <Search size={16} />
               <span>Search anything...</span>
-              <kbd>⌘ K</kbd>
             </button>
             <Link
               className={styles.iconButton}
@@ -233,21 +239,31 @@ export default function DashboardPage() {
               <div className={styles.taskSummary}>
                 <div className={styles.taskMetric}>
                   <span className={`${styles.taskDot} ${styles.dotOrange}`} />{" "}
-                  <b>0</b> <span>To do</span>
+                  <b>{todoTasks}</b> <span>To do</span>
                 </div>
                 <div className={styles.taskMetric}>
                   <span className={`${styles.taskDot} ${styles.dotPurple}`} />{" "}
-                  <b>0</b> <span>In progress</span>
+                  <b>{inProgressTasks}</b> <span>In progress</span>
                 </div>
                 <div className={styles.taskMetric}>
                   <span className={`${styles.taskDot} ${styles.dotGreen}`} />{" "}
-                  <b>0</b> <span>Completed</span>
+                  <b>{completedTasks}</b> <span>Completed</span>
                 </div>
               </div>
               <div className={styles.taskList}>
-                <div className={styles.dashboardEmpty}>
-                  No tasks assigned yet.
-                </div>
+                {tasks.length > 0 ? (
+                  tasks.slice(0, 4).map((task) => (
+                    <div key={task._id}>
+                      <h3>{task.title}</h3>
+                      <p>{task.projectId?.name}</p>
+                      <span>{task.status}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className={styles.dashboardEmpty}>
+                    No tasks assigned yet.
+                  </div>
+                )}
               </div>
             </section>
 
@@ -266,13 +282,13 @@ export default function DashboardPage() {
               </div>
 
               <div className={styles.activityList}>
-                {notification.length > 0 ? (
-                  notification.slice(0, 4).map((notification) => (
-                    <div key={notification._id}>
-                      <p>{notification.message}</p>
+                {notifications.length > 0 ? (
+                  notifications.slice(0, 4).map((item) => (
+                    <div key={item._id}>
+                      <p>{item.message}</p>
 
                       <small>
-                        {new Date(notification.createdAt).toLocaleString()}
+                        {new Date(item.createdAt).toLocaleString()}
                       </small>
                     </div>
                   ))
@@ -321,8 +337,17 @@ export default function DashboardPage() {
               </div>
               <div>
                 <span className={styles.noticeLabel}>NOTIFICATIONS</span>
-                <h2>You’re all caught up!</h2>
-                <p>New updates from your teams will show up here.</p>
+                <h2>
+                  {notifications.length > 0
+                    ? `${notifications.length} new notifications`
+                    : "You're all caught up!"}
+                </h2>
+
+                <p>
+                  {notifications.length > 0
+                    ? "You have new updates from your workspace."
+                    : "New updates from your teams will show up here."}
+                </p>
                 <Link href="/notifications">
                   Go to notifications <ArrowRight size={14} />
                 </Link>

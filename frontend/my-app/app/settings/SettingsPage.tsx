@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { Check, ChevronRight, Laptop, LockKeyhole, Monitor, Shield, UserRound } from "lucide-react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { Check, ChevronRight, Laptop, LockKeyhole, Monitor, Shield, Upload, UserRound } from "lucide-react";
 import styles from "./settings.module.css";
 
 type Section = "profile" | "account" | "security";
@@ -49,6 +49,31 @@ export default function SettingsPage() {
   function update<K extends keyof Preferences>(key: K, value: Preferences[K]) {
     setValues((current) => ({ ...current, [key]: value }));
   }
+
+  function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setMessage("Choose an image file.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setMessage("Choose an image smaller than 2 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") update("photo", reader.result);
+    };
+    reader.onerror = () => setMessage("Could not read that image. Try another one.");
+    reader.readAsDataURL(file);
+  }
+
   const initials = values.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "?";
   const activeSection = sections.find((section) => section.id === active)!;
 
@@ -63,8 +88,17 @@ export default function SettingsPage() {
         <div className={styles.contentHeading}><div><h2>{activeSection.label}</h2><p>{activeSection.description}</p></div></div>
 
         {active === "profile" && <form className={styles.form} onSubmit={saveValues}>
-          <div className={styles.profilePictureRow}><span className={styles.profileAvatar}>{values.photo ? <img src={values.photo} alt="Profile" /> : initials}</span><div><b>Profile picture</b><small>Shown to your teammates across RedSun.</small></div><label className={styles.photoInput}>Photo URL<input value={values.photo} onChange={(event) => update("photo", event.target.value)} placeholder="Paste an image URL" /></label></div>
-          <div className={styles.formGrid}><label>Full name<input value={values.name} onChange={(event) => update("name", event.target.value)} placeholder="Your name" /></label><label>Email address<input type="email" value={values.email} onChange={(event) => update("email", event.target.value)} placeholder="you@example.com" /></label></div>
+          <div className={styles.profileEditLayout}>
+            <div className={styles.profilePhotoPanel}>
+              <span className={styles.profileAvatar}>{values.photo ? <img src={values.photo} alt="Profile" /> : initials}</span>
+              <div className={styles.profilePhotoText}><b>Profile photo</b><small>Use a clear photo so teammates can recognize you.</small></div>
+              <label className={styles.photoUpload}><Upload size={14} />Change photo<input type="file" accept="image/*" onChange={handlePhotoChange} aria-label="Upload profile picture" /></label>
+            </div>
+            <div className={styles.profileFields}>
+              <label>Full name<input value={values.name} onChange={(event) => update("name", event.target.value)} placeholder="Your name" /></label>
+              <label>Email address<input type="email" value={values.email} onChange={(event) => update("email", event.target.value)} placeholder="you@example.com" /></label>
+            </div>
+          </div>
           <div className={styles.formFooter}><span>Keep your profile details up to date.</span><button className={styles.primaryButton}>Save profile</button></div>
         </form>}
 
