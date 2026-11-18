@@ -18,8 +18,12 @@ require("dotenv").config()
 app.use(cors({
     origin: "http://localhost:3000"
 }));
-app.use(helmet()) //Helmet helps protect your backend from common web attacks by setting security headers in HTTP responses.
-app.use(express.json());
+// app.use(helmet()) //Helmet helps protect your backend from common web attacks by setting security headers in HTTP responses.
+// app.use(express.json());
+
+// For Profile uplaod size change
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use("/api",userRouter)
 app.use("/api", authRouter);

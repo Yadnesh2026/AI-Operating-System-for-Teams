@@ -4,7 +4,7 @@ const router = express.Router()
 const validate = require("../middleware/validateMiddleware")
 
 const {register, getUser, updateUser, deleteUser} = require("../controllers/userController")
-const profile = require("../controllers/authController")
+const {profile, changePassword} = require("../controllers/authController")
 const userValidation = require("../validation/userValidation")
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -23,6 +23,9 @@ router.delete("/user/:id",deleteUser)
 // Profile
 router.get("/profile", authMiddleware, profile);
 router.put("/profile", authMiddleware, updateUser);
+
+// Change Password
+router.put("/change-password",authMiddleware,changePassword)
 
 
 

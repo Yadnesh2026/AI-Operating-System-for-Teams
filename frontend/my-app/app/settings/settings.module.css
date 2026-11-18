@@ -838,6 +838,20 @@
   border-color: rgba(239, 68, 68, 0.48) !important;
   background: rgba(20, 23, 31, 0.95) !important;
 }
+
+.toastError {
+  color: #ff5c5c;
+  background: rgba(255, 92, 92, 0.1);
+  border-color: rgba(255, 92, 92, 0.25);
+}
+
+.toastSuccess {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.25);
+}
+
+
 @media (max-width: 700px) {
   .profileEditLayout {
     grid-template-columns: 1fr;

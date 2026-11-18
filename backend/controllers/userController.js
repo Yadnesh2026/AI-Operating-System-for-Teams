@@ -1,5 +1,6 @@
 const User = require("../model/userModle.js");
 const bcrypt = require("bcrypt");
+const Session = require("../model/Session");
 
 const register = async (req, res, next) => {
     try{
@@ -109,6 +110,10 @@ const deleteUser = async(req,res, next)=>{
         next(err)
     }
 }
+
+// Active Sessions log
+
+
 
 
 

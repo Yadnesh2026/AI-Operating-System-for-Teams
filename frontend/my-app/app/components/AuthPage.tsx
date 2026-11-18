@@ -37,16 +37,12 @@ export default function AuthPage({ mode }: AuthPageProps) {
     const email = formData.get("email")
     const password = formData.get("password")
 
-    console.log({name, email, password})
-
     const payload = {
       name,
       email,
       password
     }
     const sendData = await api.post("/register",payload)
-    console.log(sendData.data)
-
     setMessage(sendData.data.message)
   }else{
     // event.preventDefault();
@@ -60,11 +56,9 @@ export default function AuthPage({ mode }: AuthPageProps) {
     }
 
     const sendLoginData = await api.post("/login",payload)
-    console.log(sendLoginData.data)
-    router.push("/dashboard");
-
     // Store JWT Token
     localStorage.setItem("token",sendLoginData.data.token)
+    router.push("/dashboard");
   }
     }catch(err){
       console.log("Form Error")
@@ -142,7 +136,6 @@ export default function AuthPage({ mode }: AuthPageProps) {
                     placeholder="Your name"
                     autoComplete="name"
                     required
-                    onChange={(e)=> console.log(e.target.value) }
                   />
                 </div>
               </label>

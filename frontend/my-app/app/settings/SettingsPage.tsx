@@ -14,10 +14,11 @@ import {
   UserRound,
 } from "lucide-react";
 import styles from "./settings.module.css";
+import api from "../lib/axios";
 
 type Section = "profile" | "account" | "security";
+
 type ProfileValues = { name: string; email: string; photo: string };
-const preferenceKey = "redsun-settings-v2";
 const defaults: ProfileValues = { name: "", email: "", photo: "" };
 
 
@@ -47,32 +48,144 @@ const sections: {
   },
 ];
 
+// Active session ---------------------
+type Session = {
+  _id: string;
+  device: string;
+  lastActive: string;
+  createdAt: string;
+  isCurrent: boolean;
+}; // ------------------------
+
 export default function SettingsPage() {
   const [active, setActive] = useState<Section>("profile");
   const [values, setValues] = useState(defaults);
   const [loaded, setLoaded] = useState(false);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    const saved = window.localStorage.getItem(preferenceKey);
-    if (saved) {
-      try {
-        setValues({
-          ...defaults,
-          ...(JSON.parse(saved) as Partial<ProfileValues>),
-        });
-      } catch {
-        window.localStorage.removeItem(preferenceKey);
-      }
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(true);
+
+  // ----------Sessions---------------------------------------------------
+  async function fetchSessions() {
+    try {
+      const response = await api.get("/user/sessions");
+      setSessions(response.data.sessions);
+    } catch (error) {
+      console.error("Failed to fetch sessions:", error);
+    } finally {
+      setSessionsLoading(false);
     }
-    setLoaded(true);
+  }
+
+  async function handleRevokeSession(sessionId: string) {
+  try {
+    await api.delete(`/user/sessions/${sessionId}`);
+
+    setSessions((prev) =>
+      prev.filter((session) => session._id !== sessionId)
+    );
+
+    setMessage("Device signed out successfully.");
+  } catch (error: any) {
+    setMessage(
+      error.response?.data?.message || "Failed to sign out device."
+    );
+  }
+
+  window.setTimeout(() => setMessage(""), 2600);
+} // ----------------------------------------------------------------------------------
+
+  useEffect(() => {
+    fetchSessions();
   }, []);
 
-  function saveProfile(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    window.localStorage.setItem(preferenceKey, JSON.stringify(values));
-    setMessage("Your profile has been saved.");
-    window.setTimeout(() => setMessage(""), 2600);
+  useEffect(()=>{
+    const fetchProfile = async()=>{
+      try{
+        const response = await api.get("/profile")
+        const user = response.data.user
+
+        setValues({
+          name: user.name || "",
+          email: user.email || "",
+          photo: user.profilePhoto || ""
+        })
+
+      }catch(err){
+        console.log("Fetch data error",err)
+        setMessage("Failed to load the profile")
+      }finally{
+        setLoaded(true)
+      }
+    }
+
+
+    fetchProfile()
+  },[])
+
+  async function saveProfile(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    try{
+      const response = await api.put("/profile",{
+        name: values.name,
+        email: values.email,
+        profilePhoto: values.photo
+      })
+
+      const user = response.data.user
+
+      setValues({
+        name: user.name,
+        email: user.email,
+        photo: user.profilePhoto || " "
+      })
+
+      setMessage("Your profile has been saved.")
+
+    }catch(err){
+      console.log("Save profile error", err)
+      setMessage("Failed to update profile")
+    }
+
+    window.setTimeout(()=> setMessage(""),2500);
+  }
+
+  async function handleChangePassword() {
+     if (!currentPassword || !newPassword || !confirmPassword) {
+    setMessage("Please fill all password fields.");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    setMessage("New passwords do not match.");
+    return;
+  }
+
+  if (newPassword.length < 8) {
+    setMessage("Password must be at least 8 characters.");
+    return;
+  }
+
+  try{
+    const response = await api.put("change-password",{
+      newPassword, currentPassword
+    });
+
+    setMessage("Password has been Chnaged Successfully")
+
+
+  }catch(err){
+    console.log(err)
+    setMessage("Failed to change password")
+  }
+
+  window.setTimeout(()=> setMessage(""),2500)
   }
 
   function updateProfile<K extends keyof ProfileValues>(
@@ -92,8 +205,8 @@ export default function SettingsPage() {
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      setMessage("Choose an image smaller than 2 MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage("Choose an image smaller than 5 MB.");
       event.target.value = "";
       return;
     }
@@ -127,7 +240,13 @@ export default function SettingsPage() {
           <p>Manage your profile and account security.</p>
         </div>
         {message && (
-          <div className={styles.toast}>
+          <div
+            className={`${styles.toast} ${
+              message.toLowerCase().includes("failed")
+                ? styles.toastError
+                : styles.toastSuccess
+            }`}
+          >
             <Check size={15} />
             {message}
           </div>
@@ -249,6 +368,9 @@ export default function SettingsPage() {
                 </div>
                 <span className={styles.verified}>Not connected</span>
               </article>
+
+
+
               <div className={styles.form}>
                 <div className={styles.subheading}>
                   <h3>Change password</h3>
@@ -260,6 +382,8 @@ export default function SettingsPage() {
                     type="password"
                     autoComplete="current-password"
                     placeholder="Enter current password"
+                    value={currentPassword}
+                    onChange={(e)=> setCurrentPassword(e.target.value)}
                   />
                 </label>
                 <div className={styles.formGrid}>
@@ -269,6 +393,8 @@ export default function SettingsPage() {
                       type="password"
                       autoComplete="new-password"
                       placeholder="At least 8 characters"
+                      value={newPassword}
+                      onChange={(e)=> setNewPassword(e.target.value)}
                     />
                   </label>
                   <label>
@@ -277,12 +403,14 @@ export default function SettingsPage() {
                       type="password"
                       autoComplete="new-password"
                       placeholder="Repeat new password"
+                      value={confirmPassword}
+                      onChange={(e)=> setConfirmPassword(e.target.value)}
                     />
                   </label>
                 </div>
                 <div className={styles.formFooter}>
                   <span>Password changes require the account service.</span>
-                  <button type="button" className={styles.primaryButton}>
+                  <button type="button" className={styles.primaryButton} onClick={handleChangePassword}>
                     Update password
                   </button>
                 </div>
@@ -296,30 +424,43 @@ export default function SettingsPage() {
                 <h3>Active sessions</h3>
                 <p>Session details appear after authentication is connected.</p>
               </div>
-              <article className={styles.sessionCard}>
-                <span className={styles.sessionIcon}>
-                  <Monitor size={18} />
-                </span>
-                <div>
-                  <b>Current session</b>
-                  <small>No session information available yet.</small>
-                </div>
-                <span className={styles.currentSession}>Unavailable</span>
-              </article>
-              <article className={styles.sessionCard}>
-                <span className={styles.sessionIcon}>
-                  <Laptop size={18} />
-                </span>
-                <div>
-                  <b>Other sessions</b>
-                  <small>
-                    Connect account security to review active sessions.
-                  </small>
-                </div>
-                <button className={styles.signOutButton} disabled>
-                  Sign out
-                </button>
-              </article>
+                {sessionsLoading ? (
+                  <p>Loading active sessions...</p>
+                ) : sessions.length === 0 ? (
+                  <p>No active sessions found.</p>
+                ) : (
+                  sessions.map((session) => (
+                    <article key={session._id} className={styles.sessionCard}>
+                      <span className={styles.sessionIcon}>
+                        {session.isCurrent ? (
+                          <Monitor size={18} />
+                        ) : (
+                          <Laptop size={18} />
+                        )}
+                      </span>
+
+                      <div>
+                        <b>
+                          {session.isCurrent ? "Current session" : session.device}
+                        </b>
+                        <small>
+                          Last active: {new Date(session.lastActive).toLocaleString()}
+                        </small>
+                      </div>
+
+                      {session.isCurrent ? (
+                        <span className={styles.currentSession}>Current</span>
+                      ) : (
+                       <button
+                          className={styles.signOutButton}
+                          onClick={() => handleRevokeSession(session._id)}
+                        >
+                          Sign out
+                        </button>
+                      )}
+                    </article>
+                  ))
+                )}
               <div className={styles.securityNote}>
                 <Shield size={16} />
                 <span>
