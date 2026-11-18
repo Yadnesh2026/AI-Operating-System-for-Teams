@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { Check, ChevronRight, Laptop, LockKeyhole, Monitor, Shield, Upload, UserRound } from "lucide-react";
+import { Camera, Check, ChevronRight, Laptop, LockKeyhole, Mail, Monitor, Shield, Upload, UserRound } from "lucide-react";
 import styles from "./settings.module.css";
 
 type Section = "profile" | "account" | "security";
@@ -90,13 +90,16 @@ export default function SettingsPage() {
         {active === "profile" && <form className={styles.form} onSubmit={saveValues}>
           <div className={styles.profileEditLayout}>
             <div className={styles.profilePhotoPanel}>
-              <span className={styles.profileAvatar}>{values.photo ? <img src={values.photo} alt="Profile" /> : initials}</span>
+              <div className={styles.profileAvatarWrap}>
+                <span className={styles.profileAvatar}>{values.photo ? <img src={values.photo} alt="Profile" /> : initials}</span>
+                <span className={styles.profileCameraBadge}><Camera size={13} /></span>
+              </div>
               <div className={styles.profilePhotoText}><b>Profile photo</b><small>Use a clear photo so teammates can recognize you.</small></div>
               <label className={styles.photoUpload}><Upload size={14} />Change photo<input type="file" accept="image/*" onChange={handlePhotoChange} aria-label="Upload profile picture" /></label>
             </div>
             <div className={styles.profileFields}>
-              <label>Full name<input value={values.name} onChange={(event) => update("name", event.target.value)} placeholder="Your name" /></label>
-              <label>Email address<input type="email" value={values.email} onChange={(event) => update("email", event.target.value)} placeholder="you@example.com" /></label>
+              <label>Full name<div className={styles.profileInputWrap}><UserRound size={15} /><input value={values.name} onChange={(event) => update("name", event.target.value)} placeholder="Your name" /></div></label>
+              <label>Email address<div className={styles.profileInputWrap}><Mail size={15} /><input type="email" value={values.email} onChange={(event) => update("email", event.target.value)} placeholder="you@example.com" /></div></label>
             </div>
           </div>
           <div className={styles.formFooter}><span>Keep your profile details up to date.</span><button className={styles.primaryButton}>Save profile</button></div>
