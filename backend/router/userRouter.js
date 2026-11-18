@@ -21,7 +21,10 @@ router.put("/user/:id",authMiddleware,updateUser)
 router.delete("/user/:id",deleteUser)
 
 // Profile
-router.get("/profile",authMiddleware,profile)
+router.get("/profile", authMiddleware, profile);
+router.put("/profile", authMiddleware, updateUser);
+
+
 
 
 module.exports = router

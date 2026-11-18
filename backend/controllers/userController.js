@@ -61,13 +61,15 @@ const getUser = async (req, res, next) =>{
 
 const updateUser = async (req, res, next)=>{
     try{
-        const {name, email} = req.body
-        const id = req.params.id
+        const {name, email, profilePhoto} = req.body
+        const id = req.user.id
+
 
         // User.findByIdAndUpdate(id, updateData, options)
         const user = await User.findByIdAndUpdate(id,{
             name,
-            email
+            email,
+            profilePhoto
         },
         {returnDocument: 'after', runValidators: true}  ) 
     
