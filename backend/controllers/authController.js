@@ -68,7 +68,8 @@ const profile = async(req,res,next)=>{
             user:{
                 userId: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                profilePhoto: user.profilePhoto
             }
         })
 

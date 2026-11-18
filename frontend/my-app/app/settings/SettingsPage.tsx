@@ -19,6 +19,8 @@ type Section = "profile" | "account" | "security";
 type ProfileValues = { name: string; email: string; photo: string };
 const preferenceKey = "redsun-settings-v2";
 const defaults: ProfileValues = { name: "", email: "", photo: "" };
+
+
 const sections: {
   id: Section;
   label: string;
