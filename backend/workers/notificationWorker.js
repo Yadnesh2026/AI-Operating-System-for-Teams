@@ -40,10 +40,12 @@ const notificationWorker = new Worker(
         console.log("Job processed successfully!");
     },
     {
-        connection:{ // Redis conenction detaos 
+        
+        connection: {
             host: process.env.REDIS_HOST || "localhost",
             port: 6379
         }
+
     }
 )
 
