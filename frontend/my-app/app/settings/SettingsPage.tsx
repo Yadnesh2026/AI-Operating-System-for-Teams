@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { isAxiosError } from "axios";
 import {
   Camera,
   Check,
@@ -73,7 +74,7 @@ export default function SettingsPage() {
   // ----------Sessions---------------------------------------------------
   async function fetchSessions() {
     try {
-      const response = await api.get("/user/sessions");
+      const response = await api.get("/sessions");
       setSessions(response.data.sessions);
     } catch (error) {
       console.error("Failed to fetch sessions:", error);
@@ -84,23 +85,25 @@ export default function SettingsPage() {
 
   async function handleRevokeSession(sessionId: string) {
   try {
-    await api.delete(`/user/sessions/${sessionId}`);
+    await api.delete(`/sessions/${sessionId}`);
 
     setSessions((prev) =>
       prev.filter((session) => session._id !== sessionId)
     );
 
     setMessage("Device signed out successfully.");
-  } catch (error: any) {
-    setMessage(
-      error.response?.data?.message || "Failed to sign out device."
-    );
+  } catch (error: unknown) {
+    const errorMessage = isAxiosError<{ message?: string }>(error)
+      ? error.response?.data?.message
+      : undefined;
+    setMessage(errorMessage || "Failed to sign out device.");
   }
 
   window.setTimeout(() => setMessage(""), 2600);
 } // ----------------------------------------------------------------------------------
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Fetch active sessions after this page mounts.
     fetchSessions();
   }, []);
 

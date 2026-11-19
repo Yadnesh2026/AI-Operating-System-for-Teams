@@ -19,7 +19,10 @@ export default function ProfileMenu() {
   useEffect(() => {
     const saved = window.localStorage.getItem("redsun-settings-v2");
     if (saved) {
-      try { setProfile({ ...defaultProfile, ...(JSON.parse(saved) as Partial<Profile>) }); } catch { /* Keep the default profile if local data is invalid. */ }
+      try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Load the saved profile after hydration to avoid a server/client mismatch.
+        setProfile({ ...defaultProfile, ...(JSON.parse(saved) as Partial<Profile>) });
+      } catch { /* Keep the default profile if local data is invalid. */ }
     }
     function closeOnOutsideClick(event: MouseEvent) {
       if (rootRef.current && !rootRef.current.contains(event.target as Node)) setOpen(false);

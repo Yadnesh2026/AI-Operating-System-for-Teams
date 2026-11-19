@@ -3,7 +3,7 @@ services:
     build: ./backend
     container_name: redsun-backend
     ports:
-      - "1001:1000"
+      - "1000:1000"
     env_file:
       - ./backend/.env
     environment:
@@ -16,12 +16,12 @@ services:
     build:
       context: ./frontend/my-app
       args:
-        NEXT_PUBLIC_API_URL: http://localhost:1001/api
+        NEXT_PUBLIC_API_URL: http://localhost:1000/api
     container_name: redsun-frontend
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:1001/api
+      NEXT_PUBLIC_API_URL: http://localhost:1000/api
     depends_on:
       - backend
 

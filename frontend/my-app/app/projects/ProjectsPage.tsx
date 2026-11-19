@@ -90,6 +90,7 @@ export default function ProjectsPage() {
 
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Fetch server data after this page mounts.
     void refreshProjects();
   }, [refreshProjects]);
 

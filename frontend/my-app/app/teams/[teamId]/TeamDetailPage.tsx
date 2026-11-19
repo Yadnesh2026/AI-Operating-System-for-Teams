@@ -72,6 +72,7 @@ export default function TeamDetailPage({ teamId }: { teamId: string }) {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Fetch team details when the route's team ID changes.
     void fetchDetails();
   }, [teamId]);
 

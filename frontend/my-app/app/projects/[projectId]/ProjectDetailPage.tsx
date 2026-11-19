@@ -31,6 +31,10 @@ const taskFilters: TaskFilter[] = [
   "Completed",
 ];
 const isObjectId = (value: string) => /^[a-f\d]{24}$/i.test(value);
+type TeamMembership = {
+  role: string;
+  userId: { _id: string; name: string };
+};
 
 export default function ProjectDetailPage({
   projectId,
@@ -48,6 +52,7 @@ export default function ProjectDetailPage({
   const [editName, setEditName] = useState("")
   const [editDescription, setEditDescription] = useState("")
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
 
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
@@ -104,15 +109,18 @@ const [editTaskModal, setEditTaskModal] = useState(false);
       if (!isObjectId(teamId)) return;
       try{
 
-      const response = await api.get(`/getDetails/${teamId}`);
+      const response = await api.get<{
+        team: Team;
+        membership: TeamMembership[];
+      }>(`/getDetails/${teamId}`);
 
       console.log("Response data",response.data)
       setTeam(response.data.team)
 
 
       // To add the employee in dropdown of while creating a task
-      const teamEmployee = response.data.membership.filter((member: any)=> member.role === "employee")
-      .map((member: any)=>({
+      const teamEmployee = response.data.membership.filter((member) => member.role === "employee")
+      .map((member) => ({
         id: member.userId._id,
         name: member.userId.name
       }));
@@ -205,9 +213,6 @@ const [editTaskModal, setEditTaskModal] = useState(false);
   }
 
 
-
-  // Create empty array to store your team Employee and show them in dropdown of assign
-  const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
 
   const pending = 0;
   const inProgress = 0;

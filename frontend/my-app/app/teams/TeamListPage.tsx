@@ -43,6 +43,7 @@ export default function TeamListPage() {
 
   // Load teams once when this page first opens.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Fetch team memberships after this page mounts.
     void fetchTeams();
   }, []);
 
