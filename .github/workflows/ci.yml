@@ -55,13 +55,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: frontend/my-app/backend/package-lock.json
+          cache-dependency-path: frontend/my-app/package-lock.json
 
       - name: Install Dependecies
         run: npm ci
 
       - name: Run ESlint
-        run: npm run linit
+        run: npm run lint
 
       - name: Build frontend
         run: npm run build
