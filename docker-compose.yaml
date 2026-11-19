@@ -19,7 +19,7 @@ services:
         NEXT_PUBLIC_API_URL: http://localhost:1000/api
     container_name: redsun-frontend
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:1000/api
     depends_on:
