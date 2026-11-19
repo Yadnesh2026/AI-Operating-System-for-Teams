@@ -16,7 +16,7 @@ require("dotenv").config()
 
 
 app.use(cors({
-    origin: "http://localhost:3000"
+    origin: ["http://localhost:3000", "http://localhost:3001"]
 }));
 // app.use(helmet()) //Helmet helps protect your backend from common web attacks by setting security headers in HTTP responses.
 // app.use(express.json());

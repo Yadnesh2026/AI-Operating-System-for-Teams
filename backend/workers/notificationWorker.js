@@ -1,7 +1,7 @@
 // notificationWorker.js — processes jobs in the background.
 
 const { Worker} = require("bullmq")
-const NotificationModel = require("../../backend/model/NotificationModel")
+const NotificationModel = require("../model/NotificationModel")
 
 const notificationWorker = new Worker(
     "notification",  // Name of the queue to listen to
@@ -41,7 +41,7 @@ const notificationWorker = new Worker(
     },
     {
         connection:{ // Redis conenction detaos 
-            host: "localhost",
+            host: process.env.REDIS_HOST || "localhost",
             port: 6379
         }
     }

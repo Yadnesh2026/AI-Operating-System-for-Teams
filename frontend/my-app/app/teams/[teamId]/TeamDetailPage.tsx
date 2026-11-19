@@ -22,6 +22,7 @@ import api from "../../lib/axios";
 
 type PopulatedMembership = Omit<TeamMembership, "userId"> & {
   userId: TeamMember;
+  createdAt?: string;
 };
 // The details API populates userId, so it contains user objects rather than ID strings.
 type TeamDetails = {

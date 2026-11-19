@@ -7,7 +7,7 @@ const { Queue } = require("bullmq")  //  BullMQ class used to create a queue
 
 const notificationQueue = new Queue("notification",{ // "notificat is name of queue"
     connection:{      // Will use Redis Connection server
-        host: "localhost",
+        host: process.env.REDIS_HOST || "localhost",
         port: 6379
     }
 });
