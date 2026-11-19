@@ -70,11 +70,13 @@ jobs:
       name: Build and Push Docker Images
       runs-on: ubuntu-latest
 
+      # needs means Docker publishing waits for both CI jobs.
       needs:
         - backend-checks
         - frontend-checks
 
-      if: github.event_name == 'push' && github.ref == 'ref/heads/main'
+      # if means publishing happens only when the event is a push to main.
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       steps:
         - name: Checkout Repo
