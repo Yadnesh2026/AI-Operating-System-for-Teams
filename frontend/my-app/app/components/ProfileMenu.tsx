@@ -5,25 +5,16 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronDown, LogOut, UserRound } from "lucide-react";
 import styles from "./profile-menu.module.css";
-
-type Profile = { name: string; email: string; photo: string };
-const defaultProfile: Profile = { name: "Your profile", email: "Account not connected", photo: "" };
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 export default function ProfileMenu() {
   const [open, setOpen] = useState(false);
-  const [profile, setProfile] = useState(defaultProfile);
+  const user = useCurrentUser();
   const rootRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const initials = profile.name === "Your profile" ? "?" : profile.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "?";
+  const initials = user?.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "?";
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("redsun-settings-v2");
-    if (saved) {
-      try {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- Load the saved profile after hydration to avoid a server/client mismatch.
-        setProfile({ ...defaultProfile, ...(JSON.parse(saved) as Partial<Profile>) });
-      } catch { /* Keep the default profile if local data is invalid. */ }
-    }
     function closeOnOutsideClick(event: MouseEvent) {
       if (rootRef.current && !rootRef.current.contains(event.target as Node)) setOpen(false);
     }
@@ -38,15 +29,22 @@ export default function ProfileMenu() {
     };
   }, []);
 
+  function logOut() {
+    window.localStorage.removeItem("token");
+    window.localStorage.removeItem("redsun-user-profile");
+    setOpen(false);
+    router.push("/login");
+  }
+
   return <div className={styles.profileMenu} ref={rootRef}>
     <button className={styles.trigger} onClick={() => setOpen((current) => !current)} aria-label="Open profile menu" aria-haspopup="menu" aria-expanded={open}>
-      <span className={styles.avatar}>{profile.photo ? <img src={profile.photo} alt="" /> : initials}</span><ChevronDown size={13} className={open ? styles.chevronOpen : ""} />
+      <span className={styles.avatar}>{user?.profilePhoto ? <img src={user.profilePhoto} alt="" /> : initials}</span><ChevronDown size={13} className={open ? styles.chevronOpen : ""} />
     </button>
     {open && <div className={styles.dropdown} role="menu">
-      <div className={styles.identity}><span className={styles.identityAvatar}>{profile.photo ? <img src={profile.photo} alt="" /> : initials}</span><span><b>{profile.name}</b><small>{profile.email}</small></span></div>
+      <div className={styles.identity}><span className={styles.identityAvatar}>{user?.profilePhoto ? <img src={user.profilePhoto} alt="" /> : initials}</span><span><b>{user?.name || "Your profile"}</b><small>{user?.email || "Sign in to connect"}</small></span></div>
       <div className={styles.divider} />
       <Link href="/settings" className={styles.menuItem} role="menuitem" onClick={() => setOpen(false)}><UserRound size={16} /><span>My Profile</span></Link>
-      <button className={`${styles.menuItem} ${styles.logout}`} role="menuitem" onClick={() => { setOpen(false); router.push("/login"); }}><LogOut size={16} /><span>Log out</span></button>
+      <button className={`${styles.menuItem} ${styles.logout}`} role="menuitem" onClick={logOut}><LogOut size={16} /><span>Log out</span></button>
     </div>}
   </div>;
 }

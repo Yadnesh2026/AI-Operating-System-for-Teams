@@ -58,6 +58,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
     const sendLoginData = await api.post("/login",payload)
     // Store JWT Token
     localStorage.setItem("token",sendLoginData.data.token)
+    localStorage.setItem("redsun-user-profile", JSON.stringify(sendLoginData.data.user))
     router.push("/dashboard");
   }
     }catch(err){

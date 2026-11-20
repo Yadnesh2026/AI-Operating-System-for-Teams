@@ -251,7 +251,7 @@ export default function ProductShowcase() {
                   </div>
                   <div>
                     <div style={{ fontSize: "12px", fontWeight: 600, color: "#F5F5F7" }}>Your profile</div>
-                    <div style={{ fontSize: "10px", color: "#9297A5" }}>Account not connected</div>
+                    <div style={{ fontSize: "10px", color: "#9297A5" }}>Team member</div>
                   </div>
                 </div>
 

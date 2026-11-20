@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import {
   Bell,
   ClipboardList,
@@ -43,6 +46,9 @@ export default function WorkspaceSidebar({
 }: {
   active: SidebarSection;
 }) {
+  const user = useCurrentUser();
+  const initials = user?.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "?";
+
   return (
     <aside className={styles.sidebar}>
       <Link href="/" className={styles.brand} aria-label="RedSun home">
@@ -79,10 +85,10 @@ export default function WorkspaceSidebar({
           <span>Settings</span>
         </Link>
         <Link href="/settings" className={styles.profile}>
-          <span className={`${styles.avatar} ${styles.avatarPeach}`}>?</span>
+          <span className={`${styles.avatar} ${styles.avatarPeach}`}>{initials}</span>
           <span className={styles.profileText}>
-            <b>Your profile</b>
-            <small>Account not connected</small>
+            <b>{user?.name || "Your profile"}</b>
+            <small>{user?.email || "Sign in to connect"}</small>
           </span>
         </Link>
       </div>
