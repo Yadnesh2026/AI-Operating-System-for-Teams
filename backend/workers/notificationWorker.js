@@ -32,8 +32,6 @@ const notificationWorker = new Worker(
             console.log("Testing failed cases")
             throw new Error("Something went wrong")
         }
-
-        
         // Log only identifiers and event metadata; never dump user documents or credentials.
         console.log({ jobName: job.name, teamId: job.data.teamId, employeeId: job.data.employeeId })
 
