@@ -15,7 +15,7 @@ const notificationRouter = require("./router/notificationRouter");
 require("dotenv").config()
 
 
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:3001,https://redsunai.vercel.app")
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:3001,https://redsunai.vercel.app,https://ai-operating-system-for-teams-front.vercel.app")
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
