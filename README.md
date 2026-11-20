@@ -289,7 +289,7 @@ Configure production environment variables through the respective deployment pla
 
 ## Author
 
-**Vedant**
+**Yadnesh Vidulkar**
 
 B.Tech – Information Technology (Data Science)
 
