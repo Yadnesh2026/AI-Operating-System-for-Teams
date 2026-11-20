@@ -151,18 +151,6 @@ cd backend
 npm install
 ```
 
-Create a `.env` file inside the backend directory:
-
-```env
-PORT=1000
-MONGODB_URL=your_mongodb_url
-MONGODB_USERNAME=your_mongodb_username
-MONGODB_PASS=your_mongodb_password
-JWT_SECRET=your_jwt_secret
-REDIS_HOST=localhost
-REDIS_URL=redis://localhost:6379
-```
-
 Start the backend:
 
 ```bash
@@ -177,29 +165,10 @@ Open another terminal:
 cd frontend/my-app
 npm install
 ```
-
-Create a `.env.local` file:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:1000/api
-```
-
 Start the frontend:
 
 ```bash
 npm run dev
-```
-
-Frontend runs at:
-
-```text
-http://localhost:3000
-```
-
-Backend runs at:
-
-```text
-http://localhost:1000
 ```
 
 ## Run Using Docker Compose
