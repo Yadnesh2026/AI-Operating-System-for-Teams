@@ -15,8 +15,13 @@ const notificationRouter = require("./router/notificationRouter");
 require("dotenv").config()
 
 
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:3001,https://redsunai.vercel.app")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"]
+    origin: allowedOrigins
 }));
 // app.use(helmet()) //Helmet helps protect your backend from common web attacks by setting security headers in HTTP responses.
 // app.use(express.json());
