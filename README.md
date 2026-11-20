@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 RedSun --- AI Operating System for Teams
 <p align="center">
 <strong>{=html}Bring your teams, projects, and work together in one
@@ -299,3 +300,164 @@ Vedant
 RedSun is a hands-on full-stack and DevOps project exploring team
 collaboration, backend services, background jobs, Docker, CI/CD, and
 cloud deployment.
+=======
+# RedSun
+
+RedSun is a team workspace for organizing teams, projects, and tasks. This repository contains a Next.js web app and an Express API backed by MongoDB and Redis. The app includes account authentication, team and project management, task workflows, notifications, and session management.
+
+## Features
+
+- Register and sign in with JWT authentication.
+- Create teams, manage members, and update team details.
+- Create projects within teams and manage project tasks.
+- View assigned tasks and update task status.
+- View and dismiss notifications.
+- View active sessions and revoke a session.
+- Process notification jobs using BullMQ and Redis.
+
+## Tech stack
+
+- **Web:** Next.js 16, React 19, TypeScript, Tailwind CSS
+- **API:** Node.js, Express 5
+- **Data:** MongoDB with Mongoose
+- **Jobs and cache infrastructure:** Redis and BullMQ
+- **Authentication and validation:** JWT, bcrypt, Joi
+
+## Repository layout
+
+```text
+.
+├── backend/                 # Express API, database models, routes, and worker
+├── frontend/
+│   └── my-app/              # Next.js application
+└── docker-compose.yaml      # Backend, frontend, and Redis services
+```
+
+## Run locally
+
+### Requirements
+
+- Node.js 22 or later and npm
+- MongoDB (local or hosted)
+- Redis (local, or use the Docker Compose instructions below)
+
+### 1. Configure the backend
+
+Create `backend/.env` with the following values:
+
+```env
+PORT=1000
+MONGODB_URL=mongodb://127.0.0.1:27017/redsun
+JWT_SECRET=replace_with_a_long_random_secret
+REDIS_HOST=localhost
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+```
+
+`MONGODB_URL` must point to a MongoDB database you can access. `REDIS_HOST` is the Redis hostname; Redis uses port `6379`. `CORS_ORIGINS` is a comma-separated list of allowed browser origins and can be omitted to use the defaults in the server.
+
+Install dependencies and start the API:
+
+```bash
+cd backend
+npm install
+node server.js
+```
+
+The API starts at `http://localhost:1000`. The backend package currently does not define a `dev` or `start` npm script, so run the server with `node server.js`.
+
+### 2. Configure and start the web app
+
+In a second terminal, set the API base URL in `frontend/my-app/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:1000/api
+```
+
+Then install dependencies and run Next.js:
+
+```bash
+cd frontend/my-app
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser.
+
+### Run with Docker Compose
+
+Docker Compose builds the frontend and backend and starts Redis. MongoDB is not included, so configure `backend/.env` with a MongoDB connection string reachable from the backend container. For a MongoDB instance running on the host, use `host.docker.internal` as the hostname where supported.
+
+The compose configuration loads `backend/.env` into the backend container and sets `REDIS_HOST=redis`. The file must exist before starting Compose.
+
+```bash
+docker compose up --build
+```
+
+The web app is available at `http://localhost:3001`, the API at `http://localhost:1000`, and Redis is exposed on port `6379`. Stop the services with `Ctrl+C`, or run `docker compose down` in another terminal.
+
+## API routes
+
+All routes are served under `/api`. Routes marked **Protected** require `Authorization: Bearer <token>`.
+
+| Method | Route | Purpose | Auth |
+|---|---|---|---|
+| `POST` | `/register` | Register an account | No |
+| `POST` | `/login` | Sign in and receive a token | No |
+| `GET` | `/profile` | Get the current profile | Protected |
+| `PUT` | `/profile` | Update the current profile | Protected |
+| `PUT` | `/change-password` | Change the password | Protected |
+| `GET` | `/sessions` | List active sessions | Protected |
+| `DELETE` | `/sessions/:sessionId` | Revoke a session | Protected |
+| `GET` | `/user/:id` | Get a user | No |
+| `PUT` | `/user/:id` | Update a user | Protected |
+| `DELETE` | `/user/:id` | Delete a user | No |
+| `POST` | `/createteam` | Create a team | Protected |
+| `GET` | `/getAllTeams` | List the current user's teams | Protected |
+| `GET` | `/getDetails/:teamId` | Get team details | Protected |
+| `POST` | `/addEmployee/:teamId/members` | Add a team member | Protected |
+| `DELETE` | `/deleteEmployee/:teamId/:userId` | Remove a team member | Protected |
+| `PUT` | `/updateTeam/:teamId` | Update a team | Protected |
+| `DELETE` | `/deleteTeam/:teamId` | Delete a team | Protected |
+| `POST` | `/project/:teamId` | Create a project | Protected |
+| `GET` | `/project/:teamId` | List team projects | Protected |
+| `GET` | `/project/:teamId/:projectId` | Get project details | Protected |
+| `PUT` | `/project/:teamId/:projectId` | Update a project | Protected |
+| `DELETE` | `/project/:teamId/:projectId` | Delete a project | Protected |
+| `POST` | `/task/:teamId/:projectId` | Create a task | Protected |
+| `GET` | `/task/:teamId/:projectId` | List project tasks | Protected |
+| `GET` | `/task/:teamId/:projectId/:taskId` | Get task details | Protected |
+| `PUT` | `/task/:teamId/:projectId/:taskId` | Update a task | Protected |
+| `PATCH` | `/task/:teamId/:projectId/:taskId/assign` | Update assigned task status | Protected |
+| `DELETE` | `/task/:teamId/:projectId/:taskId` | Delete a task | Protected |
+| `GET` | `/mytasks` | List tasks assigned to the current user | Protected |
+| `GET` | `/notifications` | List current user's notifications | Protected |
+| `DELETE` | `/notifications/:notificationId` | Delete a notification | Protected |
+
+## Available scripts
+
+From `frontend/my-app`:
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the Next.js development server |
+| `npm run build` | Build the production web app |
+| `npm start` | Serve the production build |
+| `npm run lint` | Run ESLint |
+
+The backend currently has no npm scripts; start it with `node server.js` from `backend/`.
+
+## Configuration and security
+
+- Keep `backend/.env` and `frontend/my-app/.env.local` out of version control. Never commit database credentials or `JWT_SECRET`.
+- Use a unique, long `JWT_SECRET` outside local development.
+- `NEXT_PUBLIC_API_URL` is embedded into the frontend build and must point to an API reachable by the user's browser.
+- The current frontend stores its JWT in browser `localStorage`; use this implementation with appropriate care.
+
+## Contributing
+
+Changes and suggestions are welcome. For a contribution, fork the repository, create a branch, make your change, and open a pull request with a description of the behavior changed.
+
+## License
+
+No license is currently specified in this repository.
+>>>>>>> 5e3d018 (docs: improve project README)
