@@ -33,6 +33,8 @@ const notificationWorker = new Worker(
             throw new Error("Something went wrong")
         }
 
+
+        
         // Log only identifiers and event metadata; never dump user documents or credentials.
         console.log({ jobName: job.name, teamId: job.data.teamId, employeeId: job.data.employeeId })
 
@@ -40,7 +42,7 @@ const notificationWorker = new Worker(
         console.log("Job processed successfully!");
     },
     {
-        
+
         
         connection: {
             host: process.env.REDIS_HOST || "localhost",
