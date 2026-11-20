@@ -1,343 +1,301 @@
-# RedSun — AI Operating System for Teams
-
+RedSun --- AI Operating System for Teams
 <p align="center">
-  <strong>An intelligent workspace to manage teams, projects, tasks, and collaboration — all in one place.</strong>
+<strong>{=html}Bring your teams, projects, and work together in one
+workspace.`</strong>`{=html}
 </p>
-
 <p align="center">
-  Built with Next.js, React, TypeScript, Node.js, Express.js, MongoDB, and Redis.
+<a href="https://redsunnai.vercel.app/">{=html}Live
+Application`</a>`{=html} ·
+<a href="https://redsun-backend-latest.onrender.com">{=html}Backend`</a>`{=html}
+·
+<a href="https://hub.docker.com/r/vedantv0502/redsun-frontend">{=html}Frontend
+Docker Image`</a>`{=html} ·
+<a href="https://hub.docker.com/r/vedantv0502/redsun-backend">{=html}Backend
+Docker Image`</a>`{=html}
 </p>
+RedSun is a team-workspace application for organizing teams, projects,
+tasks, and notifications. It combines a Next.js frontend, an Express.js
+backend, MongoDB persistence, and Redis-powered background processing
+with BullMQ.
+Live Deployment
+  Component               Platform                Link
+  Frontend                Vercel                  Open RedSun
 
----
+  Backend                 Render                  Backend service
 
-## About the Project
-
-**RedSun** is an AI-powered operating system for teams designed to simplify team collaboration, project management, and task organization.
-
-It aims to bring essential team workflows into one centralized platform where managers and team members can organize work, manage projects, track tasks, and stay connected.
-
-The goal is to evolve beyond traditional project management tools by introducing intelligent, AI-driven assistance that helps teams work smarter, make better decisions, and improve productivity.
-
-## Key Features
-
-
-
-### Authentication & Security
+  Frontend image          Docker Hub              vedantv0502/redsun-frontend
+Backend image           Docker Hub              vedantv0502/redsun-backend
+Production API base URL:
+https://redsun-backend-latest.onrender.com/api
+Features
+Authentication and account management
 - User registration and login.
+- Password hashing and verification.
 - JWT-based authentication.
-- Password hashing using bcrypt.
-- Protected backend APIs using authentication middleware.
-- Centralized API request and response handling using Axios interceptors.
-- Request validation using Joi.
-- Security middleware using Helmet and CORS.
-
-### Team Management
-- Create and manage teams.
-- Retrieve teams associated with users.
-- View individual team details.
-- Add employees or members to teams.
-- Update team information.
-- Remove team members.
-- Delete teams.
-
-### Project Management
-- Organize work through projects.
-- Manage project information.
-- Connect projects with teams.
-- Track project progress.
-
-### Task Management
-- Create and organize tasks.
+- Active-session tracking and individual session revocation.
+- Profile management, profile photo updates, and password changes.
+Teams and collaboration
+- Create and view teams.
+- Team memberships and role-aware access.
+- Add employees to teams.
+- View team details and membership information.
+Projects and tasks
+- Create and manage projects.
+- Create and manage tasks.
 - Assign tasks to team members.
-- Manage task progress and status.
-- Keep work organized across projects.
-
-### Notifications & Collaboration
-- Centralized notifications.
-- Team-focused collaboration workflows.
-- A unified workspace for managing activities.
-
-### Backend Infrastructure
-- MongoDB and Mongoose for database management.
-- Redis for caching and supporting background workflows.
-- BullMQ for queue-based background processing.
-- Express middleware for authentication and request handling.
-- Joi for request validation.
-
-### AI-Powered Vision
-Planned intelligent capabilities include:
-- AI-assisted task management.
-- Intelligent team productivity insights.
-- Automated workflow assistance.
-- AI-powered project summaries.
-- Smart recommendations for team collaboration.
-
-*AI capabilities are part of the project's development vision and will be introduced as the platform evolves.*
-
----
-
-## Technology Stack
-
-| Category | Technologies |
-|---|---|
-| Frontend | Next.js, React.js, TypeScript |
-| Styling | CSS, Tailwind CSS |
-| Backend | Node.js, Express.js |
-| Database | MongoDB, Mongoose |
-| Authentication | JWT, bcrypt |
-| API Integration | Axios |
-| Caching | Redis |
-| Background Jobs | BullMQ |
-| Validation | Joi |
-| Security | Helmet, CORS, express-rate-limit |
-| Version Control | Git, GitHub |
-
----
-
-## Project Architecture
-
-RedSun follows a frontend-backend architecture.
-
-```text
-RedSun/
-│
+- Track task status and completion.
+Dashboard and notifications
+- Dashboard overview with project, task, and notification information.
+- Redis-backed notification queue.
+- Background notification processing with BullMQ workers.
+Technology Stack
+  Area                 Technologies
+  Frontend             Next.js, React, TypeScript
+UI                   CSS Modules, Lucide React
+Backend              Node.js, Express.js
+Database             MongoDB Atlas, Mongoose
+Authentication       JWT, bcrypt
+Background jobs      BullMQ
+Queue                Redis
+Containers           Docker, Docker Compose
+CI/CD                GitHub Actions
+Hosting              Vercel, Render
+Container registry   Docker Hub
+Architecture
+Browser
+   |
+   v
+Next.js Frontend (Vercel)
+   |
+   | HTTPS API requests
+   v
+Express Backend (Render)
+   |                 |
+   v                 v
+MongoDB Atlas       Redis
+                    |
+                    v
+               BullMQ Worker
+The frontend communicates with the backend through
+NEXT_PUBLIC_API_URL. The backend stores application data in MongoDB
+and uses Redis/BullMQ for background notification jobs.
+Project Structure
+project-root/
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── model/
+│   ├── queues/
+│   ├── routes/
+│   ├── workers/
+│   ├── Dockerfile
+│   └── server.js
 ├── frontend/
 │   └── my-app/
 │       ├── app/
 │       ├── components/
-│       ├── lib/
-│       │   └── axios.ts
 │       ├── public/
-│       ├── .env.local
-│       └── package.json
-│
-└── backend/
-    ├── config/
-    ├── controllers/
-    ├── model/
-    ├── middleware/
-    ├── router/
-    ├── validation/
-    ├── queues/
-    ├── workers/
-    ├── .env
-    ├── package.json
-    └── server.js
-```
-
-*The structure above is a simplified overview. Adjust folder names if your repository structure differs.*
-
-## Application Workflow
-
-```mermaid
-flowchart TD
-    A[User] --> B[Next.js Frontend]
-    B --> C[Axios API Client]
-    C --> D[JWT Authentication Middleware]
-    D --> E[Express.js Backend]
-    E --> F[Controllers]
-    F --> G[MongoDB]
-    F --> H[Redis]
-    F --> I[BullMQ Queues]
-    G --> J[API Response]
-    H --> J
-    I --> J
-    J --> B
-```
-
----
-
-## Getting Started
-
-Follow these instructions to run RedSun locally.
-
-### Prerequisites
-
-Make sure you have installed:
-
-- Node.js and npm.
-- MongoDB or MongoDB Atlas.
-- Redis.
-- Git.
-
-### 1. Clone the Repository
-
-```bash
+│       ├── package.json
+│       └── Dockerfile
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+└── docker-compose.yaml
+Getting Started
+Prerequisites
+- Node.js 22
+- npm
+- pnpm (the frontend includes a pnpm-lock.yaml)
+- MongoDB Atlas or another reachable MongoDB instance
+- Redis
+- Git
+- Docker Desktop with Docker Compose (for containerized development)
+Clone the repository
 git clone <YOUR_GITHUB_REPOSITORY_URL>
-```
-
-```bash
-cd AI-Operating-System-for-Teams
-```
-
-### 2. Backend Setup
-
-Navigate to the backend directory:
-
-```bash
-cd backend
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Create a `.env` file in the backend directory.
-
-Configure your environment variables according to your backend configuration:
-
-```env
+cd <YOUR_PROJECT_DIRECTORY>
+Replace the placeholders with your repository URL and directory name.
+Environment Variables
+Create environment files locally. Never commit them or share their
+secret values.
+Backend --- backend/.env
+MONGODB_URL=your_mongodb_connection_string
+JWT_SECRET=replace_with_a_long_random_secret
 PORT=1000
-ATLASDB_URL=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-REDIS_URL=your_redis_connection_url
-```
 
-*Use the exact environment variable names expected by your backend configuration.*
+# Local development Redis
+REDIS_HOST=localhost
+REDIS_URL=redis://localhost:6379
+  Variable                            Purpose
+  MONGODB_URL                       MongoDB connection string.
 
-Start the backend:
+  JWT_SECRET                        Secret used to sign and verify
+JWTs.
 
-```bash
-npm run dev
-```
+  PORT                              Local backend port; the deployed
+server should respect
+process.env.PORT.
 
-### 3. Frontend Setup
+  REDIS_HOST                        Redis hostname used by the BullMQ
+queue and worker.
+REDIS_URL                         Full Redis URL for URL-based Redis
+client configuration, where
+applicable.
+For Docker Compose, use the Redis service hostname (commonly redis) as
+REDIS_HOST, not localhost.
 
-Open another terminal and navigate to the frontend:
-
-```bash
-cd frontend/my-app
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Create a `.env.local` file:
-
-```env
+For Render, use the hostname portion of the Redis internal URL as
+REDIS_HOST. For example, for redis://red-abc123:6379, set
+REDIS_HOST=red-abc123. Keep the full internal URL in REDIS_URL if
+your Redis client uses it.
+Frontend --- frontend/my-app/.env.local
 NEXT_PUBLIC_API_URL=http://localhost:1000/api
-```
+For Vercel Production:
+NEXT_PUBLIC_API_URL=https://redsun-backend-latest.onrender.com/api
+NEXT_PUBLIC_ variables are exposed to browser-side code. Use this
+prefix only for public configuration such as the API URL. Never put
+passwords, database credentials, JWT secrets, or private tokens in a
+NEXT_PUBLIC_ variable. Redeploy Vercel after changing it because the
+value is included at build time.
+Run Locally
+Start Redis
+If Redis is not already running locally:
+docker run --name redsun-redis -p 6379:6379 -d redis:alpine
+If a container with that name already exists, start the existing
+container instead of creating another one.
+Start the backend
+cd backend
+npm install
+node server.js
+Use the backend's start script instead if one is defined in
+backend/package.json.
+Start the frontend
+In a second terminal:
+cd frontend/my-app
+pnpm install
+pnpm dev
+Open http://localhost:3000. The local frontend API URL should point to
+http://localhost:1000/api.
+Run with Docker Compose
+From the repository root:
+docker compose up --build -d
+Check services:
+docker compose ps
+Follow logs:
+docker compose logs -f
+Stop the containers:
+docker compose down
+Inside Docker Compose, localhost refers to the current container. The
+backend should use the Redis Compose service hostname (commonly
+redis). The frontend API URL must be reachable from the browser, not
+merely from another container.
+CI/CD Pipeline
+GitHub Actions runs on pushes to main and pull requests targeting
+main.
 
-Start the frontend:
+The workflow contains three jobs:
+1. Backend checks
+   - Checks out the repository.
+   - Sets up Node.js 22.
+   - Installs dependencies with npm ci.
+   - Checks backend syntax using node --check server.js.
+2. Frontend checks
+   - Sets up Node.js 22.
+   - Installs frontend dependencies with npm ci.
+   - Runs ESLint.
+   - Builds the Next.js application.
+3. Docker image publishing
+   - Runs on pushes to main after both check jobs pass.
+   - Builds and pushes frontend and backend images.
+   - Publishes latest and commit-SHA tags.
+Configure these GitHub Actions repository secrets: -
+DOCKERHUB_USERNAME - DOCKERHUB_TOKEN
 
-```bash
-npm run dev
-```
+Never place Docker Hub credentials directly in workflow files.
+Deployment
+Backend --- Render
+The backend is deployed using:
+docker.io/vedantv0502/redsun-backend:latest
+Live service: https://redsun-backend-latest.onrender.com
 
-### 4. Open the Application
+Configure the required backend variables in Render: - MONGODB_URL -
+JWT_SECRET - PORT (the server should listen on
+process.env.PORT || 1000) - REDIS_HOST - REDIS_URL if used by the
+Redis client
 
-Frontend:
+Use the Redis internal hostname for REDIS_HOST, not localhost.
+Frontend --- Vercel
+The Next.js project root is frontend/my-app.
 
-```text
-http://localhost:3000
-```
+Live application: https://redsunnai.vercel.app/
 
-Backend:
+Set this Production environment variable in Vercel:
+NEXT_PUBLIC_API_URL=https://redsun-backend-latest.onrender.com/api
+Redeploy after changing it.
+CORS
+The backend must allow the exact production frontend origin:
+https://redsunnai.vercel.app
+Add other trusted Vercel preview or custom domains to the backend CORS
+allowlist only when needed. Register CORS middleware before API routes.
+Avoid wildcard origins when credentials are enabled.
+Troubleshooting
+Redis error: ECONNREFUSED 127.0.0.1:6379
+- Confirm Render's REDIS_HOST is the Redis internal hostname, not
+  localhost.
+- Confirm the Render Key Value service is available.
+- Confirm the BullMQ queue and worker use the same Redis host and
+  port.
+- In Docker Compose, use the Redis service hostname.
+Browser CORS error
+- Confirm the exact Vercel origin is allowed by backend CORS.
+- Register CORS middleware before API routes.
+- Inspect the request and preflight OPTIONS request in the browser
+  Network tab.
+- With credentials enabled, use an explicit trusted origin rather than
+  *.
+API requests go to the frontend domain
+- Check NEXT_PUBLIC_API_URL in Vercel.
+- Include /api if backend routes are mounted under /api.
+- Redeploy Vercel after changing the variable.
+- Verify the Axios base URL and endpoint paths.
+Vercel reports NEXT_NO_VERSION
+- Set Root Directory to frontend/my-app.
+- Confirm package.json in that directory declares next as a
+  dependency.
+- Confirm the selected package manager and lockfile match.
+Vercel reports ERR_PNPM_OUTDATED_LOCKFILE
+From frontend/my-app, run:
+pnpm install
+Commit the updated package.json and pnpm-lock.yaml, then push.
+Render reports no open ports
+Make sure Express listens on Render's assigned port:
+const PORT = process.env.PORT || 1000;
 
-```text
-http://localhost:1000
-```
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+});
+If the server does not reach app.listen(), inspect earlier logs for
+MongoDB or Redis startup errors.
+Security Notes
+- Never commit .env or .env.local.
+- Rotate any credential or secret that has been accidentally exposed.
+- Use a long, randomly generated production JWT_SECRET.
+- Keep MongoDB credentials and Docker Hub tokens private.
+- Restrict MongoDB network access appropriately.
+- Use HTTPS for deployed frontend/backend communication.
+- Allow only trusted frontend origins through CORS.
+- Never expose secrets through NEXT_PUBLIC_ variables.
+- Do not log passwords, tokens, or sensitive user information.
+Future Improvements
+- Automated backend unit and integration tests.
+- API health checks, structured logging, and monitoring.
+- More granular role-based permissions.
+- Additional notification events and retry/failure handling.
+- Production backup and recovery procedures.
+- AI-powered team productivity features.
+Author
+Vedant
 
----
-
-## Authentication Flow
-
-RedSun uses JWT-based authentication.
-
-1. A user registers or logs in.
-2. The backend validates the credentials.
-3. The backend generates a JWT.
-4. The frontend stores the received token.
-5. Axios request interceptors attach the token to API requests.
-6. Backend authentication middleware verifies the token.
-7. Authorized requests proceed to their respective controllers.
-
-Example authorization header:
-
-```http
-Authorization: Bearer <JWT_TOKEN>
-```
-
----
-
-## API Overview
-
-The backend provides REST API endpoints for managing application resources.
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/register` | Register a user |
-| POST | `/api/login` | Authenticate a user |
-| POST | `/api/teams/createteam` | Create a team |
-| GET | `/api/teams/getAllTeams` | Fetch teams |
-| GET | `/api/teams/getDetails/:teamId` | Fetch team details |
-| POST | `/api/teams/addEmployee/:teamId/members` | Add a team member |
-| PUT | `/api/teams/updateTeam/:teamId` | Update team information |
-| DELETE | `/api/teams/deleteTeam/:teamId` | Delete a team |
-
-*These team routes reflect the current router implementation. Additional project, task, and notification endpoints can be documented as they are finalized.*
-
----
-
-## Development Roadmap
-
-- [x] Frontend UI development.
-- [x] Backend API development.
-- [x] User registration and login.
-- [x] JWT authentication.
-- [x] Team management APIs.
-- [x] Axios instance configuration.
-- [x] Axios request interceptor.
-- [x] Axios response interceptor.
-- [ ] Frontend and backend integration across all modules.
-- [ ] Protected frontend routes.
-- [ ] Complete project management integration.
-- [ ] Complete task management integration.
-- [ ] Notification integration.
-- [ ] AI-powered team assistance.
-- [ ] AI-driven productivity insights.
-- [ ] Deployment and production optimization.
-
----
-
-## Security Notes
-
-- Never commit `.env` or `.env.local` files.
-- Never expose JWT secrets or database credentials.
-- Validate incoming API requests.
-- Protect private endpoints with authentication middleware.
-- Use secure token storage and appropriate production security practices.
-- Configure CORS for trusted frontend origins.
-
----
-
-## Future Vision
-
-RedSun aims to become more than a project management application.
-
-The long-term vision is to build an intelligent operating system for teams that combines collaboration, task execution, project visibility, workflow automation, and AI-powered decision support in one unified workspace.
-
-## Contributing
-
-Contributions, suggestions, and feedback are welcome.
-
-1. Fork the repository.
-2. Create a new feature branch.
-3. Commit your changes.
-4. Push the branch.
-5. Open a Pull Request.
-
-## License
-
-No license has been specified yet. Add a suitable `LICENSE` file before distributing the project as open source.
-
----
-
-<p align="center">
-  <strong>RedSun — Build Better. Collaborate Smarter. Work Intelligently.</strong>
-</p>
+RedSun is a hands-on full-stack and DevOps project exploring team
+collaboration, backend services, background jobs, Docker, CI/CD, and
+cloud deployment.
