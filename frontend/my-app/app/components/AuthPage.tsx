@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
+  LoaderCircle,
   LockKeyhole,
   Mail,
   Router,
@@ -21,6 +22,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
   const isRegister = mode === "register";
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -28,6 +30,10 @@ export default function AuthPage({ mode }: AuthPageProps) {
   // Handle the Submit Butto
   async function handleSubmit (event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setMessage("");
 
     try{
       if(isRegister){
@@ -62,7 +68,13 @@ export default function AuthPage({ mode }: AuthPageProps) {
     router.push("/dashboard");
   }
     }catch(err){
-      console.log("Form Error")
+      const errorMessage =
+        typeof err === "object" && err !== null && "response" in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : undefined;
+      setMessage(errorMessage || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -125,7 +137,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
 
 
 
-          <form className="auth-form" onSubmit={handleSubmit}>
+          <form className="auth-form" onSubmit={handleSubmit} aria-busy={isSubmitting}>
             {isRegister && (
               <label className="auth-field">
                 <span>Full name</span>
@@ -197,13 +209,27 @@ export default function AuthPage({ mode }: AuthPageProps) {
                 <a href="#forgot-password">Forgot password?</a>
               </div>
             )}
-            <button className="auth-submit" type="submit">
-              {isRegister ? "Create account" : "Sign in"}
-              <ArrowRight size={17} />
+            <button className="auth-submit" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <LoaderCircle className="auth-spinner" size={17} aria-hidden="true" />
+                  {isRegister ? "Creating account…" : "Signing you in…"}
+                </>
+              ) : (
+                <>
+                  {isRegister ? "Create account" : "Sign in"}
+                  <ArrowRight size={17} />
+                </>
+              )}
             </button>
             {message && (
               <p className="auth-message" role="status">
                 {message}
+              </p>
+            )}
+            {isSubmitting && (
+              <p className="auth-progress" role="status">
+                {isRegister ? "Setting up your account…" : "Connecting to your workspace…"}
               </p>
             )}
           </form>
