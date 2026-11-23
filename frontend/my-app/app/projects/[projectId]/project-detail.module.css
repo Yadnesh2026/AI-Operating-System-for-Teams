@@ -479,22 +479,32 @@
   background: rgba(75, 190, 127, 0.08);
   color: #7bd4a0;
 }
-.statusSelect {
-  height: 37px;
-  padding: 0 10px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+.statusBadge {
+  display: inline-flex;
+  min-height: 37px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 11px;
+  border: 1px solid transparent;
   border-radius: 7px;
-  outline: 0;
-  background: #14161d;
-  color: #c6cad3;
-  font: inherit;
   font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
 }
-.statusSelect:focus {
-  border-color: rgba(239, 68, 68, 0.42);
+.statusTodo {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.045);
+  color: #b9bec8;
 }
-.statusSelect option {
-  background: #14161d;
+.statusInProgress {
+  border-color: rgba(96, 165, 250, 0.2);
+  background: rgba(96, 165, 250, 0.09);
+  color: #8fc3ff;
+}
+.statusCompleted {
+  border-color: rgba(75, 190, 127, 0.2);
+  background: rgba(75, 190, 127, 0.09);
+  color: #7bd4a0;
 }
 .taskActions {
   display: flex;
@@ -502,10 +512,6 @@
   align-items: center;
   justify-self: end;
   gap: 8px;
-}
-.taskActions .statusSelect {
-  min-width: 0;
-  flex: 1;
 }
 .taskActions .editButton {
   min-height: 37px;
@@ -806,9 +812,6 @@
   }
   .taskRow .taskActions {
     grid-column: 1/-1;
-    width: 100%;
-  }
-  .taskRow .statusSelect {
     width: 100%;
   }
   .taskInfo p {

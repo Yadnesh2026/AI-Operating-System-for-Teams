@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowRight,
@@ -35,6 +35,10 @@ type Employee = {
     name: string;
 };
 
+const subscribeToMount = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export type AISaveTask = {
   title: string,
   description: string,
@@ -57,10 +61,13 @@ export default function AITaskGenerator({project,teamId,employees,onClose, onSav
 
   const [isGenerating, setIsGenerating] = useState(false); //tracks whether Groq is currently generating tasks.
   const [isSaving, setIsSaving] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useSyncExternalStore(
+    subscribeToMount,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
 
   useEffect(() => {
-    setIsMounted(true);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 

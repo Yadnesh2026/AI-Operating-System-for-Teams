@@ -56,6 +56,7 @@ export default function ProjectDetailPage({
   const [editDescription, setEditDescription] = useState("")
   const [tasks, setTasks] = useState<Task[]>([]);
   const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
+  const [activeTaskFilter, setActiveTaskFilter] = useState<TaskFilter>("All tasks");
 
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
@@ -190,23 +191,6 @@ const [editTaskModal, setEditTaskModal] = useState(false);
     }
   }
 
-  // Update status of employee task
-  async function updateTaskStatus(taskId: string, status: string) {
-    try{
-      const response = await api.patch(`/task/${teamId}/${projectId}/${taskId}/assign`,
-      {status}
-    );
-    setTasks((prevTasks)=>
-      prevTasks.map((task)=>
-        task._id === taskId ? response.data.updateStatus : task
-      ));
-
-    console.log(response.data)
-    }catch(err){
-      console.log("Update status error",err)
-    }
-  }
-
   // Update Task edit
   async function updateTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -245,12 +229,23 @@ const [editTaskModal, setEditTaskModal] = useState(false);
 
 
 
-  const pending = 0;
-  const inProgress = 0;
-  const completed = 0;
-  const progress = 0;
+  const pending = tasks.filter((task) => task.status === "todo").length;
+  const inProgress = tasks.filter((task) => task.status === "in-progress").length;
+  const completed = tasks.filter((task) => task.status === "completed").length;
+  const progress = tasks.length ? Math.round((completed / tasks.length) * 100) : 0;
+  const taskCountByFilter: Record<TaskFilter, number> = {
+    "All tasks": tasks.length,
+    "To do": pending,
+    "In progress": inProgress,
+    Completed: completed,
+  };
 
-  const visibleTasks = tasks;
+  const visibleTasks = tasks.filter((task) => {
+    if (activeTaskFilter === "To do") return task.status === "todo";
+    if (activeTaskFilter === "In progress") return task.status === "in-progress";
+    if (activeTaskFilter === "Completed") return task.status === "completed";
+    return true;
+  });
 
   // Update Project edit btn 
   async function updateProject(event: FormEvent<HTMLFormElement>) {
@@ -430,16 +425,12 @@ const [editTaskModal, setEditTaskModal] = useState(false);
               <button
                 key={item}
                 role="tab"
-                aria-selected={item === "All tasks"}
-                className={item === "All tasks" ? styles.activeFilter : ""}
-                onClick={() => {}}
+                aria-selected={item === activeTaskFilter}
+                className={item === activeTaskFilter ? styles.activeFilter : ""}
+                onClick={() => setActiveTaskFilter(item)}
               >
                 {item}
-                <span>
-                  {item === "All tasks"
-                    ? tasks.length
-                    : 0}
-                </span>
+                <span>{taskCountByFilter[item]}</span>
               </button>
             ))}
           </div>
@@ -481,16 +472,22 @@ const [editTaskModal, setEditTaskModal] = useState(false);
                   </div>
                 </div>
                 <div className={styles.taskActions}>
-                  <select
-                    className={styles.statusSelect}
-                    aria-label={`Status for ${task.title}`}
-                    value={task.status}
-                    onChange={(e) => updateTaskStatus(task._id, e.target.value)}
+                  <span
+                    className={`${styles.statusBadge} ${
+                      task.status === "completed"
+                        ? styles.statusCompleted
+                        : task.status === "in-progress"
+                          ? styles.statusInProgress
+                          : styles.statusTodo
+                    }`}
+                    aria-label={`Status: ${task.status === "in-progress" ? "In progress" : task.status === "completed" ? "Completed" : "To do"}`}
                   >
-                    <option value="todo">To do</option>
-                    <option value="in-progress">In progress</option>
-                    <option value="completed">Completed</option>
-                  </select>
+                    {task.status === "in-progress"
+                      ? "In progress"
+                      : task.status === "completed"
+                        ? "Completed"
+                        : "To do"}
+                  </span>
                   <button
                     type="button"
                     className={styles.editButton}
