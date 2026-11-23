@@ -251,6 +251,38 @@
   color: #8f95a2;
   font-size: 12px;
 }
+.taskHeaderActions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+.aiGenerateButton {
+  display: inline-flex;
+  min-height: 39px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 112, 112, 0.32);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.13), rgba(157, 31, 50, 0.09));
+  color: #ff9999;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.16s, background 0.16s, transform 0.16s;
+}
+.aiGenerateButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 112, 112, 0.58);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.21), rgba(157, 31, 50, 0.14));
+}
+.aiGenerateButton:focus-visible {
+  outline: 2px solid rgba(255, 140, 140, 0.8);
+  outline-offset: 2px;
+}
 .createButton {
   display: inline-flex;
   min-height: 39px;
@@ -735,6 +767,14 @@
   }
   .taskHeader {
     align-items: flex-start;
+  }
+  .taskHeaderActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .taskHeaderActions > button {
+    min-height: 36px;
+    white-space: nowrap;
   }
   .taskHeader p {
     max-width: 190px;

@@ -11,6 +11,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Sparkles,
   Trash2,
   UsersRound,
   X,
@@ -22,6 +23,7 @@ import type { Project } from "../projectData";
 import type { Team } from "@/app/teams/teamData";
 import { useRouter } from "next/navigation";
 import type { Task } from "../taskData";
+import AITaskGenerator, { type AISaveTask } from "./AITaskGenerator";
 
 type TaskFilter = "All tasks" | "To do" | "In progress" | "Completed";
 const taskFilters: TaskFilter[] = [
@@ -46,6 +48,7 @@ export default function ProjectDetailPage({
 
   const [taskModal, setTaskModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [aiTaskGeneratorOpen, setAiTaskGeneratorOpen] = useState(false);
 
   const [project, setProject]= useState<Project| null>(null);
   const [team, setTeam] = useState<Team | null>(null)
@@ -156,6 +159,34 @@ const [editTaskModal, setEditTaskModal] = useState(false);
 
     }catch(err){
       console.log("Create Task Error",err)
+    }
+  }
+
+  // Ai generated Tasks
+  async function saveAiTasks(selectedTasks: AISaveTask[]) {
+    try{
+      const responses = await Promise.all(selectedTasks.map((task)=>
+      api.post(`/task/${teamId}/${projectId}`,{
+        title: task.title,
+        description: task.description,
+        assignedTo: task.assignee
+      })))
+
+      const createdTasks = responses.map(
+      (response) => response.data.createTask
+    );
+
+     setTasks((prevTasks) => [
+      ...prevTasks,
+      ...createdTasks,
+    ]);
+
+      console.log("AI Tasks Saved Successfully!");
+
+
+    }catch(err){
+      console.log("Ai error",err)
+      throw err;
     }
   }
 
@@ -271,6 +302,9 @@ const [editTaskModal, setEditTaskModal] = useState(false);
   }
 
 
+
+
+
   return (
     <main className={styles.page}>
       <Link href="/projects" className={styles.backLink}>
@@ -369,13 +403,22 @@ const [editTaskModal, setEditTaskModal] = useState(false);
             <h2>Tasks</h2>
             <p>Keep the project work organized and moving.</p>
           </div>
-          <button
-            className={styles.createButton}
-            onClick={() => setTaskModal(true)}
-          >
-            <Plus size={16} />
-            Create task
-          </button>
+          <div className={styles.taskHeaderActions}>
+            <button
+              className={styles.aiGenerateButton}
+              onClick={() => setAiTaskGeneratorOpen(true)}
+            >
+              <Sparkles size={15} />
+              Generate Tasks with AI
+            </button>
+            <button
+              className={styles.createButton}
+              onClick={() => setTaskModal(true)}
+            >
+              <Plus size={16} />
+              Create task
+            </button>
+          </div>
         </div>
         <div className={styles.taskToolbar}>
           <div
@@ -749,6 +792,14 @@ const [editTaskModal, setEditTaskModal] = useState(false);
             </form>
           </section>
         </div>
+      )}
+
+      {aiTaskGeneratorOpen && project && (
+        <AITaskGenerator
+          project={project} teamId={teamId} employees={employees}
+          onClose={() => setAiTaskGeneratorOpen(false)}
+          onSaveTasks={saveAiTasks}
+        />
       )}
     </main>
   );

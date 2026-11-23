@@ -18,7 +18,8 @@ api.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`  // Adding this beacuse Backend needs the Bearror as auth from frontend to create JWT Token
         }
 
-        // After modifying the request, we return config so Axios can continue with the updated configuration and send the request.
+        // After modifying the request, we return config so Axios can continue with the update
+        // d configuration and send the request.
         return config;  
     },
     (error) => {
