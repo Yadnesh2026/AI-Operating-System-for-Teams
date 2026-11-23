@@ -11,6 +11,7 @@ const helmet = require("helmet")
 const {connectRedis, redisClient} = require("./config/redis")
 require("./workers/notificationWorker")
 const notificationRouter = require("./router/notificationRouter");
+const aiRouter = require("./router/aiRouter")
 
 require("dotenv").config()
 
@@ -36,6 +37,7 @@ app.use("/api", teamRouter);
 app.use("/api", projectRouter);
 app.use("/api", taskRouter)
 app.use("/api/notifications", notificationRouter);
+app.use("/api/ai",aiRouter)
 
 
 app.get("/",(req, res)=>{

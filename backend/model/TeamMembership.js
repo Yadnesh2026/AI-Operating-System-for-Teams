@@ -18,6 +18,8 @@ const teamMembersShipSchema = new mongoose.Schema({
     }
 })
 
-const TeamMembership = mongoose.model("TeamMembership", teamMembersShipSchema)
+// Nodemon can reload modules while Mongoose keeps its model registry alive.
+// Reuse the registered model on reload instead of compiling it a second time.
+const TeamMembership = mongoose.models.TeamMembership || mongoose.model("TeamMembership", teamMembersShipSchema)
 
 module.exports = TeamMembership
