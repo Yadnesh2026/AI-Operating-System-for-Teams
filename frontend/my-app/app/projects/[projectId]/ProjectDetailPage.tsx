@@ -24,6 +24,7 @@ import type { Team } from "@/app/teams/teamData";
 import { useRouter } from "next/navigation";
 import type { Task } from "../taskData";
 import AITaskGenerator, { type AISaveTask } from "./AITaskGenerator";
+import AIProjectAssistant from "./AiProjectAssistance";
 
 type TaskFilter = "All tasks" | "To do" | "In progress" | "Completed";
 const taskFilters: TaskFilter[] = [
@@ -50,6 +51,7 @@ export default function ProjectDetailPage({
   const [editModal, setEditModal] = useState(false);
   const [aiTaskGeneratorOpen, setAiTaskGeneratorOpen] = useState(false);
 
+
   const [project, setProject]= useState<Project| null>(null);
   const [team, setTeam] = useState<Team | null>(null)
   const [editName, setEditName] = useState("")
@@ -61,6 +63,9 @@ export default function ProjectDetailPage({
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
+
+  const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
+
 
   // Update Task
 const [editTaskId, setEditTaskId] = useState("");
@@ -322,6 +327,14 @@ const [editTaskModal, setEditTaskModal] = useState(false);
         </div>
         {
           <div className={styles.managerActions}>
+            <button
+              type="button"
+              className={styles.aiGenerateButton}
+              onClick={() => setAiAssistantOpen(true)}
+            >
+              <Sparkles size={15} />
+              Ask AI
+            </button>
             <button
               className={styles.editButton}
               onClick={() => {
@@ -797,6 +810,11 @@ const [editTaskModal, setEditTaskModal] = useState(false);
           onClose={() => setAiTaskGeneratorOpen(false)}
           onSaveTasks={saveAiTasks}
         />
+      )}
+
+      {aiAssistantOpen && (
+        <AIProjectAssistant onClose={() => setAiAssistantOpen(false)}
+        teamId={teamId} projectId={projectId} />
       )}
     </main>
   );

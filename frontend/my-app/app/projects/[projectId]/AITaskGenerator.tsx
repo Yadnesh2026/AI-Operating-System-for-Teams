@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import {
   ArrowRight,
   Check,
-  Clock3,
   Pencil,
   Sparkles,
   Trash2,
@@ -23,12 +22,15 @@ type SuggestedTask = {
   id: string;
   title: string;
   description: string;
-  priority: Priority;
-  duration: string;
+  priority?: Priority;
   assignee: string;
 };
 
-type TaskDraft = Pick<SuggestedTask, "title" | "description" | "priority">;
+type TaskDraft = {
+  title: string;
+  description: string;
+  priority: Priority | "";
+};
 
 type Employee = {
     id: string;
@@ -97,8 +99,6 @@ export default function AITaskGenerator({project,teamId,employees,onClose, onSav
         id: `${Date.now()}-${index}`,
         title: task.title,
         description: task.description,
-        priority: "Medium" as Priority,
-        duration: "Not estimated",
         assignee: "",
       }));
 
@@ -134,7 +134,7 @@ export default function AITaskGenerator({project,teamId,employees,onClose, onSav
     setDraft({
       title: task.title,
       description: task.description,
-      priority: task.priority,
+      priority: task.priority ?? "",
     });
   }
 
@@ -143,7 +143,12 @@ export default function AITaskGenerator({project,teamId,employees,onClose, onSav
     setSuggestions((current) =>
       current.map((task) =>
         task.id === id
-          ? { ...task, ...draft, title: draft.title.trim() }
+          ? {
+              ...task,
+              title: draft.title.trim(),
+              description: draft.description,
+              priority: draft.priority || undefined,
+            }
           : task,
       ),
     );
@@ -223,7 +228,7 @@ export default function AITaskGenerator({project,teamId,employees,onClose, onSav
           </div>
           <div className={styles.headingText}>
             <div className={styles.eyebrow}>
-              RED SUN INTELLIGENCE <span>DEMO</span>
+              RED SUN INTELLIGENCE
             </div>
             <h2 id="ai-task-title">AI Task Generator</h2>
             <p id="ai-task-subtitle">
@@ -370,10 +375,11 @@ export default function AITaskGenerator({project,teamId,employees,onClose, onSav
                                 onChange={(event) =>
                                   setDraft({
                                     ...draft,
-                                    priority: event.target.value as Priority,
+                                    priority: event.target.value as Priority | "",
                                   })
                                 }
                               >
+                                <option value="">No priority</option>
                                 <option>High</option>
                                 <option>Medium</option>
                                 <option>Low</option>
@@ -403,20 +409,17 @@ export default function AITaskGenerator({project,teamId,employees,onClose, onSav
                           <>
                             <div className={styles.taskTitleRow}>
                               <h4>{task.title}</h4>
-                              <span
-                                className={`${styles.priority} ${styles[`priority${task.priority}`]}`}
-                              >
-                                {task.priority}
-                              </span>
+                              {task.priority && (
+                                <span
+                                  className={`${styles.priority} ${styles[`priority${task.priority}`]}`}
+                                >
+                                  {task.priority}
+                                </span>
+                              )}
                             </div>
                             <p className={styles.taskDescription}>
                               {task.description}
                             </p>
-                            <div className={styles.taskMeta}>
-                              <span>
-                                <Clock3 size={13} /> {task.duration}
-                              </span>
-                            </div>
                           </>
                         )}
                       </div>
@@ -486,8 +489,8 @@ export default function AITaskGenerator({project,teamId,employees,onClose, onSav
               </h4>
               <p>
                 {hasGenerated
-                  ? "Generate another sample plan whenever you want."
-                  : "Generate a sample plan to see actionable tasks for this project."}
+                  ? "Generate another task plan whenever you want."
+                  : "Generate a task plan from this project's details."}
               </p>
               <button
                     type="button"
