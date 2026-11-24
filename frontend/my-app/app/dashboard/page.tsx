@@ -12,7 +12,6 @@ import {
   FolderKanban,
   MoreHorizontal,
   Plus,
-  Search,
   UsersRound,
 } from "lucide-react";
 import styles from "./dashboard.module.css";
@@ -29,6 +28,7 @@ type Project = {
   _id: string;
   name: string;
   description: string;
+  teamId: string;
 };
 
 type Task = {
@@ -38,6 +38,10 @@ type Task = {
   projectId: {
     _id: string;
     name: string;
+    teamId?: {
+      _id: string;
+      name: string;
+    };
   };
 };
 
@@ -139,10 +143,6 @@ export default function DashboardPage() {
             Workspace <span>/</span> <b>Overview</b>
           </div>
           <div className={styles.topActions}>
-            <button className={styles.search}>
-              <Search size={16} />
-              <span>Search anything...</span>
-            </button>
             <Link
               className={styles.iconButton}
               aria-label="Notifications"
@@ -253,15 +253,25 @@ export default function DashboardPage() {
               <div className={styles.taskList}>
                 {tasks.length > 0 ? (
                   tasks.slice(0, 4).map((task) => (
-                    <div key={task._id}>
+                    <Link
+                      key={task._id}
+                      className={styles.dashboardItemLink}
+                      href={
+                        task.projectId.teamId
+                          ? `/projects/${task.projectId._id}?teamId=${task.projectId.teamId._id}`
+                          : "/tasks"
+                      }
+                    >
                       <h3>{task.title}</h3>
                       <p>{task.projectId?.name}</p>
                       <span>{task.status}</span>
-                    </div>
+                    </Link>
                   ))
                 ) : (
                   <div className={styles.dashboardEmpty}>
-                    No tasks assigned yet.
+                    {loading
+                      ? "Loading your tasks…"
+                      : "No tasks assigned to you yet. Tasks assigned to other teammates won’t appear in My tasks."}
                   </div>
                 )}
               </div>
@@ -284,17 +294,23 @@ export default function DashboardPage() {
               <div className={styles.activityList}>
                 {notifications.length > 0 ? (
                   notifications.slice(0, 4).map((item) => (
-                    <div key={item._id}>
+                    <Link
+                      key={item._id}
+                      className={styles.dashboardItemLink}
+                      href="/notifications"
+                    >
                       <p>{item.message}</p>
 
                       <small>
                         {new Date(item.createdAt).toLocaleString()}
                       </small>
-                    </div>
+                    </Link>
                   ))
                 ) : (
                   <div className={styles.dashboardEmpty}>
-                    No recent activity yet.
+                    {loading
+                      ? "Loading recent activity…"
+                      : "No recent activity yet."}
                   </div>
                 )}
               </div>
@@ -319,14 +335,20 @@ export default function DashboardPage() {
 
               {projects.length > 0 ? (
                 projects.slice(0, 4).map((project) => (
-                  <div key={project._id}>
+                  <Link
+                    key={project._id}
+                    className={styles.dashboardItemLink}
+                    href={`/projects/${project._id}?teamId=${project.teamId}`}
+                  >
                     <h3>{project.name}</h3>
                     <p>{project.description}</p>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <div className={styles.dashboardEmpty}>
-                  No projects available.
+                  {loading
+                    ? "Loading recent projects…"
+                    : "No projects available."}
                 </div>
               )}
             </section>

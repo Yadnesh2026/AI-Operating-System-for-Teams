@@ -81,7 +81,6 @@ const [editTaskModal, setEditTaskModal] = useState(false);
 
   // Fetch the tasks
   useEffect(()=>{
-
       async function fetchTasks() {
         if (!isObjectId(teamId) || !isObjectId(projectId)) return;
         try{
@@ -92,7 +91,17 @@ const [editTaskModal, setEditTaskModal] = useState(false);
           console.log("Tasks Fetch error", err)
         }
     }
-    fetchTasks()
+    const refreshTasks = () => {
+      if (document.visibilityState === "visible") void fetchTasks();
+    };
+
+    fetchTasks();
+    window.addEventListener("focus", refreshTasks);
+    document.addEventListener("visibilitychange", refreshTasks);
+    return () => {
+      window.removeEventListener("focus", refreshTasks);
+      document.removeEventListener("visibilitychange", refreshTasks);
+    };
   },[teamId,projectId])
 
   // fetch the projects from backend
@@ -396,7 +405,14 @@ const [editTaskModal, setEditTaskModal] = useState(false);
             <span>Project progress</span>
             <b>{progress}%</b>
           </div>
-          <div className={styles.progressTrack}>
+          <div
+            className={styles.progressTrack}
+            role="progressbar"
+            aria-label="Project task completion"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progress}
+          >
             <span style={{ width: `${progress}%` }} />
           </div>
           <small>

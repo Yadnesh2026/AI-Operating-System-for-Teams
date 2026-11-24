@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Bell, Search } from "lucide-react";
+import { Bell } from "lucide-react";
 import WorkspaceSidebar from "./WorkspaceSidebar";
 import ProfileMenu from "./ProfileMenu";
 import layout from "../dashboard/dashboard.module.css";
@@ -13,7 +13,6 @@ export default function TeamWorkspace({ title, active = "teams", children }: { t
         <header className={layout.topbar}>
           <div className={layout.breadcrumb}>Workspace <span>/</span> <b>{title}</b></div>
           <div className={layout.topActions}>
-            <button className={layout.search}><Search size={16} /><span>Search anything...</span></button>
             <Link className={layout.iconButton} aria-label="Notifications" href="/notifications"><Bell size={18} /></Link>
             <ProfileMenu />
           </div>
