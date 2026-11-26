@@ -119,6 +119,11 @@ export default function AIProjectAssistant({
           </button>
         </div>
 
+
+
+
+        
+
         <div className={styles.messages} aria-live="polite">
             {messages.map((message, index) => ( // If true → apply userMessage styling. If false → apply aiMessage styling.
                 <div key={index} className={message.role === "user"? styles.userMessage: styles.aiMessage}>
