@@ -117,12 +117,7 @@ export default function AIProjectAssistant({
           <button type="button" onClick={onClose} aria-label="Close AI assistant">
             <X />
           </button>
-        </div>
-
-
-
-
-        
+        </div>        
 
         <div className={styles.messages} aria-live="polite">
             {messages.map((message, index) => ( // If true → apply userMessage styling. If false → apply aiMessage styling.
